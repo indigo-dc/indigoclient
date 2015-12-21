@@ -1,9 +1,9 @@
-package pl.psnc.indigo.api.restful;
+package pl.psnc.indigo.fg.api.restful;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import pl.psnc.indigo.api.restful.RootAPI;
-import pl.psnc.indigo.api.restful.BaseAPI;
+import pl.psnc.indigo.fg.api.restful.RootAPI;
+import pl.psnc.indigo.fg.api.restful.BaseAPI;
 
 public class RootAPITest {
 

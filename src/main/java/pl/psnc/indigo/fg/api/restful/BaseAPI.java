@@ -1,4 +1,4 @@
-package pl.psnc.indigo.api.restful;
+package pl.psnc.indigo.fg.api.restful;
 
 public class BaseAPI {
 

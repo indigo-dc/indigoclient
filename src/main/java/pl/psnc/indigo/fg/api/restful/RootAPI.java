@@ -1,4 +1,4 @@
-package pl.psnc.indigo.api.restful;
+package pl.psnc.indigo.fg.api.restful;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
