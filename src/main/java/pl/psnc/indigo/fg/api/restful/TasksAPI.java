@@ -3,11 +3,12 @@ package pl.psnc.indigo.fg.api.restful;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONObject;
+import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 
 public class TasksAPI extends BaseAPI {
 
@@ -19,9 +20,12 @@ public class TasksAPI extends BaseAPI {
 	/**
 	 * Calls prepare task at server side
 	 */
-	public String prepareTask(String user, String application, String description) {
-		Client client = ClientBuilder.newClient();
-                
+	public Task prepareTask(String user, String application, String description) {
+//		ClientConfig cc = new ClientConfig().register(new JacksonFeature());
+//              Client client = ClientBuilder.newClient(cc);
+
+                Client client = ClientBuilder.newClient();
+
                 String httpToCall = httpAddress + user;
                 
 		Entity<String> payload 
@@ -44,16 +48,14 @@ public class TasksAPI extends BaseAPI {
 
 		System.out.println(body);
 
-		String id = null;
-
-		try { 
-			JSONObject jsonOutput = new JSONObject( body ); 
-
-			id = jsonOutput.getString("id");
+                
+                try { 
+//			JSONObject jsonOutput = new JSONObject( body ); 
+                        ObjectMapper mapper = new ObjectMapper();
+                        Task task = mapper.readValue(body, Task.class);
+                        return task;
 		} catch(Exception ex) {
-
+			return null;
 		}
-		
-		return id;
 	}
 }	
