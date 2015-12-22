@@ -21,8 +21,6 @@ public class TasksAPI extends BaseAPI {
 	 * Calls prepare task at server side
 	 */
 	public Task prepareTask(String user, String application, String description) {
-//		ClientConfig cc = new ClientConfig().register(new JacksonFeature());
-//              Client client = ClientBuilder.newClient(cc);
 
                 Client client = ClientBuilder.newClient();
 
@@ -50,7 +48,6 @@ public class TasksAPI extends BaseAPI {
 
                 
                 try { 
-//			JSONObject jsonOutput = new JSONObject( body ); 
                         ObjectMapper mapper = new ObjectMapper();
                         Task task = mapper.readValue(body, Task.class);
                         return task;
