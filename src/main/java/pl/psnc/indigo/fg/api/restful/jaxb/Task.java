@@ -14,6 +14,8 @@ public class Task implements Serializable {
     String description;
     String status;
     String user;
+    String creation;
+    String iosandbox;
     List<String> arguments;
     List<InputFile> input_files;
     List<OutputFile> output_files;
@@ -75,6 +77,22 @@ public class Task implements Serializable {
 
     public void setUser(String user) {
         this.user = user;
+    }
+    
+    public String getCreation() {
+        return creation;
+    }
+
+    public void setCreation(String creation) {
+        this.creation = creation;
+    }
+
+    public String getIosandbox() {
+        return iosandbox;
+    }
+
+    public void setIosandbox(String iosandbox) {
+        this.iosandbox = iosandbox;
     }
 
     public List<String> getArguments() {
