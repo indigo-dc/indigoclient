@@ -46,6 +46,20 @@ public class TasksAPITest {
 	}
         
         @Test
+	public void testGetAllTasks() {
+		TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
+	
+		// TODO: make sure to set proper task ID below
+		// this one is an arbitrary value from previous calls to
+		// TaskAPI
+                try {
+                    Task [] tasks = api.getAllTasks();
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
+	}
+        
+        @Test
         public void testFinalize() {
             System.out.flush();
         }

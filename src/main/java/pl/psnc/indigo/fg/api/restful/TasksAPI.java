@@ -136,4 +136,37 @@ public class TasksAPI extends BaseAPI {
                         throw ex;
                 }
         }
+        
+        public Task[] getAllTasks() throws Exception {
+                Client client = ClientBuilder.newClient();
+
+                String httpToCall = httpAddress;
+
+                System.out.println("Calling: " + httpToCall);
+
+                Entity<String> payload
+                        = Entity.text( "" );
+
+                Response response = client.target(httpToCall)
+                                        .request(MediaType.APPLICATION_JSON_TYPE)
+                                        .header("Content-Type","application/json")
+                                        .header("Authorization", "Bearer {access_token}")
+                                        .accept(MediaType.APPLICATION_JSON_TYPE)
+                                        .get(Response.class);
+                int status = response.getStatus();
+                System.out.println("Status: " + status);
+                MultivaluedMap<String,Object> headers = response.getHeaders();
+                String body = response.readEntity(String.class);
+
+                System.out.println(body);
+
+
+                try {
+                        ObjectMapper mapper = new ObjectMapper();
+                        Task [] tasks = mapper.readValue(body, Task[].class);
+                        return tasks;
+                } catch(Exception ex) {
+                        throw ex;
+                }
+        }
 }	
