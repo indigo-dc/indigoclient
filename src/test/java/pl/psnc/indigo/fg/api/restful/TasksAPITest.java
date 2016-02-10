@@ -10,10 +10,14 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 public class TasksAPITest {
 
 	@Test
-	public void testPrepareTask() {
+	public void testCreateTask() {
 		TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
                 try {
-                    Task result = api.prepareTask( "brunor", "1", "hello" );				
+                    Task newTask = new Task();
+                    newTask.setUser("brunor");
+                    newTask.setApplication("1");
+                    newTask.setDescription("hello");
+                    Task result = api.createTask( newTask );				
                 } catch(Exception ex) {
                     ex.printStackTrace();
                 }
@@ -23,9 +27,13 @@ public class TasksAPITest {
 	public void testSubmitTask() {
 		TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
                 try {
-                    Task prepTask = api.prepareTask( "brunor", "1", "hello" );
+                    Task newTask = new Task();
+                    newTask.setUser("brunor");
+                    newTask.setApplication("1");
+                    newTask.setDescription("hello");
+                    Task prepTask = api.createTask( newTask );
 
-                    Upload upload = api.submitTask( "brunor", prepTask.getId() );
+                    Upload upload = api.submitTask( prepTask );
                 } catch(Exception ex) {
                     ex.printStackTrace();
                 }
@@ -39,7 +47,11 @@ public class TasksAPITest {
 		// this one is an arbitrary value from previous calls to
 		// TaskAPI
                 try {
-                    Task task = api.getTask("brunor", "44" );
+                    Task newTask = new Task();
+                    newTask.setUser("brunor");
+                    newTask.setId("1");
+                    
+                    Task task = api.getTask( newTask );
                 } catch(Exception ex) {
                     ex.printStackTrace();
                 }

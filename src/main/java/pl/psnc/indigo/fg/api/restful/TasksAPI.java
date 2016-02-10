@@ -7,11 +7,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.json.JSONObject;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TasksAPI extends BaseAPI {
+    
+        private final static Logger LOGGER = Logger.getLogger(TasksAPI.class.getName());
 
 	public TasksAPI(String httpAddress) {
 		super(httpAddress);
@@ -24,19 +28,27 @@ public class TasksAPI extends BaseAPI {
 	/**
 	 * Calls prepare task at server side
 	 */
-	public Task prepareTask(String user, String application, String description) throws Exception {
-
+	public Task createTask(Task newTask) throws Exception {
 
                 Client client = ClientBuilder.newClient();
 
-                String httpToCall = httpAddress + "?user=" + user;
+                String httpToCall = httpAddress + "?user=" + newTask.getUser();
+                String jsonText = null;
+                
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+                    jsonText = mapper.writeValueAsString(newTask);
+                } catch(Exception ex) {
+                    throw ex;
+                }
                 
 		Entity<String> payload 
 			= Entity.json(
-				" {  \"application\": \"" + application + "\" ,  \"description\": \"" + description + "\" }"
+				jsonText
 				);
 
-		System.out.println("Calling: " + httpToCall);
+                LOGGER.info("Calling: " + httpToCall);
                 
 		Response response = client.target(httpToCall)
   					.request(MediaType.APPLICATION_JSON_TYPE)
@@ -45,34 +57,40 @@ public class TasksAPI extends BaseAPI {
                                         .accept(MediaType.APPLICATION_JSON_TYPE)
   					.post(payload);
 		int status = response.getStatus();
-		System.out.println("Status: " + status);
-		MultivaluedMap<String,Object> headers = response.getHeaders();
-	        String body = response.readEntity(String.class);
-
-		System.out.println(body);
-
                 
-                try { 
-                        ObjectMapper mapper = new ObjectMapper();
-                        Task task = mapper.readValue(body, Task.class);
-                        return task;
-		} catch(Exception ex) {
-			throw ex;
-		}
+                if(status == 200) {
+                    LOGGER.info("Response status: " + status);
+                    MultivaluedMap<String,Object> headers = response.getHeaders();
+                    String body = response.readEntity(String.class);
+
+                    LOGGER.info("Body: " + body);
+                    
+                    try { 
+                            ObjectMapper mapper = new ObjectMapper();
+                            Task task = mapper.readValue(body, Task.class);
+                            return task;
+                    } catch(Exception ex) {
+                        LOGGER.log(Level.SEVERE, "Exception while parsing JSON value:", ex);
+                        throw ex;
+                    }
+                } else {
+                    LOGGER.severe("Error while calling: " + httpToCall + " - status: " + status);
+                    return null;
+                }
 	}
 	
 	/**
          * Submit task
 	 * TODO: replace arguments with Task object, serialize object to JSON and pass it to WS
          */
-        public Upload submitTask(String user, String id) throws Exception {
+        public Upload submitTask(Task task) throws Exception {
 
                 Client client = ClientBuilder.newClient();
 
-                String httpToCall = httpAddress + "/" + id + "/input?user=" + user;
+                String httpToCall = httpAddress + "/" + task.getId() + "/input?user=" + task.getUser();
 
-                System.out.println("Calling: " + httpToCall);
-
+                LOGGER.info("Calling: " + httpToCall);
+                
 		Entity<String> payload
                         = Entity.text( "" );
 
@@ -83,19 +101,26 @@ public class TasksAPI extends BaseAPI {
                                         .accept(MediaType.APPLICATION_JSON_TYPE)
                                         .post(payload);
                 int status = response.getStatus();
-                System.out.println("Status: " + status);
-                MultivaluedMap<String,Object> headers = response.getHeaders();
-                String body = response.readEntity(String.class);
+               
+                LOGGER.info("Status:" + status);
+                
+                if(status == 200) {
+                    MultivaluedMap<String,Object> headers = response.getHeaders();
+                    String body = response.readEntity(String.class);
 
-                System.out.println(body);
-
-
-                try {
+                    LOGGER.info("Body: " + body);
+                    
+                    try {
                         ObjectMapper mapper = new ObjectMapper();
                         Upload upload = mapper.readValue(body, Upload.class);
                         return upload;
-                } catch(Exception ex) {
+                    } catch(Exception ex) {
+                        LOGGER.log(Level.SEVERE, "Exception while parsing JSON value:", ex);
                         throw ex;
+                    }
+                } else {
+                    LOGGER.severe("Error while calling: " + httpToCall + " - status: " + status);
+                    return null;
                 }
         }
 
@@ -103,13 +128,13 @@ public class TasksAPI extends BaseAPI {
          * Check status
          * TODO: replace arguments with Task object, serialize object to JSON and pass it to WS
          */
-        public Task getTask(String user, String id) throws Exception {
+        public Task getTask(Task task) throws Exception {
 
                 Client client = ClientBuilder.newClient();
 
-                String httpToCall = httpAddress + "/" + id;
+                String httpToCall = httpAddress + "/" + task.getId();
 
-                System.out.println("Calling: " + httpToCall);
+                LOGGER.info("Calling: " + httpToCall);
 
                 Entity<String> payload
                         = Entity.text( "" );
@@ -121,19 +146,27 @@ public class TasksAPI extends BaseAPI {
                                         .accept(MediaType.APPLICATION_JSON_TYPE)
                                         .get(Response.class);
                 int status = response.getStatus();
-                System.out.println("Status: " + status);
+                
+                LOGGER.info("Status:" + status);
+                
                 MultivaluedMap<String,Object> headers = response.getHeaders();
                 String body = response.readEntity(String.class);
 
-                System.out.println(body);
+                LOGGER.info("Body: " + body);
+                
+                if(status == 200) {
 
-
-                try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        Task task = mapper.readValue(body, Task.class);
-                        return task;
-                } catch(Exception ex) {
-                        throw ex;
+                    try {
+                            ObjectMapper mapper = new ObjectMapper();
+                            Task retVal = mapper.readValue(body, Task.class);
+                            return retVal;
+                    } catch(Exception ex) {
+                        LOGGER.log(Level.SEVERE, "Exception while parsing JSON value:", ex);
+                        return null;
+                    }
+                } else {
+                  LOGGER.severe("Error while calling: " + httpToCall + " - status: " + status);
+                  return null;  
                 }
         }
         
@@ -142,7 +175,7 @@ public class TasksAPI extends BaseAPI {
 
                 String httpToCall = httpAddress;
 
-                System.out.println("Calling: " + httpToCall);
+                LOGGER.info("Calling: " + httpToCall);
 
                 Entity<String> payload
                         = Entity.text( "" );
@@ -154,19 +187,24 @@ public class TasksAPI extends BaseAPI {
                                         .accept(MediaType.APPLICATION_JSON_TYPE)
                                         .get(Response.class);
                 int status = response.getStatus();
-                System.out.println("Status: " + status);
+                LOGGER.info("Status:" + status);
                 MultivaluedMap<String,Object> headers = response.getHeaders();
                 String body = response.readEntity(String.class);
 
-                System.out.println(body);
+                LOGGER.info("Body: " + body);
 
-
-                try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        Task [] tasks = mapper.readValue(body, Task[].class);
-                        return tasks;
-                } catch(Exception ex) {
+                if(status == 200) {
+                    try {
+                            ObjectMapper mapper = new ObjectMapper();
+                            Task [] tasks = mapper.readValue(body, Task[].class);
+                            return tasks;
+                    } catch(Exception ex) {
+                        LOGGER.log(Level.SEVERE, "Exception while parsing JSON value:", ex);
                         throw ex;
+                    }
+                } else {
+                    LOGGER.severe("Error while calling: " + httpToCall + " - status: " + status);
+                    return null; 
                 }
         }
 }	

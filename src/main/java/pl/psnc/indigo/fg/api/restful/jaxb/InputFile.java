@@ -4,6 +4,13 @@ import java.beans.*;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * 
+ * @author michalo
+ * 
+ * POJO class for storing InputFile description
+ * 
+ */
 public class InputFile implements Serializable {
     
     String name;

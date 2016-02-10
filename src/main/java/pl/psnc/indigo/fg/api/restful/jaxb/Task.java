@@ -5,6 +5,13 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 import pl.psnc.indigo.fg.api.restful.jaxb.*;
 
+/**
+ * 
+ * @author michalo
+ * 
+ * POJO class for storing Task description
+ * 
+ */
 public class Task implements Serializable {
     
     String id;
@@ -19,6 +26,7 @@ public class Task implements Serializable {
     List<String> arguments;
     List<InputFile> input_files;
     List<OutputFile> output_files;
+    List<RuntimeData> runtime_data;
     List<Links> _links;
     
     public Task() {}
@@ -29,6 +37,14 @@ public class Task implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public List<RuntimeData> getRuntime_data() {
+        return runtime_data;
+    }
+
+    public void setRuntime_data(List<RuntimeData> runtime_data) {
+        this.runtime_data = runtime_data;
     }
 
     public String getDate() {

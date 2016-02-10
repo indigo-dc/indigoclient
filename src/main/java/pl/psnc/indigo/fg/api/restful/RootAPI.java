@@ -1,5 +1,6 @@
 package pl.psnc.indigo.fg.api.restful;
 
+import java.util.logging.Logger;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -8,6 +9,7 @@ import javax.ws.rs.core.MediaType;
 
 public class RootAPI extends BaseAPI {
 
+        private final static Logger LOGGER = Logger.getLogger(RootAPI.class.getName());
 
 	public RootAPI(String httpAddress) {
 
@@ -21,7 +23,9 @@ public class RootAPI extends BaseAPI {
 		  .request(MediaType.TEXT_PLAIN_TYPE)
 		  .get();
 
-		String result = "status: " 
+                String result = null;
+                if(response.getStatus() == 200) {
+                    result = "status: " 
 				+ response.getStatus() 
 				+ "\n" 
 				+ "headers: " 
@@ -29,8 +33,10 @@ public class RootAPI extends BaseAPI {
 				+ "\n"
 				+ "body: "
 				+ response.readEntity(String.class);  
+                } else {
+                    LOGGER.severe("Error while calling: " + httpAddress + " - status: " + response.getStatus());
+                    return null;
+                }
 		return result;	
-
 	}
-
 }

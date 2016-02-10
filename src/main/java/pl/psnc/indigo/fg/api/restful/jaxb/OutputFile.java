@@ -9,6 +9,13 @@ import java.beans.*;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * 
+ * @author michalo
+ * 
+ * POJO class for storing OutputFile description
+ * 
+ */
 public class OutputFile implements Serializable {
     
     String name;

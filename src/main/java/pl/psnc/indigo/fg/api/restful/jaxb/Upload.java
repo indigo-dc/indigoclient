@@ -4,6 +4,13 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * 
+ * @author michalo
+ * 
+ * POJO class for storing Upload description
+ * 
+ */
 
 public class Upload implements Serializable {
     

@@ -3,6 +3,13 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 import java.beans.*;
 import java.io.Serializable;
 
+/**
+ * 
+ * @author michalo
+ * 
+ * POJO class for storing Links description
+ * 
+ */
 public class Links implements Serializable {
     
     private String rel;
