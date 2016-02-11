@@ -3,6 +3,7 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 import java.beans.*;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 /**
  * 
@@ -11,6 +12,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * POJO class for storing InputFile description
  * 
  */
+@JsonDeserialize(using = InputFileDeserializer.class)
 public class InputFile implements Serializable {
     
     String name;

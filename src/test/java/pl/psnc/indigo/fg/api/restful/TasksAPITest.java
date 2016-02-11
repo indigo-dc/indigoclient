@@ -23,21 +23,21 @@ public class TasksAPITest {
                 }
 	}
 
-	@Test
-	public void testSubmitTask() {
-		TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
-                try {
-                    Task newTask = new Task();
-                    newTask.setUser("brunor");
-                    newTask.setApplication("1");
-                    newTask.setDescription("hello");
-                    Task prepTask = api.createTask( newTask );
-
-                    Upload upload = api.submitTask( prepTask );
-                } catch(Exception ex) {
-                    ex.printStackTrace();
-                }
-	}
+//	@Test
+//	public void testSubmitTask() {
+//		TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
+//                try {
+//                    Task newTask = new Task();
+//                    newTask.setUser("brunor");
+//                    newTask.setApplication("1");
+//                    newTask.setDescription("hello");
+//                    Task prepTask = api.createTask( newTask );
+//
+//                    Upload upload = api.submitTask( prepTask );
+//                } catch(Exception ex) {
+//                    ex.printStackTrace();
+//                }
+//	}
 
 	@Test
 	public void testGetTask() {
@@ -49,7 +49,7 @@ public class TasksAPITest {
                 try {
                     Task newTask = new Task();
                     newTask.setUser("brunor");
-                    newTask.setId("1");
+                    newTask.setId("27");
                     
                     Task task = api.getTask( newTask );
                 } catch(Exception ex) {

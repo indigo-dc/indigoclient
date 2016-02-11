@@ -26,7 +26,19 @@ public class TasksAPI extends BaseAPI {
 	}
 
 	/**
-	 * Calls prepare task at server side
+	 * Calls create task at server side
+         * 
+         * To submit task we have to pass Task object filled with description
+         * of the task
+         * - user
+         * - application's id
+         * - arguments
+         * - description
+         * - input files
+         * - output files
+         * 
+         * The set of parameters might be application dependant. For example
+         * some applications might require inputs and some other, not.
 	 */
 	public Task createTask(Task newTask) throws Exception {
 
@@ -81,7 +93,7 @@ public class TasksAPI extends BaseAPI {
 	
 	/**
          * Submit task
-	 * TODO: replace arguments with Task object, serialize object to JSON and pass it to WS
+	 * 
          */
         public Upload submitTask(Task task) throws Exception {
 
@@ -126,7 +138,7 @@ public class TasksAPI extends BaseAPI {
 
 	/**
          * Check status
-         * TODO: replace arguments with Task object, serialize object to JSON and pass it to WS
+         * 
          */
         public Task getTask(Task task) throws Exception {
 
