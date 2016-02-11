@@ -12,17 +12,16 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import pl.psnc.indigo.fg.api.restful.jaxb.ErrorMessage;
 
 public class TasksAPI extends BaseAPI {
     
         private final static Logger LOGGER = Logger.getLogger(TasksAPI.class.getName());
+        String tasksHttpAddress = null;
 
 	public TasksAPI(String httpAddress) {
 		super(httpAddress);
-		// TODO: make sure we can get this information directly from the ROOT
-		// if ROOT have up to date information, we should initialize client
-		// with the call to ROOT
-                this.httpAddress = httpAddress + "/v1.0/tasks";
+                tasksHttpAddress = RootAPI.getRootForAddress(httpAddress).getURLAsString() + "tasks";
 	}
 
 	/**
@@ -44,7 +43,7 @@ public class TasksAPI extends BaseAPI {
 
                 Client client = ClientBuilder.newClient();
 
-                String httpToCall = httpAddress + "?user=" + newTask.getUser();
+                String httpToCall = tasksHttpAddress + "?user=" + newTask.getUser();
                 String jsonText = null;
                 
                 try {
@@ -99,7 +98,7 @@ public class TasksAPI extends BaseAPI {
 
                 Client client = ClientBuilder.newClient();
 
-                String httpToCall = httpAddress + "/" + task.getId() + "/input?user=" + task.getUser();
+                String httpToCall = tasksHttpAddress + "/" + task.getId() + "/input?user=" + task.getUser();
 
                 LOGGER.info("Calling: " + httpToCall);
                 
@@ -144,7 +143,7 @@ public class TasksAPI extends BaseAPI {
 
                 Client client = ClientBuilder.newClient();
 
-                String httpToCall = httpAddress + "/" + task.getId();
+                String httpToCall = tasksHttpAddress + "/" + task.getId();
 
                 LOGGER.info("Calling: " + httpToCall);
 
@@ -185,7 +184,7 @@ public class TasksAPI extends BaseAPI {
         public Task[] getAllTasks() throws Exception {
                 Client client = ClientBuilder.newClient();
 
-                String httpToCall = httpAddress;
+                String httpToCall = tasksHttpAddress;
 
                 LOGGER.info("Calling: " + httpToCall);
 
@@ -216,7 +215,9 @@ public class TasksAPI extends BaseAPI {
                     }
                 } else {
                     LOGGER.severe("Error while calling: " + httpToCall + " - status: " + status);
-                    return null; 
+                    ObjectMapper mapper = new ObjectMapper();
+                    ErrorMessage message = mapper.readValue(body, ErrorMessage.class);
+                    throw new Exception("Error message: " + message.getMessage());
                 }
         }
 }	

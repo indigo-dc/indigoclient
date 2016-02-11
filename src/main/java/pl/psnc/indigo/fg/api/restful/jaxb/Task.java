@@ -3,6 +3,7 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 import java.io.Serializable;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.codehaus.jackson.annotate.JsonProperty;
 import pl.psnc.indigo.fg.api.restful.jaxb.*;
 
 /**
@@ -27,7 +28,7 @@ public class Task implements Serializable {
     List<InputFile> input_files;
     List<OutputFile> output_files;
     List<RuntimeData> runtime_data;
-    List<Links> _links;
+    List<Link> links;
     
     public Task() {}
 
@@ -135,12 +136,14 @@ public class Task implements Serializable {
         this.output_files = output_files;
     }
 
-    public List<Links> get_links() {
-        return _links;
+    @JsonProperty("_links")
+    public List<Link> get_links() {
+        return links;
     }
-
-    public void set_links(List<Links> _links) {
-        this._links = _links;
+    
+    @JsonProperty("_links")
+    public void set_links(List<Link> links) {
+        this.links = links;
     }
     
 }

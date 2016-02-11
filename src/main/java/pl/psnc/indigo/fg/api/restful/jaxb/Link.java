@@ -10,12 +10,12 @@ import java.io.Serializable;
  * POJO class for storing Links description
  * 
  */
-public class Links implements Serializable {
+public class Link implements Serializable {
     
     private String rel;
     private String href;
     
-    public Links() {
+    public Link() {
         
     }
 
