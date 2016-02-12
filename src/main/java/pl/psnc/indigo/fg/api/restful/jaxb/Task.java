@@ -146,4 +146,15 @@ public class Task implements Serializable {
         this.links = links;
     }
     
+    public String getUploadURLAsString() {
+        if( links != null ) {
+            for(Link l : links) {
+                if(l.getRel().equals("input")) {
+                    return l.getHref();
+                }
+            }
+        }
+        return null;
+    }
+    
 }
