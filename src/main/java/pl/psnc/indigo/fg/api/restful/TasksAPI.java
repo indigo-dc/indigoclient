@@ -258,7 +258,7 @@ public class TasksAPI extends BaseAPI {
                 webTarget = client.target(httpURL);
 
                 // set file upload values
-                fileDataBodyPart = new FileDataBodyPart(filePath.getName(), filePath, MediaType.APPLICATION_OCTET_STREAM_TYPE);
+                fileDataBodyPart = new FileDataBodyPart("file[]", filePath, MediaType.APPLICATION_OCTET_STREAM_TYPE);
                 formDataMultiPart = new FormDataMultiPart();
                 formDataMultiPart.bodyPart(fileDataBodyPart);
 
