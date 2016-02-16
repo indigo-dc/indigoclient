@@ -150,6 +150,8 @@ public class TasksAPI extends BaseAPI {
 
                 Client client = ClientBuilder.newClient();
 
+		
+
                 String httpToCall = tasksHttpAddress + "/" + task.getId();
 
                 LOGGER.info("Calling: " + httpToCall);

@@ -27,7 +27,11 @@ public class TasksAPITest {
                     newTask.setUser("brunor");
                     newTask.setApplication("1");
                     newTask.setDescription("hello");
-                    Task result = api.createTask( newTask );				
+                    Task result = api.createTask( newTask );
+                    
+                    // Check the status of this task
+                    result = api.getTask(result);
+                    
                 } catch(Exception ex) {
                     ex.printStackTrace();
                 }
@@ -124,7 +128,7 @@ public class TasksAPITest {
                 try {
                     Task newTask = new Task();
                     newTask.setUser("brunor");
-                    newTask.setId("27");
+                    newTask.setId("1");
                     
                     Task task = api.getTask( newTask );
                 } catch(Exception ex) {
