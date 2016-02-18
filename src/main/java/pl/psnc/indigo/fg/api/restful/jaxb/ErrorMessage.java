@@ -10,14 +10,15 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
  * @author michalo
  */
 public class ErrorMessage {
-    String message;
 
-    public String getMessage() {
-        return message;
-    }
+  String message;
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-    
+  public String getMessage() {
+    return message;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
+
 }

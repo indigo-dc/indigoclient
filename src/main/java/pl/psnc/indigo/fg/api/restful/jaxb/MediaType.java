@@ -12,15 +12,15 @@ import org.codehaus.jackson.annotate.JsonProperty;
  * @author michalo
  */
 public class MediaType {
-    String type;
 
-    public String getType() {
-        return type;
-    }
+  String type;
 
-    public void setType(String type) {
-        this.type = type;
-    }
-    
-    
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
 }

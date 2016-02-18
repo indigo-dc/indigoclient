@@ -13,26 +13,26 @@ import org.codehaus.jackson.annotate.JsonProperty;
  * @author michalo
  */
 public class Root {
-    List<Link> links;
-    List<Version> versions;
 
-    @JsonProperty("_links")
-    public List<Link> getLinks() {
-        return links;
-    }
+  List<Link> links;
+  List<Version> versions;
 
-    @JsonProperty("_links")
-    public void setLinks(List<Link> links) {
-        this.links = links;
-    }
+  @JsonProperty("_links")
+  public List<Link> getLinks() {
+    return links;
+  }
 
-    public List<Version> getVersions() {
-        return versions;
-    }
+  @JsonProperty("_links")
+  public void setLinks(List<Link> links) {
+    this.links = links;
+  }
 
-    public void setVersions(List<Version> versions) {
-        this.versions = versions;
-    }
-    
-    
+  public List<Version> getVersions() {
+    return versions;
+  }
+
+  public void setVersions(List<Version> versions) {
+    this.versions = versions;
+  }
+
 }

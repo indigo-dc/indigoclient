@@ -6,56 +6,57 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
 /**
- * 
+ *
  * @author michalo
- * 
+ *
  * POJO class for storing RuntimeData description
- * 
+ *
  */
 public class RuntimeData {
-    String name;
-    String value;
-    String description;
-    String creation;
-    String last_change;
 
-    public String getValue() {
-        return value;
-    }
+  String name;
+  String value;
+  String description;
+  String creation;
+  String last_change;
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+  public String getValue() {
+    return value;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public void setValue(String value) {
+    this.value = value;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public String getCreation() {
-        return creation;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public void setCreation(String creation) {
-        this.creation = creation;
-    }
+  public String getCreation() {
+    return creation;
+  }
 
-    public String getLast_change() {
-        return last_change;
-    }
+  public void setCreation(String creation) {
+    this.creation = creation;
+  }
 
-    public void setLast_change(String last_change) {
-        this.last_change = last_change;
-    }
+  public String getLast_change() {
+    return last_change;
+  }
+
+  public void setLast_change(String last_change) {
+    this.last_change = last_change;
+  }
 }

@@ -24,21 +24,21 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @SuppressWarnings("unchecked")
 class InputFileDeserializer extends JsonDeserializer<InputFile> {
 
-    @Override
-    public InputFile deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        JsonNode node = jp.readValueAsTree();
+  @Override
+  public InputFile deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    JsonNode node = jp.readValueAsTree();
 //        Map<String, Object> map = jp.readValueAs(Map.class);
 //
-        InputFile inputFile = new InputFile();
-        if(node.isObject()) {
-            // TODO: check what will happen here if we get file name and status of the file
-            // we have to wait for the final version of server side results
-            // at the moment we return null values
-        } else {
-            inputFile.setName(node.getTextValue());
-        }
-        
-        return inputFile;
+    InputFile inputFile = new InputFile();
+    if (node.isObject()) {
+      // TODO: check what will happen here if we get file name and status of the file
+      // we have to wait for the final version of server side results
+      // at the moment we return null values
+    } else {
+      inputFile.setName(node.getTextValue());
     }
+
+    return inputFile;
+  }
 
 }

@@ -1,60 +1,56 @@
-
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * 
+ *
  * @author michalo
- * 
+ *
  * POJO class for storing Upload description
- * 
+ *
  */
-
 public class Upload implements Serializable {
-    
-    private List<InputFile> files;
-    private String message;
-    private String task;
-    private String gestatus;
-    
-    public Upload() {
-        
-    }
 
-    public List<InputFile> getFiles() {
-        return files;
-    }
+  private List<InputFile> files;
+  private String message;
+  private String task;
+  private String gestatus;
 
-    public void setFiles(List<InputFile> files) {
-        this.files = files;
-    }
+  public Upload() {
 
-    public String getMessage() {
-        return message;
-    }
+  }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  public List<InputFile> getFiles() {
+    return files;
+  }
 
-    public String getTask() {
-        return task;
-    }
+  public void setFiles(List<InputFile> files) {
+    this.files = files;
+  }
 
-    public void setTask(String task) {
-        this.task = task;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public String getGestatus() {
-        return gestatus;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-    public void setGestatus(String gestatus) {
-        this.gestatus = gestatus;
-    }
-    
-    
-    
+  public String getTask() {
+    return task;
+  }
+
+  public void setTask(String task) {
+    this.task = task;
+  }
+
+  public String getGestatus() {
+    return gestatus;
+  }
+
+  public void setGestatus(String gestatus) {
+    this.gestatus = gestatus;
+  }
+
 }

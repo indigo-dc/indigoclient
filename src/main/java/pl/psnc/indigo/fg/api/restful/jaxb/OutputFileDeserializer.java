@@ -24,23 +24,23 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @SuppressWarnings("unchecked")
 class OutputFileDeserializer extends JsonDeserializer<OutputFile> {
 
-    @Override
-    public OutputFile deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-        JsonNode node = jp.readValueAsTree();
+  @Override
+  public OutputFile deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    JsonNode node = jp.readValueAsTree();
 //        Map<String, Object> map = jp.readValueAs(Map.class);
 //
-        OutputFile outputFile = new OutputFile();
-        if(node.isObject()) {
-            JsonNode name = node.get("name");
-            JsonNode url = node.get("url");
-            
-            outputFile.setName(name.getTextValue());
-            outputFile.setUrl(url.getTextValue());
-        } else {
-            outputFile.setName(node.getTextValue());
-        }
-        
-        return outputFile;
+    OutputFile outputFile = new OutputFile();
+    if (node.isObject()) {
+      JsonNode name = node.get("name");
+      JsonNode url = node.get("url");
+
+      outputFile.setName(name.getTextValue());
+      outputFile.setUrl(url.getTextValue());
+    } else {
+      outputFile.setName(node.getTextValue());
     }
+
+    return outputFile;
+  }
 
 }

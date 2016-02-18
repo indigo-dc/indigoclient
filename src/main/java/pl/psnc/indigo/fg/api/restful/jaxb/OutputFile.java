@@ -11,38 +11,36 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 /**
- * 
+ *
  * @author michalo
- * 
+ *
  * POJO class for storing OutputFile description
- * 
+ *
  */
 @JsonDeserialize(using = OutputFileDeserializer.class)
 public class OutputFile implements Serializable {
-    
-    String name;
-    String url;
-    
-    public OutputFile() {
-    
-    }
 
-    public String getName() {
-        return name;
-    }
+  String name;
+  String url;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public OutputFile() {
 
-    public String getUrl() {
-        return url;
-    }
+  }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-    
-    
-    
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
 }

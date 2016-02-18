@@ -13,56 +13,55 @@ import org.codehaus.jackson.annotate.JsonProperty;
  * @author michalo
  */
 public class Version {
-   String status;
-   String updated;
-   MediaType mediaTypes;
-   List<Link> links;
-   String id;
 
-    public String getStatus() {
-        return status;
-    }
+  String status;
+  String updated;
+  MediaType mediaTypes;
+  List<Link> links;
+  String id;
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+  public String getStatus() {
+    return status;
+  }
 
-    public String getUpdated() {
-        return updated;
-    }
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
-    public void setUpdated(String updated) {
-        this.updated = updated;
-    }
+  public String getUpdated() {
+    return updated;
+  }
 
-    @JsonProperty("media-types")
-    public MediaType getMediaTypes() {
-        return mediaTypes;
-    }
+  public void setUpdated(String updated) {
+    this.updated = updated;
+  }
 
-    @JsonProperty("media-types")
-    public void setMediaTypes(MediaType mediaTypes) {
-        this.mediaTypes = mediaTypes;
-    }
-    
-    @JsonProperty("_links")
-    public List<Link> getLinks() {
-        return links;
-    }
+  @JsonProperty("media-types")
+  public MediaType getMediaTypes() {
+    return mediaTypes;
+  }
 
-    @JsonProperty("_links")
-    public void setLinks(List<Link> links) {
-        this.links = links;
-    }
+  @JsonProperty("media-types")
+  public void setMediaTypes(MediaType mediaTypes) {
+    this.mediaTypes = mediaTypes;
+  }
 
-    public String getId() {
-        return id;
-    }
+  @JsonProperty("_links")
+  public List<Link> getLinks() {
+    return links;
+  }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-   
-   
-   
+  @JsonProperty("_links")
+  public void setLinks(List<Link> links) {
+    this.links = links;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
 }
