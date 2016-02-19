@@ -99,6 +99,83 @@ public class TasksAPITest {
       fail("Error while creating task");
     }
   }
+  
+  /**
+   * This test is a complete scenario where job is submitted, executed
+   * and all outputs are retrieved.
+   */
+  @Test
+  public void testSubmitTaskWithFilesWaitGetOutputs() {
+
+    TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
+    Task result = null;
+    try {
+      Task newTask = new Task();
+      newTask.setUser("brunor");
+      newTask.setApplication("2");
+      newTask.setDescription("Test with files");
+
+      ArrayList<String> arguments = new ArrayList<String>();
+      arguments.add("I am saying hello");
+
+      ArrayList<OutputFile> outputFiles = new ArrayList<OutputFile>();
+      OutputFile oFile = new OutputFile();
+      oFile.setName("sayhello.data");
+      outputFiles.add(oFile);
+
+      ArrayList<InputFile> inputFiles = new ArrayList<InputFile>();
+      InputFile iFileSH = new InputFile();
+      iFileSH.setName("sayhello.sh");
+
+      InputFile iFileTXT = new InputFile();
+      iFileTXT.setName("sayhello.txt");
+
+      inputFiles.add(iFileSH);
+      inputFiles.add(iFileTXT);
+
+      newTask.setOutput_files(outputFiles);
+      newTask.setInput_files(inputFiles);
+
+      newTask.setArguments(arguments);
+      result = api.createTask(newTask);
+
+      // Once task is created, we can upload files
+      String url = result.getUploadURLAsString();
+      String fileNameSH = getClass().getResource("/sayhello.sh").getFile();
+      String fileNameTXT = getClass().getResource("/sayhello.txt").getFile();
+      api.uploadFileForTask(result, url, new File(fileNameSH));
+      api.uploadFileForTask(result, url, new File(fileNameTXT));
+      
+      // We can check status and wait for "DONE"
+      String status = null;
+      int retry = 100;
+      
+      do {
+        Task tmp = api.getTask(result);
+        status = tmp.getStatus();
+        Thread.sleep(5000);
+        retry--;
+      } while(!status.equals("DONE") && retry > 0);
+      
+      if(retry == 0) {
+        fail("To many retries");
+      }
+      
+      ArrayList<OutputFile> files = api.getOutputsForTask(result);
+      
+      String outputDir = getClass().getResource("/outputs").getFile();
+      
+      for( OutputFile f : files ){
+        api.downloadOutputFile(f, outputDir);
+      }
+      
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      fail("Error while creating task");
+    }
+    
+    
+  }
 
 //	@Test
 //	public void testSubmitTask() {
