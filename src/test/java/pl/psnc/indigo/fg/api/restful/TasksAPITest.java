@@ -177,21 +177,6 @@ public class TasksAPITest {
     
   }
 
-//	@Test
-//	public void testSubmitTask() {
-//		TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
-//                try {
-//                    Task newTask = new Task();
-//                    newTask.setUser("brunor");
-//                    newTask.setApplication("1");
-//                    newTask.setDescription("hello");
-//                    Task prepTask = api.createTask( newTask );
-//
-//                    Upload upload = api.submitTask( prepTask );
-//                } catch(Exception ex) {
-//                    ex.printStackTrace();
-//                }
-//	}
   @Test
   public void testGetTask() {
     TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
@@ -214,8 +199,6 @@ public class TasksAPITest {
   public void testGetAllTasks() {
     TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
 
-    // TODO: make sure to set proper task ID below
-    // this one is an arbitrary value from previous calls to
     // TaskAPI
     try {
       Task[] tasks = api.getAllTasks();
