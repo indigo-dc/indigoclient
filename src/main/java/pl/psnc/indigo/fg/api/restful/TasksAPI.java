@@ -344,9 +344,9 @@ public class TasksAPI extends BaseAPI {
    * @return true - in case download was successful, false - if it failed
    * @throws Exception 
    */
-  public boolean getOutputFile(String url, String localFile) throws Exception {
+  public boolean downloadOutputFile(OutputFile file, String folder) throws Exception {
 
-    String httpToCall = RootAPI.getRootForAddress(BaseAPI.LOCALHOST_ADDRESS) + "/" + url;
+    String httpToCall = RootAPI.getRootForAddress(BaseAPI.LOCALHOST_ADDRESS).getURLAsString() + file.getUrl();
     LOGGER.info("Calling: " + httpToCall);
 
     Client client = null;
@@ -374,7 +374,7 @@ public class TasksAPI extends BaseAPI {
       LOGGER.info("Body: " + body);
 
       if (status == 200) {
-        try(  PrintWriter out = new PrintWriter( localFile )  ){
+        try(  PrintWriter out = new PrintWriter( folder + "/" + file.getName() )  ){
           out.println( body );
         }
         return true;
