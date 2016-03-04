@@ -2,7 +2,11 @@ package pl.psnc.indigo.fg.api.restful;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -362,21 +366,25 @@ public class TasksAPI extends BaseAPI {
         .request(MediaType.APPLICATION_JSON_TYPE)
         .header("Content-Type", "application/json")
         .header("Authorization", "Bearer {access_token}")
-        .accept(MediaType.APPLICATION_JSON_TYPE)
+        .accept(MediaType.APPLICATION_OCTET_STREAM)
         .get(Response.class);
       int status = response.getStatus();
 
       LOGGER.info("Status:" + status);
 
       MultivaluedMap<String, Object> headers = response.getHeaders();
-      String body = response.readEntity(String.class);
+//      String body = response.readEntity(String.class);
 
-      LOGGER.info("Body: " + body);
+//      LOGGER.info("Body: " + body);
 
       if (status == 200) {
-        try(  PrintWriter out = new PrintWriter( folder + "/" + file.getName() )  ){
-          out.println( body );
-        }
+        
+        InputStream is = response.readEntity(InputStream.class);
+        Files.copy(is, new File(folder + "/" + file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+        
+//        try(  PrintWriter out = new PrintWriter( folder + "/" + file.getName() )  ){
+//          out.println( body );
+//        }
         return true;
       } else {
         LOGGER.severe("Error while calling: " + httpToCall + " - status: " + status);
