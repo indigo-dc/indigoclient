@@ -1,21 +1,15 @@
 package pl.psnc.indigo.fg.api.restful;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import junit.framework.Assert;
+
 import static junit.framework.Assert.fail;
 import org.junit.Test;
-import pl.psnc.indigo.fg.api.restful.TasksAPI;
-import pl.psnc.indigo.fg.api.restful.BaseAPI;
 import pl.psnc.indigo.fg.api.restful.jaxb.InputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
-import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 
 public class TasksAPITest {
 
@@ -77,8 +71,8 @@ public class TasksAPITest {
       inputFiles.add(iFileSH);
       inputFiles.add(iFileTXT);
 
-      newTask.setOutput_files(outputFiles);
-      newTask.setInput_files(inputFiles);
+      newTask.setOutputFiles(outputFiles);
+      newTask.setInputFiles(inputFiles);
 
       newTask.setArguments(arguments);
       result = api.createTask(newTask);
@@ -133,8 +127,8 @@ public class TasksAPITest {
       inputFiles.add(iFileSH);
       inputFiles.add(iFileTXT);
 
-      newTask.setOutput_files(outputFiles);
-      newTask.setInput_files(inputFiles);
+      newTask.setOutputFiles(outputFiles);
+      newTask.setInputFiles(inputFiles);
 
       newTask.setArguments(arguments);
       result = api.createTask(newTask);

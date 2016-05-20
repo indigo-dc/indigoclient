@@ -5,58 +5,61 @@
  */
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 /**
- *
  * @author michalo
- *
- * POJO class for storing RuntimeData description
- *
+ *         <p>
+ *         POJO class for storing RuntimeData description
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RuntimeData {
+    private String name;
+    private String value;
+    private String description;
+    private String creation;
+    private String lastChange;
 
-  String name;
-  String value;
-  String description;
-  String creation;
-  String last_change;
+    public String getValue() {
+        return value;
+    }
 
-  public String getValue() {
-    return value;
-  }
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-  public void setValue(String value) {
-    this.value = value;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public String getDescription() {
+        return description;
+    }
 
-  public String getDescription() {
-    return description;
-  }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
+    public String getCreation() {
+        return creation;
+    }
 
-  public String getCreation() {
-    return creation;
-  }
+    public void setCreation(String creation) {
+        this.creation = creation;
+    }
 
-  public void setCreation(String creation) {
-    this.creation = creation;
-  }
+    @JsonProperty("last_change")
+    public String getLastChange() {
+        return lastChange;
+    }
 
-  public String getLast_change() {
-    return last_change;
-  }
-
-  public void setLast_change(String last_change) {
-    this.last_change = last_change;
-  }
+    @JsonProperty("last_change")
+    public void setLastChange(String lastChange) {
+        this.lastChange = lastChange;
+    }
 }

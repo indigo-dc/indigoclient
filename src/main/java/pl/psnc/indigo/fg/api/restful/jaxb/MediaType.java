@@ -5,22 +5,20 @@
  */
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 /**
- *
  * @author michalo
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MediaType {
+    private String type;
 
-  String type;
+    public String getType() {
+        return type;
+    }
 
-  public String getType() {
-    return type;
-  }
-
-  public void setType(String type) {
-    this.type = type;
-  }
-
+    public void setType(String type) {
+        this.type = type;
+    }
 }

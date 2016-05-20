@@ -5,42 +5,38 @@
  */
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
-import java.beans.*;
-import java.io.Serializable;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
+import java.io.Serializable;
+
 /**
- *
  * @author michalo
- *
- * POJO class for storing OutputFile description
- *
+ *         <p>
+ *         POJO class for storing OutputFile description
  */
 @JsonDeserialize(using = OutputFileDeserializer.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OutputFile implements Serializable {
+    private String name;
+    private String url;
 
-  String name;
-  String url;
+    public OutputFile() {
+    }
 
-  public OutputFile() {
+    public String getName() {
+        return name;
+    }
 
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getUrl() {
+        return url;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getUrl() {
-    return url;
-  }
-
-  public void setUrl(String url) {
-    this.url = url;
-  }
-
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

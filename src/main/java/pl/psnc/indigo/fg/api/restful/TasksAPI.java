@@ -3,8 +3,6 @@ package pl.psnc.indigo.fg.api.restful;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -20,15 +18,12 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
-import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.filter.LoggingFilter;
 import pl.psnc.indigo.fg.api.restful.jaxb.ErrorMessage;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
-import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
@@ -307,9 +302,9 @@ public class TasksAPI extends BaseAPI {
         // In case of tasks that are still running we will get the same url
         // that is: "url": "file?path=&name=sayhello.out"
         if( retVal.getStatus().equals(TasksAPI.DONE)) {
-          if( retVal.getOutput_files() != null ) {
-            for(int i=0;i<retVal.getOutput_files().size(); i++) {
-               OutputFile file = retVal.getOutput_files().get(i);
+          if( retVal.getOutputFiles() != null ) {
+            for(int i = 0; i<retVal.getOutputFiles().size(); i++) {
+               OutputFile file = retVal.getOutputFiles().get(i);
                outputFilesArray.add(file);
             }
           }

@@ -5,20 +5,20 @@
  */
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 /**
- *
  * @author michalo
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ErrorMessage {
+    private String message;
 
-  String message;
+    public String getMessage() {
+        return message;
+    }
 
-  public String getMessage() {
-    return message;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }
