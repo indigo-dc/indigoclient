@@ -51,4 +51,14 @@ public class Upload implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "Upload{" +
+                "files=" + files +
+                ", message='" + message + '\'' +
+                ", task='" + task + '\'' +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }

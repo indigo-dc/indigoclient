@@ -32,4 +32,12 @@ public class Link implements Serializable {
     public void setHref(String href) {
         this.href = href;
     }
+
+    @Override
+    public String toString() {
+        return "Link{" +
+                "rel='" + rel + '\'' +
+                ", href='" + href + '\'' +
+                '}';
+    }
 }

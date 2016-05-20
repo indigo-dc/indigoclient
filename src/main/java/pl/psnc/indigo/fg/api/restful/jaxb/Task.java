@@ -4,6 +4,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,19 +14,24 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Task implements Serializable {
+    public enum Status {
+        SUBMIT, SUBMITTED, WAITING, READY, SCHEDULED, RUNNING, DONE, ABORTED, CANCELLED
+    }
+
     private String id;
-    private String date;
-    private String lastChange;
+    private Date date;
+    private Date lastChange;
     private String application;
+    private String infrastructureTask;
     private String description;
-    private String status;
+    private Status status;
     private String user;
-    private String creation;
-    private String iosandbox;
     private List<String> arguments;
     private List<InputFile> inputFiles;
     private List<OutputFile> outputFiles;
     private List<RuntimeData> runtimeData;
+    private String creation;
+    private String iosandbox;
     private List<Link> links;
 
     public Task() {
@@ -49,21 +55,21 @@ public class Task implements Serializable {
         this.runtimeData = runtimeData;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
     @JsonProperty("last_change")
-    public String getLastChange() {
+    public Date getLastChange() {
         return lastChange;
     }
 
     @JsonProperty("last_change")
-    public void setLastChange(String lastChange) {
+    public void setLastChange(Date lastChange) {
         this.lastChange = lastChange;
     }
 
@@ -75,6 +81,14 @@ public class Task implements Serializable {
         this.application = application;
     }
 
+    public String getInfrastructureTask() {
+        return infrastructureTask;
+    }
+
+    public void setInfrastructureTask(String infrastructureTask) {
+        this.infrastructureTask = infrastructureTask;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -83,11 +97,11 @@ public class Task implements Serializable {
         this.description = description;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -164,4 +178,24 @@ public class Task implements Serializable {
         return null;
     }
 
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id='" + id + '\'' +
+                ", date=" + date +
+                ", lastChange=" + lastChange +
+                ", application='" + application + '\'' +
+                ", infrastructureTask='" + infrastructureTask + '\'' +
+                ", description='" + description + '\'' +
+                ", status=" + status +
+                ", user='" + user + '\'' +
+                ", arguments=" + arguments +
+                ", inputFiles=" + inputFiles +
+                ", outputFiles=" + outputFiles +
+                ", runtimeData=" + runtimeData +
+                ", creation='" + creation + '\'' +
+                ", iosandbox='" + iosandbox + '\'' +
+                ", links=" + links +
+                '}';
+    }
 }

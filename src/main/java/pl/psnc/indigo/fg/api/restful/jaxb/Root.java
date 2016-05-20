@@ -36,4 +36,11 @@ public class Root {
         this.versions = versions;
     }
 
+    @Override
+    public String toString() {
+        return "Root{" +
+                "links=" + links +
+                ", versions=" + versions +
+                '}';
+    }
 }

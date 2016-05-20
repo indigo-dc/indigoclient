@@ -62,4 +62,15 @@ public class RuntimeData {
     public void setLastChange(String lastChange) {
         this.lastChange = lastChange;
     }
+
+    @Override
+    public String toString() {
+        return "RuntimeData{" +
+                "name='" + name + '\'' +
+                ", value='" + value + '\'' +
+                ", description='" + description + '\'' +
+                ", creation='" + creation + '\'' +
+                ", lastChange='" + lastChange + '\'' +
+                '}';
+    }
 }

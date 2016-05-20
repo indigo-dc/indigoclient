@@ -75,4 +75,16 @@ public class Version {
     public void setId(String id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "Version{" +
+                "status='" + status + '\'' +
+                ", updated='" + updated + '\'' +
+                ", build='" + build + '\'' +
+                ", mediaTypes=" + mediaTypes +
+                ", links=" + links +
+                ", id='" + id + '\'' +
+                '}';
+    }
 }

@@ -1,208 +1,160 @@
 package pl.psnc.indigo.fg.api.restful;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static junit.framework.Assert.fail;
+import org.junit.Assert;
 import org.junit.Test;
 import pl.psnc.indigo.fg.api.restful.jaxb.InputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static junit.framework.Assert.fail;
+
 public class TasksAPITest {
+    @Test
+    public void testCreateTask() throws Exception {
+        TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
 
-  @Test
-  public void testCreateTask() {
-    TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
-    try {
-      Task newTask = new Task();
-      newTask.setUser("brunor");
-      newTask.setApplication("1");
-      newTask.setDescription("hello");
-      Task result = api.createTask(newTask);
+        Task task = new Task();
+        task.setUser("brunor");
+        task.setApplication("1");
+        task.setDescription("hello");
+        Task result = api.createTask(task);
 
-      // Check the status of this task
-      result = api.getTask(result);
-
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-  }
-
-  @Test
-  public void testFileAccess() {
-    try {
-      String fileName = getClass().getResource("/sayhello.sh").getFile();
-//                URI uri = ClassLoader.getSystemResource("/sayhello.sh").toURI(); 
-      File shFile = new File(fileName);
-    } catch (Exception ex) {
-      Logger.getLogger(TasksAPITest.class.getName()).log(Level.SEVERE, null, ex);
-    }
-  }
-
-  @Test
-  public void testSubmitTaskWithFiles() {
-
-    TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
-    Task result = null;
-    try {
-      Task newTask = new Task();
-      newTask.setUser("brunor");
-      newTask.setApplication("2");
-      newTask.setDescription("Test with files");
-
-      ArrayList<String> arguments = new ArrayList<String>();
-      arguments.add("I am saying hello");
-
-      ArrayList<OutputFile> outputFiles = new ArrayList<OutputFile>();
-      OutputFile oFile = new OutputFile();
-      oFile.setName("sayhello.data");
-      outputFiles.add(oFile);
-
-      ArrayList<InputFile> inputFiles = new ArrayList<InputFile>();
-      InputFile iFileSH = new InputFile();
-      iFileSH.setName("sayhello.sh");
-
-      InputFile iFileTXT = new InputFile();
-      iFileTXT.setName("sayhello.txt");
-
-      inputFiles.add(iFileSH);
-      inputFiles.add(iFileTXT);
-
-      newTask.setOutputFiles(outputFiles);
-      newTask.setInputFiles(inputFiles);
-
-      newTask.setArguments(arguments);
-      result = api.createTask(newTask);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-      fail("Error while creating task");
+        // Check the status of this task
+        api.getTask(result);
     }
 
-    // Once task is created, we can upload files
-    try {
-      String url = result.getUploadURLAsString();
-      String fileNameSH = getClass().getResource("/sayhello.sh").getFile();
-      String fileNameTXT = getClass().getResource("/sayhello.txt").getFile();
-      api.uploadFileForTask(result, url, new File(fileNameSH));
-      api.uploadFileForTask(result, url, new File(fileNameTXT));
-    } catch (Exception ex) {
-      ex.printStackTrace();
-      fail("Error while creating task");
+    @Test
+    public void testFileAccess() {
+        String fileName = getClass().getResource("/sayhello.sh").getFile();
+        Assert.assertTrue(new File(fileName).canRead());
     }
-  }
-  
-  /**
-   * This test is a complete scenario where job is submitted, executed
-   * and all outputs are retrieved.
-   */
-  @Test
-  public void testSubmitTaskWithFilesWaitGetOutputs() {
 
-    TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
-    Task result = null;
-    try {
-      Task newTask = new Task();
-      newTask.setUser("brunor");
-      newTask.setApplication("2");
-      newTask.setDescription("Test with files");
+    @Test
+    public void testSubmitTaskWithFiles() throws Exception {
+        TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
+        Task newTask = new Task();
+        newTask.setUser("brunor");
+        newTask.setApplication("2");
+        newTask.setDescription("Test with files");
 
-      ArrayList<String> arguments = new ArrayList<String>();
-      arguments.add("I am saying hello");
+        List<String> arguments = new ArrayList<>();
+        arguments.add("I am saying hello");
 
-      ArrayList<OutputFile> outputFiles = new ArrayList<OutputFile>();
-      OutputFile oFile = new OutputFile();
-      oFile.setName("sayhello.data");
-      outputFiles.add(oFile);
+        List<OutputFile> outputFiles = new ArrayList<>();
+        OutputFile oFile = new OutputFile();
+        oFile.setName("sayhello.data");
+        outputFiles.add(oFile);
 
-      ArrayList<InputFile> inputFiles = new ArrayList<InputFile>();
-      InputFile iFileSH = new InputFile();
-      iFileSH.setName("sayhello.sh");
+        List<InputFile> inputFiles = new ArrayList<>();
+        InputFile iFileSH = new InputFile();
+        iFileSH.setName("sayhello.sh");
 
-      InputFile iFileTXT = new InputFile();
-      iFileTXT.setName("sayhello.txt");
+        InputFile iFileTXT = new InputFile();
+        iFileTXT.setName("sayhello.txt");
 
-      inputFiles.add(iFileSH);
-      inputFiles.add(iFileTXT);
+        inputFiles.add(iFileSH);
+        inputFiles.add(iFileTXT);
 
-      newTask.setOutputFiles(outputFiles);
-      newTask.setInputFiles(inputFiles);
+        newTask.setOutputFiles(outputFiles);
+        newTask.setInputFiles(inputFiles);
 
-      newTask.setArguments(arguments);
-      result = api.createTask(newTask);
+        newTask.setArguments(arguments);
+        Task result = api.createTask(newTask);
 
-      // Once task is created, we can upload files
-      String url = result.getUploadURLAsString();
-      String fileNameSH = getClass().getResource("/sayhello.sh").getFile();
-      String fileNameTXT = getClass().getResource("/sayhello.txt").getFile();
-      api.uploadFileForTask(result, url, new File(fileNameSH));
-      api.uploadFileForTask(result, url, new File(fileNameTXT));
-      
-      // We can check status and wait for "DONE"
-      String status = null;
-      int retry = 100;
-      
-      do {
-        Task tmp = api.getTask(result);
-        status = tmp.getStatus();
-        Thread.sleep(5000);
-        retry--;
-      } while(!status.equals("DONE") && retry > 0);
-      
-      if(retry == 0) {
-        fail("To many retries");
-      }
-      
-      ArrayList<OutputFile> files = api.getOutputsForTask(result);
-      
-      String outputDir = getClass().getResource("/outputs").getFile();
-      
-      for( OutputFile f : files ){
-        api.downloadOutputFile(f, outputDir);
-      }
-      
-    } catch (Exception ex) {
-      ex.printStackTrace();
-      fail("Error while creating task");
+        // Once task is created, we can upload files
+        String url = result.getUploadURLAsString();
+        String fileNameSH = getClass().getResource("/sayhello.sh").getFile();
+        String fileNameTXT = getClass().getResource("/sayhello.txt").getFile();
+        api.uploadFileForTask(result, new File(fileNameSH));
+        api.uploadFileForTask(result, new File(fileNameTXT));
     }
-    
-    
-  }
 
-  @Test
-  public void testGetTask() {
-    TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
+    /**
+     * This test is a complete scenario where job is submitted, executed
+     * and all outputs are retrieved.
+     */
+    @Test
+    public void testSubmitTaskWithFilesWaitGetOutputs() throws Exception {
+        TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
+        Task newTask = new Task();
+        newTask.setUser("brunor");
+        newTask.setApplication("2");
+        newTask.setDescription("Test with files");
 
-    // TODO: make sure to set proper task ID below
-    // this one is an arbitrary value from previous calls to
-    // TaskAPI
-    try {
-      Task newTask = new Task();
-      newTask.setUser("brunor");
-      newTask.setId("1");
+        ArrayList<String> arguments = new ArrayList<>();
+        arguments.add("I am saying hello");
 
-      Task task = api.getTask(newTask);
-    } catch (Exception ex) {
-      ex.printStackTrace();
+        ArrayList<OutputFile> outputFiles = new ArrayList<>();
+        OutputFile oFile = new OutputFile();
+        oFile.setName("sayhello.data");
+        outputFiles.add(oFile);
+
+        ArrayList<InputFile> inputFiles = new ArrayList<>();
+        InputFile iFileSH = new InputFile();
+        iFileSH.setName("sayhello.sh");
+
+        InputFile iFileTXT = new InputFile();
+        iFileTXT.setName("sayhello.txt");
+
+        inputFiles.add(iFileSH);
+        inputFiles.add(iFileTXT);
+
+        newTask.setOutputFiles(outputFiles);
+        newTask.setInputFiles(inputFiles);
+
+        newTask.setArguments(arguments);
+        Task result = api.createTask(newTask);
+
+        // Once task is created, we can upload files
+        String url = result.getUploadURLAsString();
+        String fileNameSH = getClass().getResource("/sayhello.sh").getFile();
+        String fileNameTXT = getClass().getResource("/sayhello.txt").getFile();
+        api.uploadFileForTask(result, new File(fileNameSH));
+        api.uploadFileForTask(result, new File(fileNameTXT));
+
+        // We can check status and wait for "DONE"
+        Task.Status status;
+        int retry = 100;
+
+        do {
+            Task tmp = api.getTask(result);
+            status = tmp.getStatus();
+            Thread.sleep(5000);
+            retry--;
+        } while (status != Task.Status.DONE && retry > 0);
+
+        if (retry == 0) {
+            fail("To many retries");
+        }
+
+        List<OutputFile> files = api.getOutputsForTask(result);
+        File outputDir = new File(getClass().getResource("/outputs").getFile());
+
+        for (OutputFile f : files) {
+            api.downloadOutputFile(f, outputDir);
+        }
     }
-  }
 
-  @Test
-  public void testGetAllTasks() {
-    TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
+    @Test
+    public void testGetTask() throws Exception {
+        TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
 
-    // TaskAPI
-    try {
-      Task[] tasks = api.getAllTasks();
-    } catch (Exception ex) {
-      ex.printStackTrace();
+        // TODO: make sure to set proper task ID below
+        // this one is an arbitrary value from previous calls to
+        // TaskAPI
+        Task newTask = new Task();
+        newTask.setUser("brunor");
+        newTask.setId("1");
+        api.getTask(newTask);
     }
-  }
 
-  @Test
-  public void testFinalize() {
-    System.out.flush();
-  }
+    @Test
+    public void testGetAllTasks() throws Exception {
+        TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
+        api.getAllTasks();
+    }
 }
