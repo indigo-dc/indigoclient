@@ -1,7 +1,7 @@
 package pl.psnc.indigo.fg.api.restful;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -32,15 +32,14 @@ import java.util.logging.Logger;
 public class TasksAPI extends BaseAPI {
     private final static Logger LOGGER = Logger.getLogger(TasksAPI.class.getName());
 
-    private ObjectMapper mapper = new ObjectMapper();
-
+    private final ObjectMapper mapper = new ObjectMapper();
     private final String tasksHttpAddress;
 
     public TasksAPI(String httpAddress) throws FutureGatewayException {
         super(httpAddress);
         tasksHttpAddress = RootAPI.getRootForAddress(httpAddress).getURLAsString() + "tasks";
 
-        mapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
     }
 

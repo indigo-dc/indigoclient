@@ -1,6 +1,6 @@
 package pl.psnc.indigo.fg.api.restful;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Root;
 
@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 public class RootAPI extends BaseAPI {
-    private final static Logger LOGGER = Logger.getLogger(RootAPI.class.getName());
-    private static Map<String, RootAPI> rootMap = new HashMap<>();
+    private static final Logger LOGGER = Logger.getLogger(RootAPI.class.getName());
+    private static final Map<String, RootAPI> rootMap = new HashMap<>();
 
     public static RootAPI getRootForAddress(String httpAddress) throws FutureGatewayException {
         if (!rootMap.containsKey(httpAddress)) {
@@ -24,8 +24,7 @@ public class RootAPI extends BaseAPI {
         return rootMap.get(httpAddress);
     }
 
-    private ObjectMapper mapper = new ObjectMapper();
-
+    private final ObjectMapper mapper = new ObjectMapper();
     private final Root wsRoot;
 
     private RootAPI(String httpAddress) throws FutureGatewayException {

@@ -5,11 +5,11 @@
  */
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.JsonDeserializer;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 
@@ -24,7 +24,7 @@ class InputFileDeserializer extends JsonDeserializer<InputFile> {
             // we have to wait for the final version of server side results
             // at the moment we return null values
         } else {
-            inputFile.setName(node.getTextValue());
+            inputFile.setName(node.asText());
         }
 
         return inputFile;

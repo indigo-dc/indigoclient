@@ -5,11 +5,11 @@
  */
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.JsonDeserializer;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 
@@ -24,10 +24,10 @@ class OutputFileDeserializer extends JsonDeserializer<OutputFile> {
             JsonNode name = node.get("name");
             JsonNode url = node.get("url");
 
-            outputFile.setName(name.getTextValue());
-            outputFile.setUrl(url.getTextValue());
+            outputFile.setName(name.asText());
+            outputFile.setUrl(url.asText());
         } else {
-            outputFile.setName(node.getTextValue());
+            outputFile.setName(node.asText());
         }
 
         return outputFile;
