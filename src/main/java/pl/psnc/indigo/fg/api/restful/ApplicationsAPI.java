@@ -68,8 +68,39 @@ public class ApplicationsAPI extends BaseAPI {
         }
     }
 
-    public Application getApplication(Application application) {
-        // TODO
-        return null;
+    public Application getApplication(Application application) throws FutureGatewayException {
+        String httpToCall = applicationsAddress + "/" + application.getId();
+        Response response = null;
+
+        try {
+            LOGGER.debug("GET " + httpToCall);
+            response = client.target(httpToCall)
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .accept(MediaType.APPLICATION_JSON_TYPE)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer {access_token}")
+                    .get();
+
+            Response.StatusType status = response.getStatusInfo();
+            LOGGER.debug("Status: " + status.getStatusCode() + " " + status.getReasonPhrase());
+
+            if (status.getStatusCode() == Response.Status.OK.getStatusCode()) {
+                String body = response.readEntity(String.class);
+                LOGGER.trace("Body: " + body);
+                return mapper.readValue(body, Application.class);
+            } else {
+                String message = "Failed to list application " + application.getId() + ". Response: " + response.getStatus() + " " + response;
+                LOGGER.error(message);
+                throw new FutureGatewayException(message);
+            }
+        } catch (IOException e) {
+            String message = "Failed to list application" + application.getId();
+            LOGGER.error(message, e);
+            throw new FutureGatewayException(message, e);
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
     }
 }
