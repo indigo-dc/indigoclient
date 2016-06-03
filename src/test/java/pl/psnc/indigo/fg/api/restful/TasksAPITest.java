@@ -1,22 +1,29 @@
 package pl.psnc.indigo.fg.api.restful;
 
-import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.InputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.fail;
+import static org.junit.Assert.*;
 
 public class TasksAPITest {
-    @Test
-    public void testCreateTask() throws Exception {
-        TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
+    private TasksAPI api;
 
+    @Before
+    public void initialize() throws FutureGatewayException, URISyntaxException {
+        api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
+    }
+
+    @Test
+    public void testCreateTask() throws FutureGatewayException {
         Task task = new Task();
         task.setUser("brunor");
         task.setApplication("1");
@@ -30,12 +37,11 @@ public class TasksAPITest {
     @Test
     public void testFileAccess() {
         String fileName = getClass().getResource("/sayhello.sh").getFile();
-        Assert.assertTrue(new File(fileName).canRead());
+        assertTrue(new File(fileName).canRead());
     }
 
     @Test
-    public void testSubmitTaskWithFiles() throws Exception {
-        TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
+    public void testSubmitTaskWithFiles() throws FutureGatewayException {
         Task newTask = new Task();
         newTask.setUser("brunor");
         newTask.setApplication("2");
@@ -66,7 +72,6 @@ public class TasksAPITest {
         Task result = api.createTask(newTask);
 
         // Once task is created, we can upload files
-        String url = result.getUploadURLAsString();
         String fileNameSH = getClass().getResource("/sayhello.sh").getFile();
         String fileNameTXT = getClass().getResource("/sayhello.txt").getFile();
         api.uploadFileForTask(result, new File(fileNameSH));
@@ -78,8 +83,7 @@ public class TasksAPITest {
      * and all outputs are retrieved.
      */
     @Test
-    public void testSubmitTaskWithFilesWaitGetOutputs() throws Exception {
-        TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
+    public void testSubmitTaskWithFilesWaitGetOutputs() throws FutureGatewayException, URISyntaxException, InterruptedException {
         Task newTask = new Task();
         newTask.setUser("brunor");
         newTask.setApplication("2");
@@ -110,7 +114,6 @@ public class TasksAPITest {
         Task result = api.createTask(newTask);
 
         // Once task is created, we can upload files
-        String url = result.getUploadURLAsString();
         String fileNameSH = getClass().getResource("/sayhello.sh").getFile();
         String fileNameTXT = getClass().getResource("/sayhello.txt").getFile();
         api.uploadFileForTask(result, new File(fileNameSH));
@@ -140,9 +143,7 @@ public class TasksAPITest {
     }
 
     @Test
-    public void testGetTask() throws Exception {
-        TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
-
+    public void testGetTask() throws FutureGatewayException {
         // TODO: make sure to set proper task ID below
         // this one is an arbitrary value from previous calls to
         // TaskAPI
@@ -153,8 +154,19 @@ public class TasksAPITest {
     }
 
     @Test
-    public void testGetAllTasks() throws Exception {
+    public void testGetAllTasks() throws FutureGatewayException, URISyntaxException {
         TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
         api.getAllTasks();
+    }
+
+    @Test
+    public void testDeleteTask() throws FutureGatewayException {
+        Task task = new Task();
+        task.setApplication("1");
+        task.setUser("brunor");
+        task = api.createTask(task);
+
+        assertTrue(api.deleteTask(task));
+        assertFalse(api.deleteTask(task));
     }
 }

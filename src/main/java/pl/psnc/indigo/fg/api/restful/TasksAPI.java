@@ -261,4 +261,24 @@ public class TasksAPI extends RootAPI {
             }
         }
     }
+
+    public boolean deleteTask(Task task) {
+        URI uri = UriBuilder.fromUri(tasksUri).path(task.getId()).build();
+        Response response = null;
+
+        try {
+            LOGGER.debug("DELETE " + uri);
+            response = client.target(uri)
+                    .request()
+                    .delete();
+
+            Response.StatusType status = response.getStatusInfo();
+            LOGGER.debug("Status: " + status.getStatusCode() + " " + status.getReasonPhrase());
+            return status.getFamily() == Response.Status.Family.SUCCESSFUL;
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
+    }
 }
