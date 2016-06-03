@@ -2,7 +2,7 @@ package pl.psnc.indigo.fg.api.restful;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.glassfish.jersey.filter.LoggingFilter;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
@@ -110,7 +110,7 @@ public class TasksAPI extends BaseAPI {
 
         try {
             client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
-            client.register(new LoggingFilter());
+            client.register(new LoggingFeature(TasksAPI.LOGGER));
             WebTarget webTarget = client.target(httpToCall);
             multiPart = new MultiPart();
             multiPart.setMediaType(MediaType.MULTIPART_FORM_DATA_TYPE);

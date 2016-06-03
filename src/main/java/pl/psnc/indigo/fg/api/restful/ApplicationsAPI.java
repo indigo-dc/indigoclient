@@ -7,6 +7,7 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Application;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class ApplicationsAPI extends BaseAPI {
     private static final Logger LOGGER = Logger.getLogger(ApplicationsAPI.class.getName());
 
     private final ObjectMapper mapper = new ObjectMapper();
+    private final Client client = ClientBuilder.newClient();
     private final String applicationsAddress;
 
     public ApplicationsAPI(String httpAddress) throws FutureGatewayException {
@@ -35,16 +37,14 @@ public class ApplicationsAPI extends BaseAPI {
         String httpToCall = applicationsAddress;
         LOGGER.info("Calling: " + httpToCall);
 
-        Client client = null;
         Response response = null;
 
         try {
-            client = ClientBuilder.newClient();
             response = client.target(httpToCall)
                     .request(MediaType.APPLICATION_JSON_TYPE)
-                    .header("Content-Type", "application/json")
-                    .header("Authorization", "Bearer {access_token}")
                     .accept(MediaType.APPLICATION_JSON_TYPE)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer {access_token}")
                     .get();
             int status = response.getStatus();
             LOGGER.info("Response status: " + status);
@@ -68,9 +68,11 @@ public class ApplicationsAPI extends BaseAPI {
             if (response != null) {
                 response.close();
             }
-            if (client != null) {
-                client.close();
-            }
         }
+    }
+
+    public Application getApplication(Application application) {
+        // TODO
+        return null;
     }
 }
