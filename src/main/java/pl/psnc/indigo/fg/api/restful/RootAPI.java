@@ -1,6 +1,8 @@
 package pl.psnc.indigo.fg.api.restful;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
@@ -10,7 +12,11 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,29 +24,38 @@ public class RootAPI extends BaseAPI {
     private static final Logger LOGGER = LoggerFactory.getLogger(RootAPI.class);
     private static final Map<String, RootAPI> rootMap = new HashMap<>();
 
-    public static RootAPI getRootForAddress(String httpAddress) throws FutureGatewayException {
+    public static RootAPI getRootForAddress(String httpAddress) throws FutureGatewayException, URISyntaxException {
         if (!rootMap.containsKey(httpAddress)) {
             rootMap.put(httpAddress, new RootAPI(httpAddress));
         }
         return rootMap.get(httpAddress);
     }
 
-    private final Client client = ClientBuilder.newClient();
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final Root wsRoot;
+    protected final URI rootUri;
+    protected final Client client = ClientBuilder.newBuilder()
+            .register(MultiPartFeature.class)
+            .build();
+    protected final ObjectMapper mapper = new ObjectMapper();
 
-    private RootAPI(String httpAddress) throws FutureGatewayException {
-        super(httpAddress);
-        wsRoot = this.getRoot();
+    protected RootAPI(String baseUri) throws FutureGatewayException, URISyntaxException {
+        super(baseUri);
+
+        Root wsRoot = getRoot();
+        String version = wsRoot.getVersions().get(0).getId();
+        rootUri = UriBuilder.fromUri(baseUri)
+                .path(version)
+                .build();
+
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
     }
 
     private Root getRoot() throws FutureGatewayException {
-        String httpToCall = httpAddress;
         Response response = null;
 
         try {
-            LOGGER.debug("GET " + httpToCall);
-            response = client.target(httpToCall)
+            LOGGER.debug("GET " + baseUri);
+            response = client.target(baseUri)
                     .request(MediaType.TEXT_PLAIN_TYPE)
                     .get();
 
@@ -65,9 +80,5 @@ public class RootAPI extends BaseAPI {
                 response.close();
             }
         }
-    }
-
-    public String getURLAsString() {
-        return httpAddress + "/" + wsRoot.getVersions().get(0).getId() + "/";
     }
 }

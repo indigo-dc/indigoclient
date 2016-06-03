@@ -6,6 +6,8 @@ import org.junit.Test;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Application;
 
+import java.net.URISyntaxException;
+
 /**
  * Created by tzok on 20.05.16.
  */
@@ -13,7 +15,7 @@ public class ApplicationsAPITest {
     private ApplicationsAPI api;
 
     @Before
-    public void initialize() throws FutureGatewayException {
+    public void initialize() throws FutureGatewayException, URISyntaxException {
         api = new ApplicationsAPI(BaseAPI.LOCALHOST_ADDRESS);
     }
 

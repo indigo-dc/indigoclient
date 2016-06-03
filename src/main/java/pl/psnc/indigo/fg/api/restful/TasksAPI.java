@@ -1,9 +1,6 @@
 package pl.psnc.indigo.fg.api.restful;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.glassfish.jersey.media.multipart.MultiPart;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,35 +9,31 @@ import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class TasksAPI extends BaseAPI {
+public class TasksAPI extends RootAPI {
     private final static Logger LOGGER = LoggerFactory.getLogger(TasksAPI.class);
 
-    private final Client client = ClientBuilder.newBuilder().register(MultiPartFeature.class).build();
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final String tasksHttpAddress;
+    private final URI tasksUri;
 
-    public TasksAPI(String httpAddress) throws FutureGatewayException {
-        super(httpAddress);
-        tasksHttpAddress = RootAPI.getRootForAddress(httpAddress).getURLAsString() + "tasks";
+    public TasksAPI(String baseUri) throws FutureGatewayException, URISyntaxException {
+        super(baseUri);
 
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+        tasksUri = UriBuilder.fromUri(rootUri).path("tasks").build();
     }
 
     /**
@@ -54,12 +47,12 @@ public class TasksAPI extends BaseAPI {
      * applications might require inputs and some other, not.
      */
     public Task createTask(Task task) throws FutureGatewayException {
-        String httpToCall = tasksHttpAddress + "?user=" + task.getUser();
+        URI uri = UriBuilder.fromUri(tasksUri).queryParam("user", task.getUser()).build();
         Response response = null;
 
         try {
-            LOGGER.debug("POST " + httpToCall);
-            response = client.target(httpToCall)
+            LOGGER.debug("POST " + uri);
+            response = client.target(uri)
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .accept(MediaType.APPLICATION_JSON_TYPE)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -93,7 +86,7 @@ public class TasksAPI extends BaseAPI {
      * Upload file for task
      */
     public Upload uploadFileForTask(Task task, File file) throws FutureGatewayException {
-        String httpToCall = tasksHttpAddress + "/" + task.getId() + "/input?user=" + task.getUser();
+        URI uri = UriBuilder.fromUri(tasksUri).path(task.getId()).path("input").queryParam("user", task.getUser()).build();
         FileDataBodyPart fileDataBodyPart = null;
         MultiPart multiPart = null;
         Response response = null;
@@ -105,8 +98,8 @@ public class TasksAPI extends BaseAPI {
             multiPart.setMediaType(MediaType.MULTIPART_FORM_DATA_TYPE);
             multiPart.bodyPart(fileDataBodyPart);
 
-            LOGGER.debug("POST " + httpToCall);
-            response = client.target(httpToCall)
+            LOGGER.debug("POST " + uri);
+            response = client.target(uri)
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .accept(MediaType.APPLICATION_JSON_TYPE)
                     .post(Entity.entity(multiPart, MediaType.MULTIPART_FORM_DATA_TYPE));
@@ -144,12 +137,12 @@ public class TasksAPI extends BaseAPI {
      * Check status
      */
     public Task getTask(Task task) throws FutureGatewayException {
-        String httpToCall = tasksHttpAddress + "/" + task.getId();
+        URI uri = UriBuilder.fromUri(tasksUri).path(task.getId()).build();
         Response response = null;
 
         try {
-            LOGGER.debug("GET " + httpToCall);
-            response = client.target(httpToCall)
+            LOGGER.debug("GET " + uri);
+            response = client.target(uri)
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .accept(MediaType.APPLICATION_JSON_TYPE)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -183,60 +176,29 @@ public class TasksAPI extends BaseAPI {
      * Get output files for task
      */
     public List<OutputFile> getOutputsForTask(Task task) throws FutureGatewayException {
-        String httpToCall = tasksHttpAddress + "/" + task.getId();
-        Response response = null;
+        task = getTask(task);
 
-        try {
-            LOGGER.debug("GET " + httpToCall);
-            response = client.target(httpToCall)
-                    .request(MediaType.APPLICATION_JSON_TYPE)
-                    .accept(MediaType.APPLICATION_JSON_TYPE)
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer {access_token}")
-                    .get();
-
-            Response.StatusType status = response.getStatusInfo();
-            LOGGER.debug("Status: " + status.getStatusCode() + " " + status.getReasonPhrase());
-
-            if (status.getStatusCode() == Response.Status.OK.getStatusCode()) {
-                String body = response.readEntity(String.class);
-                LOGGER.trace("Body: " + body);
-                Task retVal = mapper.readValue(body, Task.class);
-
-                // There is no sense to get output files for tasks that are not DONE
-                // In case of tasks that are still running we will get the same url
-                // that is: "url": "file?path=&name=sayhello.out"
-                if (retVal.getStatus() != Task.Status.DONE || retVal.getOutputFiles() == null) {
-                    return Collections.emptyList();
-                }
-
-                return Collections.unmodifiableList(retVal.getOutputFiles());
-            } else {
-                String message = "Failed to get output files for task. Response: " + response.getStatus() + " " + response + "\nTask: " + task;
-                LOGGER.error(message);
-                throw new FutureGatewayException(message);
-            }
-        } catch (IOException e) {
-            String message = "Failed to get output files for task\nTask: " + task;
-            LOGGER.error(message, e);
-            throw new FutureGatewayException(message, e);
-        } finally {
-            if (response != null) {
-                response.close();
-            }
+        // There is no sense to get output files for tasks that are not DONE
+        // In case of tasks that are still running we will get the same url
+        // that is: "url": "file?path=&name=sayhello.out"
+        if (task.getStatus() != Task.Status.DONE || task.getOutputFiles() == null) {
+            return Collections.emptyList();
         }
+
+        return Collections.unmodifiableList(task.getOutputFiles());
     }
 
     /**
      * Gets output file for the job
      */
-    public void downloadOutputFile(OutputFile outputFile, File directory) throws FutureGatewayException {
-        String httpToCall = RootAPI.getRootForAddress(BaseAPI.LOCALHOST_ADDRESS).getURLAsString() + outputFile.getUrl();
+    public void downloadOutputFile(OutputFile outputFile, File directory) throws FutureGatewayException, URISyntaxException {
+        URI outputFileUri = new URI(outputFile.getUrl());
+        URI uri = UriBuilder.fromUri(rootUri).path(outputFileUri.getPath()).replaceQuery(outputFileUri.getQuery()).build();
         Response response = null;
 
         try {
-            LOGGER.debug("GET " + httpToCall);
-            response = client.target(httpToCall)
+            LOGGER.debug("GET " + uri);
+            response = client.target(uri)
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .accept(MediaType.APPLICATION_OCTET_STREAM)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -266,12 +228,11 @@ public class TasksAPI extends BaseAPI {
     }
 
     public List<Task> getAllTasks() throws FutureGatewayException {
-        String httpToCall = tasksHttpAddress;
         Response response = null;
 
         try {
-            LOGGER.debug("GET " + httpToCall);
-            response = client.target(httpToCall)
+            LOGGER.debug("GET " + tasksUri);
+            response = client.target(tasksUri)
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .accept(MediaType.APPLICATION_JSON_TYPE)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)

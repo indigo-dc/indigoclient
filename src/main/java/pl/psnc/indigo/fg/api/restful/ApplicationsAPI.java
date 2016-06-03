@@ -1,42 +1,38 @@
 package pl.psnc.indigo.fg.api.restful;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Application;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
-public class ApplicationsAPI extends BaseAPI {
+public class ApplicationsAPI extends RootAPI {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationsAPI.class);
 
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final Client client = ClientBuilder.newClient();
-    private final String applicationsAddress;
+    private final URI applicationsUri;
 
-    public ApplicationsAPI(String httpAddress) throws FutureGatewayException {
-        super(httpAddress);
-        applicationsAddress = RootAPI.getRootForAddress(httpAddress).getURLAsString() + "applications";
-        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+    public ApplicationsAPI(String baseUri) throws FutureGatewayException, URISyntaxException {
+        super(baseUri);
+
+        applicationsUri = UriBuilder.fromUri(rootUri).path("applications").build();
     }
 
     public List<Application> getAllApplications() throws FutureGatewayException {
-        String httpToCall = applicationsAddress;
         Response response = null;
 
         try {
-            LOGGER.debug("GET " + httpToCall);
-            response = client.target(httpToCall)
+            LOGGER.debug("GET " + applicationsUri);
+            response = client.target(applicationsUri)
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .accept(MediaType.APPLICATION_JSON_TYPE)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
@@ -69,12 +65,12 @@ public class ApplicationsAPI extends BaseAPI {
     }
 
     public Application getApplication(Application application) throws FutureGatewayException {
-        String httpToCall = applicationsAddress + "/" + application.getId();
+        URI uri = UriBuilder.fromUri(applicationsUri).path(application.getId()).build();
         Response response = null;
 
         try {
-            LOGGER.debug("GET " + httpToCall);
-            response = client.target(httpToCall)
+            LOGGER.debug("GET " + uri);
+            response = client.target(uri)
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .accept(MediaType.APPLICATION_JSON_TYPE)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
