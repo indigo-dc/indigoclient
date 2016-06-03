@@ -170,7 +170,7 @@ public class Task implements Serializable {
     public String getUploadURLAsString() {
         if (links != null) {
             for (Link l : links) {
-                if (l.getRel().equals("input")) {
+                if ("input".equals(l.getRel())) {
                     return l.getHref();
                 }
             }

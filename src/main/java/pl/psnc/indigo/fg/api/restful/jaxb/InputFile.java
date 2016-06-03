@@ -2,6 +2,7 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import pl.psnc.indigo.fg.api.restful.jaxb.serialization.InputFileDeserializer;
 
 import java.io.Serializable;
 
@@ -15,9 +16,6 @@ import java.io.Serializable;
 public class InputFile implements Serializable {
     private String name;
     private String status;
-
-    public InputFile() {
-    }
 
     public String getName() {
         return name;

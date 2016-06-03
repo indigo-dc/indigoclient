@@ -14,9 +14,6 @@ public class Link implements Serializable {
     private String rel;
     private String href;
 
-    public Link() {
-    }
-
     public String getRel() {
         return rel;
     }

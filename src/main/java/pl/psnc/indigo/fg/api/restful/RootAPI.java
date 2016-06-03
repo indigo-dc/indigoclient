@@ -1,6 +1,8 @@
 package pl.psnc.indigo.fg.api.restful;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Root;
 
@@ -11,10 +13,9 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 public class RootAPI extends BaseAPI {
-    private static final Logger LOGGER = Logger.getLogger(RootAPI.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(RootAPI.class);
     private static final Map<String, RootAPI> rootMap = new HashMap<>();
 
     public static RootAPI getRootForAddress(String httpAddress) throws FutureGatewayException {
@@ -24,6 +25,7 @@ public class RootAPI extends BaseAPI {
         return rootMap.get(httpAddress);
     }
 
+    private final Client client = ClientBuilder.newClient();
     private final ObjectMapper mapper = new ObjectMapper();
     private final Root wsRoot;
 
@@ -34,38 +36,33 @@ public class RootAPI extends BaseAPI {
 
     private Root getRoot() throws FutureGatewayException {
         String httpToCall = httpAddress;
-        LOGGER.info("Calling: " + httpToCall);
-
-        Client client = null;
         Response response = null;
 
         try {
-            client = ClientBuilder.newClient();
+            LOGGER.debug("GET " + httpToCall);
             response = client.target(httpToCall)
                     .request(MediaType.TEXT_PLAIN_TYPE)
                     .get();
-            int status = response.getStatus();
-            LOGGER.info("Response status: " + status);
 
-            if (status == Response.Status.OK.getStatusCode()) {
+            Response.StatusType status = response.getStatusInfo();
+            LOGGER.debug("Status: " + status.getStatusCode() + " " + status.getReasonPhrase());
+
+            if (status.getStatusCode() == Response.Status.OK.getStatusCode()) {
                 String body = response.readEntity(String.class);
-                LOGGER.info("Body: " + body);
+                LOGGER.trace("Body: " + body);
                 return mapper.readValue(body, Root.class);
             } else {
                 String message = "Failed to connect to Future Gateway. Response: " + response.getStatus() + " " + response;
-                LOGGER.severe(message);
+                LOGGER.error(message);
                 throw new FutureGatewayException(message);
             }
         } catch (IOException e) {
             String message = "Failed to connect to Future Gateway";
-            LOGGER.severe(message);
+            LOGGER.error(message, e);
             throw new FutureGatewayException(message, e);
         } finally {
             if (response != null) {
                 response.close();
-            }
-            if (client != null) {
-                client.close();
             }
         }
     }

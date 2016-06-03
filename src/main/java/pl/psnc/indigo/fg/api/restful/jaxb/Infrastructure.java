@@ -6,9 +6,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by tzok on 02.06.16.
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Infrastructure implements Serializable {
     private String id;

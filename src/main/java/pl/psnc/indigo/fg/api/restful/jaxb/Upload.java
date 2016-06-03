@@ -17,9 +17,6 @@ public class Upload implements Serializable {
     private String task;
     private String status;
 
-    public Upload() {
-    }
-
     public List<InputFile> getFiles() {
         return files;
     }
