@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
 
+@FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Parameter implements Serializable {
     private String name;

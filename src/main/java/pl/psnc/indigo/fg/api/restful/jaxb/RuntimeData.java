@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *         <p>
  *         POJO class for storing RuntimeData description
  */
+@FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RuntimeData {
     private String name;

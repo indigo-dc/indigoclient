@@ -11,6 +11,7 @@ import java.io.Serializable;
  *         <p>
  *         POJO class for storing InputFile description
  */
+@FutureGatewayBean
 @JsonDeserialize(using = InputFileDeserializer.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InputFile implements Serializable {

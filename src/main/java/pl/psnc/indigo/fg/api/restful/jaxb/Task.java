@@ -12,6 +12,7 @@ import java.util.List;
  *         <p>
  *         POJO class for storing Task description
  */
+@FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Task implements Serializable {
     public enum Status {

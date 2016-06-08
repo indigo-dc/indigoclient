@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 /**
  * @author michalo
  */
+@FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ErrorMessage {
     private String message;

@@ -10,6 +10,7 @@ import java.util.List;
  *         <p>
  *         POJO class for storing Upload description
  */
+@FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Upload implements Serializable {
     private List<InputFile> files;

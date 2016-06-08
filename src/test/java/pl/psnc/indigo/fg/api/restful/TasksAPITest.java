@@ -156,7 +156,7 @@ public class TasksAPITest {
     @Test
     public void testGetAllTasks() throws FutureGatewayException, URISyntaxException {
         TasksAPI api = new TasksAPI(BaseAPI.LOCALHOST_ADDRESS);
-        api.getAllTasks();
+        api.getAllTasks("brunor");
     }
 
     @Test

@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+@FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Application implements Serializable {
     public enum Outcome {

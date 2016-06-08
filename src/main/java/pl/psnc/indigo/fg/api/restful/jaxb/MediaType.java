@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 /**
  * @author michalo
  */
+@FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MediaType {
     private String type;

@@ -227,12 +227,13 @@ public class TasksAPI extends RootAPI {
         }
     }
 
-    public List<Task> getAllTasks() throws FutureGatewayException {
+    public List<Task> getAllTasks(String user) throws FutureGatewayException {
+        URI uri = UriBuilder.fromUri(tasksUri).queryParam("user", user).build();
         Response response = null;
 
         try {
-            LOGGER.debug("GET " + tasksUri);
-            response = client.target(tasksUri)
+            LOGGER.debug("GET " + uri);
+            response = client.target(uri)
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .accept(MediaType.APPLICATION_JSON_TYPE)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)

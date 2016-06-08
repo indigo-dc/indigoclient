@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * @author michalo
  */
+@FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Version {
     private String status;

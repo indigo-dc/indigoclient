@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * @author michalo
  */
+@FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Root {
     private List<Link> links;

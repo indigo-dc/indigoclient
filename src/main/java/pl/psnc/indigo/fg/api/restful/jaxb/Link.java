@@ -9,6 +9,7 @@ import java.io.Serializable;
  *         <p>
  *         POJO class for storing Links description
  */
+@FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Link implements Serializable {
     private String rel;
