@@ -5,22 +5,28 @@
  */
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- *
  * @author michalo
  */
+@FutureGatewayBean
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MediaType {
+    private String type;
 
-  String type;
+    public String getType() {
+        return type;
+    }
 
-  public String getType() {
-    return type;
-  }
+    public void setType(String type) {
+        this.type = type;
+    }
 
-  public void setType(String type) {
-    this.type = type;
-  }
-
+    @Override
+    public String toString() {
+        return "MediaType{" +
+                "type='" + type + '\'' +
+                '}';
+    }
 }

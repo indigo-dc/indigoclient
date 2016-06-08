@@ -1,56 +1,62 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 import java.util.List;
 
 /**
- *
  * @author michalo
- *
- * POJO class for storing Upload description
- *
+ *         <p>
+ *         POJO class for storing Upload description
  */
+@FutureGatewayBean
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Upload implements Serializable {
+    private List<InputFile> files;
+    private String message;
+    private String task;
+    private String status;
 
-  private List<InputFile> files;
-  private String message;
-  private String task;
-  private String gestatus;
+    public List<InputFile> getFiles() {
+        return files;
+    }
 
-  public Upload() {
+    public void setFiles(List<InputFile> files) {
+        this.files = files;
+    }
 
-  }
+    public String getMessage() {
+        return message;
+    }
 
-  public List<InputFile> getFiles() {
-    return files;
-  }
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-  public void setFiles(List<InputFile> files) {
-    this.files = files;
-  }
+    public String getTask() {
+        return task;
+    }
 
-  public String getMessage() {
-    return message;
-  }
+    public void setTask(String task) {
+        this.task = task;
+    }
 
-  public void setMessage(String message) {
-    this.message = message;
-  }
+    public String getStatus() {
+        return status;
+    }
 
-  public String getTask() {
-    return task;
-  }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-  public void setTask(String task) {
-    this.task = task;
-  }
-
-  public String getGestatus() {
-    return gestatus;
-  }
-
-  public void setGestatus(String gestatus) {
-    this.gestatus = gestatus;
-  }
-
+    @Override
+    public String toString() {
+        return "Upload{" +
+                "files=" + files +
+                ", message='" + message + '\'' +
+                ", task='" + task + '\'' +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }

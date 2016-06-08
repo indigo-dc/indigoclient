@@ -1,41 +1,44 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
-import java.beans.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import pl.psnc.indigo.fg.api.restful.jaxb.serialization.InputFileDeserializer;
+
 import java.io.Serializable;
-import javax.xml.bind.annotation.XmlRootElement;
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 /**
- *
  * @author michalo
- *
- * POJO class for storing InputFile description
- *
+ *         <p>
+ *         POJO class for storing InputFile description
  */
+@FutureGatewayBean
 @JsonDeserialize(using = InputFileDeserializer.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class InputFile implements Serializable {
+    private String name;
+    private String status;
 
-  String name;
-  String status;
+    public String getName() {
+        return name;
+    }
 
-  public InputFile() {
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  }
+    public String getStatus() {
+        return status;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getStatus() {
-    return status;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
+    @Override
+    public String toString() {
+        return "InputFile{" +
+                "name='" + name + '\'' +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }

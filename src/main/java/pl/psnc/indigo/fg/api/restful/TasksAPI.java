@@ -1,464 +1,285 @@
 package pl.psnc.indigo.fg.api.restful;
 
+import org.glassfish.jersey.media.multipart.MultiPart;
+import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
+import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
+import pl.psnc.indigo.fg.api.restful.jaxb.Task;
+import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.nio.file.CopyOption;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import pl.psnc.indigo.fg.api.restful.jaxb.Task;
-import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.filter.LoggingFilter;
-import pl.psnc.indigo.fg.api.restful.jaxb.ErrorMessage;
-import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
-import org.glassfish.jersey.media.multipart.FormDataMultiPart;
-import org.glassfish.jersey.media.multipart.MultiPart;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
-import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-public class TasksAPI extends BaseAPI {
+public class TasksAPI extends RootAPI {
+    private final static Logger LOGGER = LoggerFactory.getLogger(TasksAPI.class);
 
-  private final static Logger LOGGER = Logger.getLogger(TasksAPI.class.getName());
-  String tasksHttpAddress = null;
-  
-  public static final String DONE = "DONE";
-  public static final String SUBMIT = "SUBMIT";
-  public static final String SUBMITTED = "SUBMITTED";
-  public static final String WAITING = "WAITING";  
+    private final URI tasksUri;
 
-  public TasksAPI(String httpAddress) {
-    super(httpAddress);
-    tasksHttpAddress = RootAPI.getRootForAddress(httpAddress).getURLAsString() + "tasks";
-  }
+    public TasksAPI(String baseUri) throws FutureGatewayException, URISyntaxException {
+        super(baseUri);
 
-  /**
-   * Calls create task at server side
-   *
-   * To submit task we have to pass Task object filled with description of the
-   * task - user - application's id - arguments - description - input files -
-   * output files
-   *
-   * The set of parameters might be application dependant. For example some
-   * applications might require inputs and some other, not.
-   */
-  public Task createTask(Task newTask) throws Exception {
-
-    String httpToCall = tasksHttpAddress + "?user=" + newTask.getUser();
-    LOGGER.info("Calling: " + httpToCall);
-
-    Client client = null;
-    Response response = null;
-
-    try {
-      client = ClientBuilder.newClient();
-
-      String jsonText = null;
-
-      ObjectMapper inputMapper = new ObjectMapper();
-      inputMapper.setSerializationInclusion(JsonSerialize.Inclusion.NON_NULL);
-      jsonText = inputMapper.writeValueAsString(newTask);
-
-      Entity<String> payload
-        = Entity.json(
-          jsonText
-        );
-
-      response = client.target(httpToCall)
-        .request(MediaType.APPLICATION_JSON_TYPE)
-        .header("Content-Type", "application/json")
-        .header("Authorization", "Bearer {access_token}")
-        .accept(MediaType.APPLICATION_JSON_TYPE)
-        .post(payload);
-      int status = response.getStatus();
-
-      if (status == 200) {
-        LOGGER.info("Response status: " + status);
-        MultivaluedMap<String, Object> headers = response.getHeaders();
-        String body = response.readEntity(String.class);
-
-        LOGGER.info("Body: " + body);
-
-        ObjectMapper outputMapper = new ObjectMapper();
-        Task task = outputMapper.readValue(body, Task.class);
-        return task;
-
-      } else {
-        LOGGER.severe("Error while calling: " + httpToCall + " - status: " + status);
-      }
-    } catch (JsonParseException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (JsonMappingException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (IOException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (Exception ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } finally {
-      if (response != null) {
-        response.close();
-      }
-      if (client != null) {
-        client.close();
-      }
+        tasksUri = UriBuilder.fromUri(rootUri).path("tasks").build();
     }
 
-    return null;
-  }
+    /**
+     * Calls create task at server side
+     * <p>
+     * To submit task we have to pass Task object filled with description of the
+     * task - user - application's id - arguments - description - input files -
+     * output files
+     * <p>
+     * The set of parameters might be application dependant. For example some
+     * applications might require inputs and some other, not.
+     */
+    public Task createTask(Task task) throws FutureGatewayException {
+        URI uri = UriBuilder.fromUri(tasksUri).queryParam("user", task.getUser()).build();
+        Response response = null;
 
-  /**
-   * Submit task
-   *
-   */
-  public Upload uploadFileForTask(Task task, String inputURL, File file) throws Exception {
+        try {
+            LOGGER.debug("POST " + uri);
+            response = client.target(uri)
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .accept(MediaType.APPLICATION_JSON_TYPE)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer {access_token}")
+                    .post(Entity.json(mapper.writeValueAsString(task)));
 
-    String httpToCall = tasksHttpAddress + "/" + task.getId() + "/input?user=" + task.getUser();
+            Response.StatusType status = response.getStatusInfo();
+            LOGGER.debug("Status: " + status.getStatusCode() + " " + status.getReasonPhrase());
 
-    LOGGER.info("Calling: " + httpToCall);
-
-    FileDataBodyPart fileDataBodyPart = null;
-    MultiPart multiPart = null;
-    Response response = null;
-    Client client = null;
-
-    try {
-      client = ClientBuilder.newBuilder()
-        .register(MultiPartFeature.class).build();
-      client.register(new LoggingFilter());
-      WebTarget webTarget = client.target(httpToCall);
-      multiPart = new MultiPart();
-      multiPart.setMediaType(MediaType.MULTIPART_FORM_DATA_TYPE);
-
-      fileDataBodyPart
-        = new FileDataBodyPart(
-          "file[]",
-          file,
-          MediaType.APPLICATION_OCTET_STREAM_TYPE);
-
-      multiPart.bodyPart(fileDataBodyPart);
-
-      response
-        = webTarget
-        .request(MediaType.APPLICATION_JSON_TYPE)
-        .post(Entity.entity(
-          multiPart,
-          multiPart.getMediaType()));
-
-      int status = response.getStatus();
-
-      LOGGER.info("Status:" + status);
-
-      if (status == 200) {
-        MultivaluedMap<String, Object> headers = response.getHeaders();
-        String body = response.readEntity(String.class);
-
-        LOGGER.info("Body: " + body);
-
-        ObjectMapper mapper = new ObjectMapper();
-        Upload upload = mapper.readValue(body, Upload.class);
-        return upload;
-
-      } else {
-        LOGGER.severe("Error while calling: " + httpToCall + " - status: " + status);
-        return null;
-      }
-    } catch (JsonParseException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (JsonMappingException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (IOException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (Exception ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } finally {
-      if (fileDataBodyPart != null) {
-        fileDataBodyPart.cleanup();
-      }
-      if (multiPart != null) {
-        multiPart.cleanup();
-      }
-      if (response != null) {
-        response.close();
-      }
-      if (client != null) {
-        client.close();
-      }
+            if (status.getStatusCode() == Response.Status.OK.getStatusCode()) {
+                String body = response.readEntity(String.class);
+                LOGGER.trace("Body: " + body);
+                return mapper.readValue(body, Task.class);
+            } else {
+                String message = "Failed to create task. Response: " + response.getStatus() + " " + response + "\nTask: " + task;
+                LOGGER.error(message);
+                throw new FutureGatewayException(message);
+            }
+        } catch (IOException e) {
+            String message = "Failed to create task\nTask: " + task;
+            LOGGER.error(message, e);
+            throw new FutureGatewayException(message, e);
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
     }
-    // in case we have failed to connect/parse response, we will
-    return null;
-  }
 
-  /**
-   * Check status
-   *
-   */
-  public Task getTask(Task task) throws Exception {
+    /**
+     * Upload file for task
+     */
+    public Upload uploadFileForTask(Task task, File file) throws FutureGatewayException {
+        URI uri = UriBuilder.fromUri(tasksUri).path(task.getId()).path("input").queryParam("user", task.getUser()).build();
+        FileDataBodyPart fileDataBodyPart = null;
+        MultiPart multiPart = null;
+        Response response = null;
 
-    String httpToCall = tasksHttpAddress + "/" + task.getId();
-    LOGGER.info("Calling: " + httpToCall);
+        try {
+            fileDataBodyPart = new FileDataBodyPart("file[]", file, MediaType.APPLICATION_OCTET_STREAM_TYPE);
 
-    Client client = null;
-    Response response = null;
+            multiPart = new MultiPart();
+            multiPart.setMediaType(MediaType.MULTIPART_FORM_DATA_TYPE);
+            multiPart.bodyPart(fileDataBodyPart);
 
-    try {
-      client = ClientBuilder.newClient();
+            LOGGER.debug("POST " + uri);
+            response = client.target(uri)
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .accept(MediaType.APPLICATION_JSON_TYPE)
+                    .post(Entity.entity(multiPart, MediaType.MULTIPART_FORM_DATA_TYPE));
 
-      Entity<String> payload
-        = Entity.text("");
+            Response.StatusType status = response.getStatusInfo();
+            LOGGER.debug("Status: " + status.getStatusCode() + " " + status.getReasonPhrase());
 
-      response = client.target(httpToCall)
-        .request(MediaType.APPLICATION_JSON_TYPE)
-        .header("Content-Type", "application/json")
-        .header("Authorization", "Bearer {access_token}")
-        .accept(MediaType.APPLICATION_JSON_TYPE)
-        .get(Response.class);
-      int status = response.getStatus();
-
-      LOGGER.info("Status:" + status);
-
-      MultivaluedMap<String, Object> headers = response.getHeaders();
-      String body = response.readEntity(String.class);
-
-      LOGGER.info("Body: " + body);
-
-      if (status == 200) {
-        ObjectMapper mapper = new ObjectMapper();
-        Task retVal = mapper.readValue(body, Task.class);
-        return retVal;
-      } else {
-        LOGGER.severe("Error while calling: " + httpToCall + " - status: " + status);
-        return null;
-      }
-    } catch (JsonParseException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (JsonMappingException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (IOException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (Exception ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } finally {
-      if (response != null) {
-        response.close();
-      }
-      if (client != null) {
-        client.close();
-      }
+            if (status.getStatusCode() == Response.Status.OK.getStatusCode()) {
+                String body = response.readEntity(String.class);
+                LOGGER.trace("Body: " + body);
+                return mapper.readValue(body, Upload.class);
+            } else {
+                String message = "Failed to upload file for task. Response: " + response.getStatus() + " " + response + "\nTask: " + task + "\nFile: " + file;
+                LOGGER.error(message);
+                throw new FutureGatewayException(message);
+            }
+        } catch (IOException e) {
+            String message = "Failed to upload file for task\nTask: " + task + "\nFile: " + file;
+            LOGGER.error(message, e);
+            throw new FutureGatewayException(message, e);
+        } finally {
+            if (fileDataBodyPart != null) {
+                fileDataBodyPart.cleanup();
+            }
+            if (multiPart != null) {
+                multiPart.cleanup();
+            }
+            if (response != null) {
+                response.close();
+            }
+        }
     }
-    return null;
-  }
-  
-  /**
-   * Check status
-   *
-   */
-  public ArrayList<OutputFile> getOutputsForTask(Task task) throws Exception {
 
-    ArrayList<OutputFile> outputFilesArray = new ArrayList<OutputFile>();
-    
-    String httpToCall = tasksHttpAddress + "/" + task.getId();
-    LOGGER.info("Calling: " + httpToCall);
+    /**
+     * Check status
+     */
+    public Task getTask(Task task) throws FutureGatewayException {
+        URI uri = UriBuilder.fromUri(tasksUri).path(task.getId()).build();
+        Response response = null;
 
-    Client client = null;
-    Response response = null;
+        try {
+            LOGGER.debug("GET " + uri);
+            response = client.target(uri)
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .accept(MediaType.APPLICATION_JSON_TYPE)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer {access_token}")
+                    .get();
 
-    try {
-      client = ClientBuilder.newClient();
+            Response.StatusType status = response.getStatusInfo();
+            LOGGER.debug("Status: " + status.getStatusCode() + " " + status.getReasonPhrase());
 
-      Entity<String> payload
-        = Entity.text("");
+            if (status.getStatusCode() == Response.Status.OK.getStatusCode()) {
+                String body = response.readEntity(String.class);
+                LOGGER.trace("Body: " + body);
+                return mapper.readValue(body, Task.class);
+            } else {
+                String message = "Failed to get task. Response: " + response.getStatus() + " " + response + "\nTask: " + task;
+                LOGGER.error(message);
+                throw new FutureGatewayException(message);
+            }
+        } catch (IOException e) {
+            String message = "Failed to get task\nTask: " + task;
+            LOGGER.error(message, e);
+            throw new FutureGatewayException(message);
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
+    }
 
-      response = client.target(httpToCall)
-        .request(MediaType.APPLICATION_JSON_TYPE)
-        .header("Content-Type", "application/json")
-        .header("Authorization", "Bearer {access_token}")
-        .accept(MediaType.APPLICATION_JSON_TYPE)
-        .get(Response.class);
-      int status = response.getStatus();
+    /**
+     * Get output files for task
+     */
+    public List<OutputFile> getOutputsForTask(Task task) throws FutureGatewayException {
+        task = getTask(task);
 
-      LOGGER.info("Status:" + status);
-
-      MultivaluedMap<String, Object> headers = response.getHeaders();
-      String body = response.readEntity(String.class);
-
-      LOGGER.info("Body: " + body);
-
-      if (status == 200) {
-        ObjectMapper mapper = new ObjectMapper();
-        Task retVal = mapper.readValue(body, Task.class);
-        
         // There is no sense to get output files for tasks that are not DONE
         // In case of tasks that are still running we will get the same url
         // that is: "url": "file?path=&name=sayhello.out"
-        if( retVal.getStatus().equals(TasksAPI.DONE)) {
-          if( retVal.getOutput_files() != null ) {
-            for(int i=0;i<retVal.getOutput_files().size(); i++) {
-               OutputFile file = retVal.getOutput_files().get(i);
-               outputFilesArray.add(file);
-            }
-          }
+        if (task.getStatus() != Task.Status.DONE || task.getOutputFiles() == null) {
+            return Collections.emptyList();
         }
-        return outputFilesArray;
-        
-      } else {
-        LOGGER.severe("Error while calling: " + httpToCall + " - status: " + status);
-        return null;
-      }
-    } catch (JsonParseException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (JsonMappingException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (IOException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (Exception ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } finally {
-      if (response != null) {
-        response.close();
-      }
-      if (client != null) {
-        client.close();
-      }
+
+        return Collections.unmodifiableList(task.getOutputFiles());
     }
-    return null;
-  }
-  
-  /**
-   * Gets output file for the job
-   * @param url location of the file at WS server; it can be retrieved by
-   *            calling {@link #getOutputsForTask(Task task) getOutputsForTask}
-   * @param localFile full path of the local file - place where we want to store
-   *                  output
-   * @return true - in case download was successful, false - if it failed
-   * @throws Exception 
-   */
-  public boolean downloadOutputFile(OutputFile file, String folder) throws Exception {
 
-    String httpToCall = RootAPI.getRootForAddress(BaseAPI.LOCALHOST_ADDRESS).getURLAsString() + file.getUrl();
-    LOGGER.info("Calling: " + httpToCall);
+    /**
+     * Gets output file for the job
+     */
+    public void downloadOutputFile(OutputFile outputFile, File directory) throws FutureGatewayException, URISyntaxException {
+        URI outputFileUri = new URI(outputFile.getUrl());
+        URI uri = UriBuilder.fromUri(rootUri).path(outputFileUri.getPath()).replaceQuery(outputFileUri.getQuery()).build();
+        Response response = null;
 
-    Client client = null;
-    Response response = null;
+        try {
+            LOGGER.debug("GET " + uri);
+            response = client.target(uri)
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .accept(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer {access_token}")
+                    .get();
 
-    try {
-      client = ClientBuilder.newClient();
+            Response.StatusType status = response.getStatusInfo();
+            LOGGER.debug("Status: " + status.getStatusCode() + " " + status.getReasonPhrase());
 
-      Entity<String> payload
-        = Entity.text("");
-
-      response = client.target(httpToCall)
-        .request(MediaType.APPLICATION_JSON_TYPE)
-        .header("Content-Type", "application/json")
-        .header("Authorization", "Bearer {access_token}")
-        .accept(MediaType.APPLICATION_OCTET_STREAM)
-        .get(Response.class);
-      int status = response.getStatus();
-
-      LOGGER.info("Status:" + status);
-
-      MultivaluedMap<String, Object> headers = response.getHeaders();
-//      String body = response.readEntity(String.class);
-
-//      LOGGER.info("Body: " + body);
-
-      if (status == 200) {
-        
-        InputStream is = response.readEntity(InputStream.class);
-        Files.copy(is, new File(folder + "/" + file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
-        
-//        try(  PrintWriter out = new PrintWriter( folder + "/" + file.getName() )  ){
-//          out.println( body );
-//        }
-        return true;
-      } else {
-        LOGGER.severe("Error while calling: " + httpToCall + " - status: " + status);
-        return false;
-      }
-    } catch (IOException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (Exception ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } finally {
-      if (response != null) {
-        response.close();
-      }
-      if (client != null) {
-        client.close();
-      }
+            if (status.getStatusCode() == Response.Status.OK.getStatusCode()) {
+                InputStream is = response.readEntity(InputStream.class);
+                Files.copy(is, new File(directory, outputFile.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                String message = "Failed to download file. Response: " + response.getStatus() + " " + response + "\nOutput file: " + outputFile + "\nDirectory: " + directory;
+                LOGGER.error(message);
+                throw new FutureGatewayException(message);
+            }
+        } catch (IOException e) {
+            String message = "Failed to download file\nOutput file: " + outputFile + "\nDirectory: " + directory;
+            LOGGER.error(message, e);
+            throw new FutureGatewayException(message, e);
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
     }
-    return false;
-  }
 
-  public Task[] getAllTasks() throws Exception {
+    public List<Task> getAllTasks(String user) throws FutureGatewayException {
+        URI uri = UriBuilder.fromUri(tasksUri).queryParam("user", user).build();
+        Response response = null;
 
-    String httpToCall = tasksHttpAddress;
-    LOGGER.info("Calling: " + httpToCall);
+        try {
+            LOGGER.debug("GET " + uri);
+            response = client.target(uri)
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .accept(MediaType.APPLICATION_JSON_TYPE)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer {access_token}")
+                    .get();
 
-    Client client = null;
-    Response response = null;
+            Response.StatusType status = response.getStatusInfo();
+            LOGGER.debug("Status: " + status.getStatusCode() + " " + status.getReasonPhrase());
 
-    try {
-      client = ClientBuilder.newClient();
-
-      Entity<String> payload
-        = Entity.text("");
-
-      response = client.target(httpToCall)
-        .request(MediaType.APPLICATION_JSON_TYPE)
-        .header("Content-Type", "application/json")
-        .header("Authorization", "Bearer {access_token}")
-        .accept(MediaType.APPLICATION_JSON_TYPE)
-        .get(Response.class);
-      int status = response.getStatus();
-      LOGGER.info("Status:" + status);
-      MultivaluedMap<String, Object> headers = response.getHeaders();
-      String body = response.readEntity(String.class);
-
-      LOGGER.info("Body: " + body);
-
-      if (status == 200) {
-        ObjectMapper mapper = new ObjectMapper();
-        Task[] tasks = mapper.readValue(body, Task[].class);
-        return tasks;
-      } else {
-        LOGGER.severe("Error while calling: " + httpToCall + " - status: " + status);
-        ObjectMapper mapper = new ObjectMapper();
-        ErrorMessage message = mapper.readValue(body, ErrorMessage.class);
-        throw new Exception("Error message: " + message.getMessage());
-      }
-    } catch (JsonParseException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (JsonMappingException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (IOException ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } catch (Exception ex) {
-      LOGGER.log(Level.SEVERE, "Error while calling: " + httpToCall, ex);
-    } finally {
-      if (response != null) {
-        response.close();
-      }
-      if (client != null) {
-        client.close();
-      }
+            if (status.getStatusCode() == Response.Status.OK.getStatusCode()) {
+                String body = response.readEntity(String.class);
+                LOGGER.trace("Body: " + body);
+                return Arrays.asList(mapper.readValue(body, Task[].class));
+            } else {
+                String message = "Failed to get all tasks. Response: " + response.getStatus() + " " + response;
+                LOGGER.error(message);
+                throw new FutureGatewayException(message);
+            }
+        } catch (IOException e) {
+            String message = "Failed to get all tasks";
+            LOGGER.error(message, e);
+            throw new FutureGatewayException(message, e);
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
     }
-    return null;
-  }
 
+    public boolean deleteTask(Task task) {
+        URI uri = UriBuilder.fromUri(tasksUri).path(task.getId()).build();
+        Response response = null;
+
+        try {
+            LOGGER.debug("DELETE " + uri);
+            response = client.target(uri)
+                    .request()
+                    .delete();
+
+            Response.StatusType status = response.getStatusInfo();
+            LOGGER.debug("Status: " + status.getStatusCode() + " " + status.getReasonPhrase());
+            return status.getFamily() == Response.Status.Family.SUCCESSFUL;
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
+    }
 }
