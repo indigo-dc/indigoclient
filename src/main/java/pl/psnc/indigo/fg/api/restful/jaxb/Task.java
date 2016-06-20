@@ -16,7 +16,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Task implements Serializable {
     public enum Status {
-        SUBMIT, SUBMITTED, WAITING, READY, SCHEDULED, RUNNING, DONE, ABORTED, CANCELLED
+        SUBMIT, SUBMITTED, WAITING, READY, SCHEDULED, RUNNING, DONE, ABORTED,
+        CANCELLED
     }
 
     private String id;
@@ -38,154 +39,154 @@ public class Task implements Serializable {
     public Task() {
     }
 
-    public String getId() {
+    public final String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public final void setId(final String id) {
         this.id = id;
     }
 
     @JsonProperty("runtime_data")
-    public List<RuntimeData> getRuntimeData() {
+    public final List<RuntimeData> getRuntimeData() {
         return runtimeData;
     }
 
     @JsonProperty("runtime_data")
-    public void setRuntimeData(List<RuntimeData> runtimeData) {
+    public final void setRuntimeData(final List<RuntimeData> runtimeData) {
         this.runtimeData = runtimeData;
     }
 
-    public Date getDate() {
+    public final Date getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public final void setDate(final Date date) {
         this.date = date;
     }
 
     @JsonProperty("last_change")
-    public Date getLastChange() {
+    public final Date getLastChange() {
         return lastChange;
     }
 
     @JsonProperty("last_change")
-    public void setLastChange(Date lastChange) {
+    public final void setLastChange(final Date lastChange) {
         this.lastChange = lastChange;
     }
 
-    public String getApplication() {
+    public final String getApplication() {
         return application;
     }
 
-    public void setApplication(String application) {
+    public final void setApplication(final String application) {
         this.application = application;
     }
 
-    public String getInfrastructureTask() {
+    public final String getInfrastructureTask() {
         return infrastructureTask;
     }
 
-    public void setInfrastructureTask(String infrastructureTask) {
+    public final void setInfrastructureTask(final String infrastructureTask) {
         this.infrastructureTask = infrastructureTask;
     }
 
-    public String getDescription() {
+    public final String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public final void setDescription(final String description) {
         this.description = description;
     }
 
-    public Status getStatus() {
+    public final Status getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public final void setStatus(final Status status) {
         this.status = status;
     }
 
-    public String getUser() {
+    public final String getUser() {
         return user;
     }
 
-    public void setUser(String user) {
+    public final void setUser(final String user) {
         this.user = user;
     }
 
-    public String getCreation() {
+    public final String getCreation() {
         return creation;
     }
 
-    public void setCreation(String creation) {
+    public final void setCreation(final String creation) {
         this.creation = creation;
     }
 
-    public String getIosandbox() {
+    public final String getIosandbox() {
         return iosandbox;
     }
 
-    public void setIosandbox(String iosandbox) {
+    public final void setIosandbox(final String iosandbox) {
         this.iosandbox = iosandbox;
     }
 
-    public List<String> getArguments() {
+    public final List<String> getArguments() {
         return arguments;
     }
 
-    public void setArguments(List<String> arguments) {
+    public final void setArguments(final List<String> arguments) {
         this.arguments = arguments;
     }
 
     @JsonProperty("input_files")
-    public List<InputFile> getInputFiles() {
+    public final List<InputFile> getInputFiles() {
         return inputFiles;
     }
 
     @JsonProperty("input_files")
-    public void setInputFiles(List<InputFile> inputFiles) {
+    public final void setInputFiles(final List<InputFile> inputFiles) {
         this.inputFiles = inputFiles;
     }
 
     @JsonProperty("output_files")
-    public List<OutputFile> getOutputFiles() {
+    public final List<OutputFile> getOutputFiles() {
         return outputFiles;
     }
 
     @JsonProperty("output_files")
-    public void setOutputFiles(List<OutputFile> outputFiles) {
+    public final void setOutputFiles(final List<OutputFile> outputFiles) {
         this.outputFiles = outputFiles;
     }
 
     @JsonProperty("_links")
-    public List<Link> getLinks() {
+    public final List<Link> getLinks() {
         return links;
     }
 
     @JsonProperty("_links")
-    public void setLinks(List<Link> links) {
+    public final void setLinks(final List<Link> links) {
         this.links = links;
     }
 
     @Override
-    public String toString() {
-        return "Task{" +
-                "id='" + id + '\'' +
-                ", date=" + date +
-                ", lastChange=" + lastChange +
-                ", application='" + application + '\'' +
-                ", infrastructureTask='" + infrastructureTask + '\'' +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                ", user='" + user + '\'' +
-                ", arguments=" + arguments +
-                ", inputFiles=" + inputFiles +
-                ", outputFiles=" + outputFiles +
-                ", runtimeData=" + runtimeData +
-                ", creation='" + creation + '\'' +
-                ", iosandbox='" + iosandbox + '\'' +
-                ", links=" + links +
-                '}';
+    public final String toString() {
+        return "Task{"
+                + "id='" + id + '\''
+                + ", date=" + date
+                + ", lastChange=" + lastChange
+                + ", application='" + application + '\''
+                + ", infrastructureTask='" + infrastructureTask + '\''
+                + ", description='" + description + '\''
+                + ", status=" + status
+                + ", user='" + user + '\''
+                + ", arguments=" + arguments
+                + ", inputFiles=" + inputFiles
+                + ", outputFiles=" + outputFiles
+                + ", runtimeData=" + runtimeData
+                + ", creation='" + creation + '\''
+                + ", iosandbox='" + iosandbox + '\''
+                + ", links=" + links
+                + '}';
     }
 }

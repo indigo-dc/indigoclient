@@ -22,81 +22,82 @@ public class Application implements Serializable {
     private boolean enabled;
     private List<Parameter> parameters;
 
-    public String getId() {
+    public final String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public final void setId(final String id) {
         this.id = id;
     }
 
-    public String getDescription() {
+    public final String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public final void setDescription(final String description) {
         this.description = description;
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public final void setName(final String name) {
         this.name = name;
     }
 
-    public Date getDate() {
+    public final Date getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public final void setDate(final Date date) {
         this.date = date;
     }
 
-    public List<Infrastructure> getInfrastructures() {
+    public final List<Infrastructure> getInfrastructures() {
         return infrastructures;
     }
 
-    public void setInfrastructures(List<Infrastructure> infrastructures) {
+    public final void setInfrastructures(final List<Infrastructure>
+                                                 infrastructures) {
         this.infrastructures = infrastructures;
     }
 
-    public Outcome getOutcome() {
+    public final Outcome getOutcome() {
         return outcome;
     }
 
-    public void setOutcome(Outcome outcome) {
+    public final void setOutcome(final Outcome outcome) {
         this.outcome = outcome;
     }
 
-    public boolean isEnabled() {
+    public final boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public final void setEnabled(final boolean enabled) {
         this.enabled = enabled;
     }
 
-    public List<Parameter> getParameters() {
+    public final List<Parameter> getParameters() {
         return parameters;
     }
 
-    public void setParameters(List<Parameter> parameters) {
+    public final void setParameters(final List<Parameter> parameters) {
         this.parameters = parameters;
     }
 
     @Override
-    public String toString() {
-        return "Application{" +
-                "id='" + id + '\'' +
-                ", description='" + description + '\'' +
-                ", name='" + name + '\'' +
-                ", date=" + date +
-                ", infrastructures=" + infrastructures +
-                ", outcome=" + outcome +
-                ", enabled=" + enabled +
-                ", parameters=" + parameters +
-                '}';
+    public final String toString() {
+        return "Application{"
+                + "id='" + id + '\''
+                + ", description='" + description + '\''
+                + ", name='" + name + '\''
+                + ", date=" + date
+                + ", infrastructures=" + infrastructures
+                + ", outcome=" + outcome
+                + ", enabled=" + enabled
+                + ", parameters=" + parameters
+                + '}';
     }
 }

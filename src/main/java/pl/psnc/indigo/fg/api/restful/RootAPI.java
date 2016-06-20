@@ -22,22 +22,24 @@ import java.util.Map;
 
 public class RootAPI extends BaseAPI {
     private static final Logger LOGGER = LoggerFactory.getLogger(RootAPI.class);
-    private static final Map<String, RootAPI> rootMap = new HashMap<>();
+    private static final Map<String, RootAPI> ROOT_API_MAP = new HashMap<>();
 
-    public static RootAPI getRootForAddress(String httpAddress) throws FutureGatewayException, URISyntaxException {
-        if (!rootMap.containsKey(httpAddress)) {
-            rootMap.put(httpAddress, new RootAPI(httpAddress));
+    public static RootAPI getRootForAddress(final String httpAddress) throws
+            FutureGatewayException, URISyntaxException {
+        if (!ROOT_API_MAP.containsKey(httpAddress)) {
+            ROOT_API_MAP.put(httpAddress, new RootAPI(httpAddress));
         }
-        return rootMap.get(httpAddress);
+        return ROOT_API_MAP.get(httpAddress);
     }
 
-    protected final URI rootUri;
-    protected final Client client = ClientBuilder.newBuilder()
+    private final URI rootUri;
+    private final Client client = ClientBuilder.newBuilder()
             .register(MultiPartFeature.class)
             .build();
-    protected final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
-    protected RootAPI(String baseUri) throws FutureGatewayException, URISyntaxException {
+    protected RootAPI(final String baseUri) throws FutureGatewayException,
+            URISyntaxException {
         super(baseUri);
 
         Root wsRoot = getRoot();
@@ -50,24 +52,34 @@ public class RootAPI extends BaseAPI {
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
     }
 
+    protected final Client getClient() {
+        return client;
+    }
+
+    protected final ObjectMapper getMapper() {
+        return mapper;
+    }
+
     private Root getRoot() throws FutureGatewayException {
         Response response = null;
 
         try {
-            LOGGER.debug("GET " + baseUri);
-            response = client.target(baseUri)
+            LOGGER.debug("GET " + getBaseUri());
+            response = client.target(getBaseUri())
                     .request(MediaType.TEXT_PLAIN_TYPE)
                     .get();
 
             Response.StatusType status = response.getStatusInfo();
-            LOGGER.debug("Status: " + status.getStatusCode() + " " + status.getReasonPhrase());
+            LOGGER.debug("Status: " + status.getStatusCode() + " " + status
+                    .getReasonPhrase());
 
             if (status.getStatusCode() == Response.Status.OK.getStatusCode()) {
                 String body = response.readEntity(String.class);
                 LOGGER.trace("Body: " + body);
                 return mapper.readValue(body, Root.class);
             } else {
-                String message = "Failed to connect to Future Gateway. Response: " + response.getStatus() + " " + response;
+                String message = "Failed to connect to Future Gateway. "
+                        + "Response: " + response.getStatus() + " " + response;
                 LOGGER.error(message);
                 throw new FutureGatewayException(message);
             }
@@ -80,5 +92,9 @@ public class RootAPI extends BaseAPI {
                 response.close();
             }
         }
+    }
+
+    protected final UriBuilder rootUriBuilder() {
+        return UriBuilder.fromUri(rootUri);
     }
 }

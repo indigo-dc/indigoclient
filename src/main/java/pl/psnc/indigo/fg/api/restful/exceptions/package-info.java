@@ -1,0 +1,1 @@
+package pl.psnc.indigo.fg.api.restful.exceptions;

@@ -15,27 +15,27 @@ public class Link implements Serializable {
     private String rel;
     private String href;
 
-    public String getRel() {
+    public final String getRel() {
         return rel;
     }
 
-    public void setRel(String rel) {
+    public final void setRel(final String rel) {
         this.rel = rel;
     }
 
-    public String getHref() {
+    public final String getHref() {
         return href;
     }
 
-    public void setHref(String href) {
+    public final void setHref(final String href) {
         this.href = href;
     }
 
     @Override
-    public String toString() {
-        return "Link{" +
-                "rel='" + rel + '\'' +
-                ", href='" + href + '\'' +
-                '}';
+    public final String toString() {
+        return "Link{"
+                + "rel='" + rel + '\''
+                + ", href='" + href + '\''
+                + '}';
     }
 }

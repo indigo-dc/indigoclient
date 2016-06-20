@@ -15,18 +15,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class MediaType {
     private String type;
 
-    public String getType() {
+    public final String getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public final void setType(final String type) {
         this.type = type;
     }
 
     @Override
-    public String toString() {
-        return "MediaType{" +
-                "type='" + type + '\'' +
-                '}';
+    public final String toString() {
+        return "MediaType{type='" + type + "'}";
     }
 }

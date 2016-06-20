@@ -18,27 +18,27 @@ public class OutputFile implements Serializable {
     private String name;
     private String url;
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public final void setName(final String name) {
         this.name = name;
     }
 
-    public String getUrl() {
+    public final String getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public final void setUrl(final String url) {
         this.url = url;
     }
 
     @Override
-    public String toString() {
-        return "OutputFile{" +
-                "name='" + name + '\'' +
-                ", url='" + url + '\'' +
-                '}';
+    public final String toString() {
+        return "OutputFile{"
+                + "name='" + name + '\''
+                + ", url='" + url + '\''
+                + '}';
     }
 }

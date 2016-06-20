@@ -18,45 +18,45 @@ public class Upload implements Serializable {
     private String task;
     private String status;
 
-    public List<InputFile> getFiles() {
+    public final List<InputFile> getFiles() {
         return files;
     }
 
-    public void setFiles(List<InputFile> files) {
+    public final void setFiles(final List<InputFile> files) {
         this.files = files;
     }
 
-    public String getMessage() {
+    public final String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public final void setMessage(final String message) {
         this.message = message;
     }
 
-    public String getTask() {
+    public final String getTask() {
         return task;
     }
 
-    public void setTask(String task) {
+    public final void setTask(final String task) {
         this.task = task;
     }
 
-    public String getStatus() {
+    public final String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public final void setStatus(final String status) {
         this.status = status;
     }
 
     @Override
-    public String toString() {
-        return "Upload{" +
-                "files=" + files +
-                ", message='" + message + '\'' +
-                ", task='" + task + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+    public final String toString() {
+        return "Upload{"
+                + "files=" + files
+                + ", message='" + message + '\''
+                + ", task='" + task + '\''
+                + ", status='" + status + '\''
+                + '}';
     }
 }

@@ -17,56 +17,56 @@ public class RuntimeData {
     private String creation;
     private String lastChange;
 
-    public String getValue() {
+    public final String getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public final void setValue(final String value) {
         this.value = value;
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public final void setName(final String name) {
         this.name = name;
     }
 
-    public String getDescription() {
+    public final String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public final void setDescription(final String description) {
         this.description = description;
     }
 
-    public String getCreation() {
+    public final String getCreation() {
         return creation;
     }
 
-    public void setCreation(String creation) {
+    public final void setCreation(final String creation) {
         this.creation = creation;
     }
 
     @JsonProperty("last_change")
-    public String getLastChange() {
+    public final String getLastChange() {
         return lastChange;
     }
 
     @JsonProperty("last_change")
-    public void setLastChange(String lastChange) {
+    public final void setLastChange(final String lastChange) {
         this.lastChange = lastChange;
     }
 
     @Override
-    public String toString() {
-        return "RuntimeData{" +
-                "name='" + name + '\'' +
-                ", value='" + value + '\'' +
-                ", description='" + description + '\'' +
-                ", creation='" + creation + '\'' +
-                ", lastChange='" + lastChange + '\'' +
-                '}';
+    public final String toString() {
+        return "RuntimeData{"
+                + "name='" + name + '\''
+                + ", value='" + value + '\''
+                + ", description='" + description + '\''
+                + ", creation='" + creation + '\''
+                + ", lastChange='" + lastChange + '\''
+                + '}';
     }
 }

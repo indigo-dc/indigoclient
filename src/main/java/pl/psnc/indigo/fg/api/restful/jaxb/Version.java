@@ -18,69 +18,69 @@ public class Version {
     private List<Link> links;
     private String id;
 
-    public String getStatus() {
+    public final String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public final void setStatus(final String status) {
         this.status = status;
     }
 
-    public String getUpdated() {
+    public final String getUpdated() {
         return updated;
     }
 
-    public void setUpdated(String updated) {
+    public final void setUpdated(final String updated) {
         this.updated = updated;
     }
 
     @JsonProperty("build:")
-    public String getBuild() {
+    public final String getBuild() {
         return build;
     }
 
     @JsonProperty("build:")
-    public void setBuild(String build) {
+    public final void setBuild(final String build) {
         this.build = build;
     }
 
     @JsonProperty("media-types")
-    public MediaType getMediaTypes() {
+    public final MediaType getMediaTypes() {
         return mediaTypes;
     }
 
     @JsonProperty("media-types")
-    public void setMediaTypes(MediaType mediaTypes) {
+    public final void setMediaTypes(final MediaType mediaTypes) {
         this.mediaTypes = mediaTypes;
     }
 
     @JsonProperty("_links")
-    public List<Link> getLinks() {
+    public final List<Link> getLinks() {
         return links;
     }
 
     @JsonProperty("_links")
-    public void setLinks(List<Link> links) {
+    public final void setLinks(final List<Link> links) {
         this.links = links;
     }
 
-    public String getId() {
+    public final String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public final void setId(final String id) {
         this.id = id;
     }
 
     @Override
-    public String toString() {
-        return "Version{" +
-                "status='" + status + '\'' +
-                ", updated='" + updated + '\'' +
-                ", build='" + build + '\'' +
-                ", mediaTypes=" + mediaTypes +
-                ", links=" + links +
-                ", id='" + id + '\'' +
-                '}';
+    public final String toString() {
+        return "Version{"
+                + "status='" + status + '\''
+                + ", updated='" + updated + '\''
+                + ", build='" + build + '\''
+                + ", mediaTypes=" + mediaTypes
+                + ", links=" + links
+                + ", id='" + id + '\''
+                + '}';
     }
 }

@@ -15,28 +15,28 @@ public class Root {
     private List<Version> versions;
 
     @JsonProperty("_links")
-    public List<Link> getLinks() {
+    public final List<Link> getLinks() {
         return links;
     }
 
     @JsonProperty("_links")
-    public void setLinks(List<Link> links) {
+    public final void setLinks(final List<Link> links) {
         this.links = links;
     }
 
-    public List<Version> getVersions() {
+    public final List<Version> getVersions() {
         return versions;
     }
 
-    public void setVersions(List<Version> versions) {
+    public final void setVersions(final List<Version> versions) {
         this.versions = versions;
     }
 
     @Override
-    public String toString() {
-        return "Root{" +
-                "links=" + links +
-                ", versions=" + versions +
-                '}';
+    public final String toString() {
+        return "Root{"
+                + "links=" + links
+                + ", versions=" + versions
+                + '}';
     }
 }

@@ -17,39 +17,46 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ApplicationsAPI extends RootAPI {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationsAPI.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(ApplicationsAPI.class);
 
     private final URI applicationsUri;
 
-    public ApplicationsAPI(String baseUri) throws FutureGatewayException, URISyntaxException {
+    public ApplicationsAPI(final String baseUri) throws FutureGatewayException,
+            URISyntaxException {
         super(baseUri);
 
-        applicationsUri = UriBuilder.fromUri(rootUri).path("applications").build();
+        applicationsUri = rootUriBuilder().path("applications").build();
     }
 
-    public List<Application> getAllApplications() throws FutureGatewayException {
+    public final List<Application> getAllApplications() throws
+            FutureGatewayException {
         Response response = null;
 
         try {
             LOGGER.debug("GET " + applicationsUri);
-            response = client.target(applicationsUri)
+            response = getClient().target(applicationsUri)
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .accept(MediaType.APPLICATION_JSON_TYPE)
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType
+                            .APPLICATION_JSON)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer {access_token}")
                     .get();
 
             Response.StatusType status = response.getStatusInfo();
-            LOGGER.debug("Status: " + status.getStatusCode() + " " + status.getReasonPhrase());
+            LOGGER.debug("Status: " + status.getStatusCode() + " " + status
+                    .getReasonPhrase());
 
             if (status.getStatusCode() == Response.Status.OK.getStatusCode()) {
                 String body = response.readEntity(String.class);
                 LOGGER.trace("Body: " + body);
-                JsonNode jsonNode = mapper.readTree(body);
+                JsonNode jsonNode = getMapper().readTree(body);
                 JsonNode applications = jsonNode.get("applications");
-                return Arrays.asList(mapper.treeToValue(applications, Application[].class));
+                return Arrays.asList(getMapper().treeToValue(applications,
+                        Application[].class));
             } else {
-                String message = "Failed to list all applications. Response: " + response.getStatus() + " " + response;
+                String message = "Failed to list all applications. Response: "
+                        + "" + response.getStatus() + " " + response;
                 LOGGER.error(message);
                 throw new FutureGatewayException(message);
             }
@@ -64,28 +71,35 @@ public class ApplicationsAPI extends RootAPI {
         }
     }
 
-    public Application getApplication(Application application) throws FutureGatewayException {
-        URI uri = UriBuilder.fromUri(applicationsUri).path(application.getId()).build();
+    public final Application getApplication(final Application application)
+            throws FutureGatewayException {
+        URI uri = UriBuilder.fromUri(applicationsUri)
+                .path(application.getId())
+                .build();
         Response response = null;
 
         try {
             LOGGER.debug("GET " + uri);
-            response = client.target(uri)
+            response = getClient().target(uri)
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .accept(MediaType.APPLICATION_JSON_TYPE)
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType
+                            .APPLICATION_JSON)
                     .header(HttpHeaders.AUTHORIZATION, "Bearer {access_token}")
                     .get();
 
             Response.StatusType status = response.getStatusInfo();
-            LOGGER.debug("Status: " + status.getStatusCode() + " " + status.getReasonPhrase());
+            LOGGER.debug("Status: " + status.getStatusCode() + " " + status
+                    .getReasonPhrase());
 
             if (status.getStatusCode() == Response.Status.OK.getStatusCode()) {
                 String body = response.readEntity(String.class);
                 LOGGER.trace("Body: " + body);
-                return mapper.readValue(body, Application.class);
+                return getMapper().readValue(body, Application.class);
             } else {
-                String message = "Failed to list application " + application.getId() + ". Response: " + response.getStatus() + " " + response;
+                String message = "Failed to list application " + application
+                        .getId() + ". Response: " + response.getStatus() + " "
+                        + "" + response;
                 LOGGER.error(message);
                 throw new FutureGatewayException(message);
             }

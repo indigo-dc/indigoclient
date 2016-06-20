@@ -12,6 +12,5 @@ public class RootAPITest {
     @Test
     public void testGetRoot() throws FutureGatewayException, URISyntaxException {
         RootAPI api = RootAPI.getRootForAddress(BaseAPI.LOCALHOST_ADDRESS);
-        LOGGER.info("Result: " + api.rootUri);
     }
 }

@@ -10,18 +10,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class ErrorMessage {
     private String message;
 
-    public String getMessage() {
+    public final String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public final void setMessage(final String message) {
         this.message = message;
     }
 
     @Override
-    public String toString() {
-        return "ErrorMessage{" +
-                "message='" + message + '\'' +
-                '}';
+    public final String toString() {
+        return "ErrorMessage{message='" + message + "'}";
     }
 }

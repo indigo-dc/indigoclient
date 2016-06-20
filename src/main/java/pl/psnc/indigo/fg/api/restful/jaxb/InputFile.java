@@ -18,27 +18,27 @@ public class InputFile implements Serializable {
     private String name;
     private String status;
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public final void setName(final String name) {
         this.name = name;
     }
 
-    public String getStatus() {
+    public final String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public final void setStatus(final String status) {
         this.status = status;
     }
 
     @Override
-    public String toString() {
-        return "InputFile{" +
-                "name='" + name + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+    public final String toString() {
+        return "InputFile{"
+                + "name='" + name + '\''
+                + ", status='" + status + '\''
+                + '}';
     }
 }
