@@ -16,6 +16,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Allows to query Future Gateway about available applications.
@@ -49,7 +50,7 @@ public class ApplicationsAPI extends RootAPI {
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
-    public final Iterable<Application> getAllApplications()
+    public final List<Application> getAllApplications()
             throws FutureGatewayException {
         Response response = null;
 

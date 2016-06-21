@@ -316,7 +316,7 @@ public class TasksAPI extends RootAPI {
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
-    public final Iterable<Task> getAllTasks(final String user)
+    public final List<Task> getAllTasks(final String user)
             throws FutureGatewayException {
         URI uri = UriBuilder.fromUri(tasksUri).queryParam("user", user).build();
         Response response = null;
