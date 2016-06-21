@@ -3,6 +3,8 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,27 +18,24 @@ public class Root {
 
     @JsonProperty("_links")
     public final List<Link> getLinks() {
-        return links;
+        return Collections.unmodifiableList(links);
     }
 
     @JsonProperty("_links")
     public final void setLinks(final List<Link> links) {
-        this.links = links;
+        this.links = new ArrayList<>(links);
     }
 
     public final List<Version> getVersions() {
-        return versions;
+        return Collections.unmodifiableList(versions);
     }
 
     public final void setVersions(final List<Version> versions) {
-        this.versions = versions;
+        this.versions = new ArrayList<>(versions);
     }
 
     @Override
     public final String toString() {
-        return "Root{"
-                + "links=" + links
-                + ", versions=" + versions
-                + '}';
+        return "Root{" + "links=" + links + ", versions=" + versions + '}';
     }
 }

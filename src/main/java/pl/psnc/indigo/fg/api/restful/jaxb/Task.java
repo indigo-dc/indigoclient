@@ -2,19 +2,25 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 /**
- * @author michalo
- *         <p>
- *         POJO class for storing Task description
+ * A bean containing full description of a task to be run via Future Gateway.
  */
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Task implements Serializable {
+    private static final long serialVersionUID = 3419851374883611721L;
+
+    /**
+     * All possible states a task can be seen by the Future Gateway.
+     */
     public enum Status {
         SUBMIT, SUBMITTED, WAITING, READY, SCHEDULED, RUNNING, DONE, ABORTED,
         CANCELLED
@@ -36,9 +42,6 @@ public class Task implements Serializable {
     private String iosandbox;
     private List<Link> links;
 
-    public Task() {
-    }
-
     public final String getId() {
         return id;
     }
@@ -49,16 +52,16 @@ public class Task implements Serializable {
 
     @JsonProperty("runtime_data")
     public final List<RuntimeData> getRuntimeData() {
-        return runtimeData;
+        return Collections.unmodifiableList(runtimeData);
     }
 
     @JsonProperty("runtime_data")
     public final void setRuntimeData(final List<RuntimeData> runtimeData) {
-        this.runtimeData = runtimeData;
+        this.runtimeData = new ArrayList<>(runtimeData);
     }
 
     public final Date getDate() {
-        return date;
+        return (Date) date.clone();
     }
 
     public final void setDate(final Date date) {
@@ -67,7 +70,7 @@ public class Task implements Serializable {
 
     @JsonProperty("last_change")
     public final Date getLastChange() {
-        return lastChange;
+        return (Date) lastChange.clone();
     }
 
     @JsonProperty("last_change")
@@ -132,61 +135,59 @@ public class Task implements Serializable {
     }
 
     public final List<String> getArguments() {
-        return arguments;
+        return Collections.unmodifiableList(arguments);
     }
 
     public final void setArguments(final List<String> arguments) {
-        this.arguments = arguments;
+        this.arguments = new ArrayList<>(arguments);
     }
 
     @JsonProperty("input_files")
     public final List<InputFile> getInputFiles() {
-        return inputFiles;
+        return Collections.unmodifiableList(inputFiles);
     }
 
     @JsonProperty("input_files")
     public final void setInputFiles(final List<InputFile> inputFiles) {
-        this.inputFiles = inputFiles;
+        this.inputFiles = new ArrayList<>(inputFiles);
     }
 
     @JsonProperty("output_files")
     public final List<OutputFile> getOutputFiles() {
-        return outputFiles;
+        return Collections.unmodifiableList(outputFiles);
     }
 
     @JsonProperty("output_files")
     public final void setOutputFiles(final List<OutputFile> outputFiles) {
-        this.outputFiles = outputFiles;
+        this.outputFiles = new ArrayList<>(outputFiles);
     }
 
     @JsonProperty("_links")
     public final List<Link> getLinks() {
-        return links;
+        return Collections.unmodifiableList(links);
     }
 
     @JsonProperty("_links")
     public final void setLinks(final List<Link> links) {
-        this.links = links;
+        this.links = new ArrayList<>(links);
     }
 
     @Override
     public final String toString() {
-        return "Task{"
-                + "id='" + id + '\''
-                + ", date=" + date
-                + ", lastChange=" + lastChange
-                + ", application='" + application + '\''
-                + ", infrastructureTask='" + infrastructureTask + '\''
-                + ", description='" + description + '\''
-                + ", status=" + status
-                + ", user='" + user + '\''
-                + ", arguments=" + arguments
-                + ", inputFiles=" + inputFiles
-                + ", outputFiles=" + outputFiles
-                + ", runtimeData=" + runtimeData
-                + ", creation='" + creation + '\''
-                + ", iosandbox='" + iosandbox + '\''
-                + ", links=" + links
-                + '}';
+        return new ToStringBuilder(this).append("id", id).append("date", date)
+                                        .append("lastChange", lastChange)
+                                        .append("application", application)
+                                        .append("infrastructureTask",
+                                                infrastructureTask)
+                                        .append("description", description)
+                                        .append("status", status)
+                                        .append("user", user)
+                                        .append("arguments", arguments)
+                                        .append("inputFiles", inputFiles)
+                                        .append("outputFiles", outputFiles)
+                                        .append("runtimeData", runtimeData)
+                                        .append("creation", creation)
+                                        .append("iosandbox", iosandbox)
+                                        .append("links", links).toString();
     }
 }

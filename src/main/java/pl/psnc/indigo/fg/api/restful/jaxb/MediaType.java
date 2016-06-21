@@ -6,10 +6,12 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
- * @author michalo
+ * A bean containing information about MIME media type of a resource.
  */
+@SuppressWarnings("WeakerAccess")
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MediaType {
@@ -25,6 +27,6 @@ public class MediaType {
 
     @Override
     public final String toString() {
-        return "MediaType{type='" + type + "'}";
+        return new ToStringBuilder(this).append("type", type).toString();
     }
 }

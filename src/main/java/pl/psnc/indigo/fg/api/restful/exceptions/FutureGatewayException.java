@@ -5,6 +5,8 @@ package pl.psnc.indigo.fg.api.restful.exceptions;
  * Gateway.
  */
 public class FutureGatewayException extends Exception {
+    private static final long serialVersionUID = -6412863594909614360L;
+
     /**
      * Construct an instance with description of the problem.
      *

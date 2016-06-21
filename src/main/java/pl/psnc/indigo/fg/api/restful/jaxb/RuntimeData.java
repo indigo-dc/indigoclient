@@ -2,15 +2,17 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import java.io.Serializable;
 
 /**
- * @author michalo
- *         <p>
- *         POJO class for storing RuntimeData description
+ * A bean containing general purpose runtime data.
  */
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RuntimeData {
+class RuntimeData implements Serializable {
+    private static final long serialVersionUID = 2473352732801435794L;
     private String name;
     private String value;
     private String description;
@@ -61,12 +63,11 @@ public class RuntimeData {
 
     @Override
     public final String toString() {
-        return "RuntimeData{"
-                + "name='" + name + '\''
-                + ", value='" + value + '\''
-                + ", description='" + description + '\''
-                + ", creation='" + creation + '\''
-                + ", lastChange='" + lastChange + '\''
-                + '}';
+        return new ToStringBuilder(this).append("name", name)
+                                        .append("value", value)
+                                        .append("description", description)
+                                        .append("creation", creation)
+                                        .append("lastChange", lastChange)
+                                        .toString();
     }
 }

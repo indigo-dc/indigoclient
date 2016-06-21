@@ -7,10 +7,12 @@ import java.net.URISyntaxException;
 import java.util.logging.Logger;
 
 public class RootAPITest {
-    private final static Logger LOGGER = Logger.getLogger(RootAPITest.class.getName());
+    private static final Logger LOGGER = Logger
+            .getLogger(RootAPITest.class.getName());
 
     @Test
-    public void testGetRoot() throws FutureGatewayException, URISyntaxException {
-        RootAPI api = RootAPI.getRootForAddress(BaseAPI.LOCALHOST_ADDRESS);
+    public void testGetRoot()
+            throws FutureGatewayException, URISyntaxException {
+        RootAPI api = RootAPI.getRootForAddress(RootAPI.LOCALHOST_ADDRESS);
     }
 }

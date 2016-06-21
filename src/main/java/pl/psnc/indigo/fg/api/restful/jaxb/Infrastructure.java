@@ -1,14 +1,22 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * A bean containing description of infrastructure as configured in Future
+ * Gateway.
+ */
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Infrastructure implements Serializable {
+    private static final long serialVersionUID = 653000622811995083L;
     private String id;
     private String name;
     private String description;
@@ -42,7 +50,7 @@ public class Infrastructure implements Serializable {
     }
 
     public final Date getDate() {
-        return date;
+        return (Date) date.clone();
     }
 
     public final void setDate(final Date date) {
@@ -66,23 +74,21 @@ public class Infrastructure implements Serializable {
     }
 
     public final List<Parameter> getParameters() {
-        return parameters;
+        return Collections.unmodifiableList(parameters);
     }
 
     public final void setParameters(final List<Parameter> parameters) {
-        this.parameters = parameters;
+        this.parameters = new ArrayList<>(parameters);
     }
 
     @Override
     public final String toString() {
-        return "Infrastructure{"
-                + "id='" + id + '\''
-                + ", name='" + name + '\''
-                + ", description='" + description + '\''
-                + ", date=" + date
-                + ", enabled=" + enabled
-                + ", virtual=" + virtual
-                + ", parameters=" + parameters
-                + '}';
+        return new ToStringBuilder(this).append("id", id).append("name", name)
+                                        .append("description", description)
+                                        .append("date", date)
+                                        .append("enabled", enabled)
+                                        .append("virtual", virtual)
+                                        .append("parameters", parameters)
+                                        .toString();
     }
 }

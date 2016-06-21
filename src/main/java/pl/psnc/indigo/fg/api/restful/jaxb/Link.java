@@ -1,17 +1,17 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 
 /**
- * @author michalo
- *         <p>
- *         POJO class for storing Links description
+ * A bean storing information about links to resources.
  */
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Link implements Serializable {
+    private static final long serialVersionUID = 1841770335729950116L;
     private String rel;
     private String href;
 
@@ -33,9 +33,7 @@ public class Link implements Serializable {
 
     @Override
     public final String toString() {
-        return "Link{"
-                + "rel='" + rel + '\''
-                + ", href='" + href + '\''
-                + '}';
+        return new ToStringBuilder(this).append("rel", rel).append("href", href)
+                                        .toString();
     }
 }

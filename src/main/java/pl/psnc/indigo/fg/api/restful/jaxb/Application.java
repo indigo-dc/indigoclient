@@ -1,14 +1,27 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * A bean class to store information about application configured on Future
+ * Gateway.
+ */
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Application implements Serializable {
+    private static final long serialVersionUID = -3560288874659978838L;
+
+    /**
+     * Types of outcome an application can return.
+     */
+    @SuppressWarnings("WeakerAccess")
     public enum Outcome {
         JOB, RESOURCE
     }
@@ -47,7 +60,7 @@ public class Application implements Serializable {
     }
 
     public final Date getDate() {
-        return date;
+        return (Date) date.clone();
     }
 
     public final void setDate(final Date date) {
@@ -55,12 +68,12 @@ public class Application implements Serializable {
     }
 
     public final List<Infrastructure> getInfrastructures() {
-        return infrastructures;
+        return Collections.unmodifiableList(infrastructures);
     }
 
-    public final void setInfrastructures(final List<Infrastructure>
-                                                 infrastructures) {
-        this.infrastructures = infrastructures;
+    public final void setInfrastructures(
+            final List<Infrastructure> infrastructures) {
+        this.infrastructures = new ArrayList<>(infrastructures);
     }
 
     public final Outcome getOutcome() {
@@ -80,24 +93,24 @@ public class Application implements Serializable {
     }
 
     public final List<Parameter> getParameters() {
-        return parameters;
+        return Collections.unmodifiableList(parameters);
     }
 
     public final void setParameters(final List<Parameter> parameters) {
-        this.parameters = parameters;
+        this.parameters = new ArrayList<>(parameters);
     }
 
     @Override
     public final String toString() {
-        return "Application{"
-                + "id='" + id + '\''
-                + ", description='" + description + '\''
-                + ", name='" + name + '\''
-                + ", date=" + date
-                + ", infrastructures=" + infrastructures
-                + ", outcome=" + outcome
-                + ", enabled=" + enabled
-                + ", parameters=" + parameters
-                + '}';
+        return new ToStringBuilder(this).append("id", id)
+                                        .append("description", description)
+                                        .append("name", name)
+                                        .append("date", date)
+                                        .append("infrastructures",
+                                                infrastructures)
+                                        .append("outcome", outcome)
+                                        .append("enabled", enabled)
+                                        .append("parameters", parameters)
+                                        .toString();
     }
 }

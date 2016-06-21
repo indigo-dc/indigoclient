@@ -11,16 +11,18 @@ import java.io.IOException;
 /**
  * Deserializes information about input files from JSON objects.
  */
-@SuppressWarnings("unchecked")
 public final class InputFileDeserializer extends JsonDeserializer<InputFile> {
     @Override
-    public InputFile deserialize(final JsonParser jsonParser, final
-    DeserializationContext context) throws IOException {
+    public InputFile deserialize(final JsonParser jsonParser,
+                                 final DeserializationContext
+                                         deserializationContext)
+            throws IOException {
         JsonNode node = jsonParser.readValueAsTree();
         InputFile inputFile = new InputFile();
 
         if (!node.isObject()) {
-            inputFile.setName(node.asText());
+            String name = node.asText();
+            inputFile.setName(name);
         }
 
         return inputFile;

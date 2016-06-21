@@ -1,12 +1,17 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 
+/**
+ * A bean containing name, value and description of a parameter.
+ */
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Parameter implements Serializable {
+    private static final long serialVersionUID = -5116819489641098653L;
     private String name;
     private String value;
     private String description;
@@ -37,10 +42,9 @@ public class Parameter implements Serializable {
 
     @Override
     public final String toString() {
-        return "Parameter{"
-                + "name='" + name + '\''
-                + ", value='" + value + '\''
-                + ", description='" + description + '\''
-                + '}';
+        return new ToStringBuilder(this).append("name", name)
+                                        .append("value", value)
+                                        .append("description", description)
+                                        .toString();
     }
 }

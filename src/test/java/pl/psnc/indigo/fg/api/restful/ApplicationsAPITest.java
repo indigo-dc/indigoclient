@@ -6,29 +6,25 @@ import org.junit.Test;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Application;
 
-import java.net.URISyntaxException;
+import static org.hamcrest.CoreMatchers.is;
 
-/**
- * Created by tzok on 20.05.16.
- */
 public class ApplicationsAPITest {
     private ApplicationsAPI api;
 
     @Before
-    public void initialize() throws FutureGatewayException, URISyntaxException {
-        api = new ApplicationsAPI(BaseAPI.LOCALHOST_ADDRESS);
+    public final void initialize() throws FutureGatewayException {
+        api = new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS);
     }
 
     @Test
-    public void testGetAllApplications() throws FutureGatewayException {
+    public final void testGetAllApplications() throws FutureGatewayException {
         api.getAllApplications();
     }
 
     @Test
-    public void testGetApplication() throws FutureGatewayException {
-        Application application = new Application();
-        application.setId("1");
-        application = api.getApplication(application);
-        Assert.assertEquals("hostname", application.getName());
+    public final void testGetApplication() throws FutureGatewayException {
+        Application application = api.getApplication("1");
+        String name = application.getName();
+        Assert.assertThat("hostname", is(name));
     }
 }

@@ -2,11 +2,14 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * @author michalo
+ * A bean containing information about version of the Future Gateway.
  */
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -56,12 +59,12 @@ public class Version {
 
     @JsonProperty("_links")
     public final List<Link> getLinks() {
-        return links;
+        return Collections.unmodifiableList(links);
     }
 
     @JsonProperty("_links")
     public final void setLinks(final List<Link> links) {
-        this.links = links;
+        this.links = new ArrayList<>(links);
     }
 
     public final String getId() {
@@ -74,13 +77,11 @@ public class Version {
 
     @Override
     public final String toString() {
-        return "Version{"
-                + "status='" + status + '\''
-                + ", updated='" + updated + '\''
-                + ", build='" + build + '\''
-                + ", mediaTypes=" + mediaTypes
-                + ", links=" + links
-                + ", id='" + id + '\''
-                + '}';
+        return new ToStringBuilder(this).append("status", status)
+                                        .append("updated", updated)
+                                        .append("build", build)
+                                        .append("mediaTypes", mediaTypes)
+                                        .append("links", links).append("id", id)
+                                        .toString();
     }
 }

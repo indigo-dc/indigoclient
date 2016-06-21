@@ -1,13 +1,14 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
- * @author michalo
+ * A bean containing error message.
  */
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ErrorMessage {
+class ErrorMessage {
     private String message;
 
     public final String getMessage() {
@@ -20,6 +21,6 @@ public class ErrorMessage {
 
     @Override
     public final String toString() {
-        return "ErrorMessage{message='" + message + "'}";
+        return new ToStringBuilder(this).append("message", message).toString();
     }
 }
