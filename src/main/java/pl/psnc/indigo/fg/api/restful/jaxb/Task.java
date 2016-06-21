@@ -27,20 +27,20 @@ public class Task implements Serializable {
     }
 
     private String id;
-    private Date date;
-    private Date lastChange;
+    private Date date = new Date(0);
+    private Date lastChange = new Date(0);
     private String application;
     private String infrastructureTask;
     private String description;
     private Status status;
     private String user;
-    private List<String> arguments;
-    private List<InputFile> inputFiles;
-    private List<OutputFile> outputFiles;
-    private List<RuntimeData> runtimeData;
+    private List<String> arguments = Collections.emptyList();
+    private List<InputFile> inputFiles = Collections.emptyList();
+    private List<OutputFile> outputFiles = Collections.emptyList();
+    private List<RuntimeData> runtimeData = Collections.emptyList();
     private String creation;
     private String iosandbox;
-    private List<Link> links;
+    private List<Link> links = Collections.emptyList();
 
     public final String getId() {
         return id;
