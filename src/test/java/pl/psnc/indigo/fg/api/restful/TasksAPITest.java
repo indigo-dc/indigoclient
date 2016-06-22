@@ -10,6 +10,7 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task.Status;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +94,7 @@ public class TasksAPITest {
     @Test
     public final void testSubmitTaskWithFilesWaitGetOutputs()
             throws FutureGatewayException, InterruptedException,
-                   URISyntaxException {
+                   URISyntaxException, IOException {
         Task newTask = new Task();
         newTask.setUser(TasksAPITest.USERNAME);
         newTask.setApplication("2");

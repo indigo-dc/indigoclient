@@ -256,10 +256,27 @@ public class TasksAPI extends RootAPI {
      * @param directory  A directory where file will be downloaded.
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
+     * @throws IOException            If I/O operations fail (directory
+     *                                creation, file writing, etc.)
      */
     public final void downloadOutputFile(final OutputFile outputFile,
                                          final File directory)
-            throws FutureGatewayException {
+            throws FutureGatewayException, IOException {
+        if (directory.exists()) {
+            if (!directory.isDirectory()) {
+                throw new IOException(
+                        "Output path exists and is not a directory: "
+                        + directory);
+            } else if (!directory.canWrite()) {
+                throw new IOException("Cannot write to: " + directory);
+            }
+        } else {
+            if (!directory.mkdirs()) {
+                throw new IOException(
+                        "Failed to create directory: " + directory);
+            }
+        }
+
         URI outputFileUri = outputFile.getUrl();
         String path = outputFileUri.getPath();
         String query = outputFileUri.getQuery();
@@ -270,13 +287,7 @@ public class TasksAPI extends RootAPI {
 
         try {
             TasksAPI.LOGGER.debug("GET {}", uri);
-            response = getClient().target(uri)
-                                  .request(MediaType.APPLICATION_JSON_TYPE)
-                                  .accept(MediaType.APPLICATION_OCTET_STREAM)
-                                  .header(HttpHeaders.CONTENT_TYPE,
-                                          MediaType.APPLICATION_JSON)
-                                  .header(HttpHeaders.AUTHORIZATION,
-                                          "Bearer {access_token}").get();
+            response = getClient().target(uri).request().get();
 
             StatusType status = response.getStatusInfo();
             int statusCode = status.getStatusCode();
@@ -296,11 +307,6 @@ public class TasksAPI extends RootAPI {
                 TasksAPI.LOGGER.error(message);
                 throw new FutureGatewayException(message);
             }
-        } catch (IOException e) {
-            String message = "Failed to download file: " + outputFile
-                             + " Directory: " + directory;
-            TasksAPI.LOGGER.error(message, e);
-            throw new FutureGatewayException(message, e);
         } finally {
             if (response != null) {
                 response.close();
