@@ -1,11 +1,28 @@
 package pl.psnc.indigo.fg.api.restful.exceptions;
 
+/**
+ * Thrown when an error was encountered during communication with Future
+ * Gateway.
+ */
 public class FutureGatewayException extends Exception {
-    public FutureGatewayException(String s) {
+    private static final long serialVersionUID = -6412863594909614360L;
+
+    /**
+     * Construct an instance with description of the problem.
+     *
+     * @param s Problem description.
+     */
+    public FutureGatewayException(final String s) {
         super(s);
     }
 
-    public FutureGatewayException(String s, Throwable throwable) {
+    /**
+     * Construct an instance with description and cause of the problem.
+     *
+     * @param s         Problem description.
+     * @param throwable Cause of the problem.
+     */
+    public FutureGatewayException(final String s, final Throwable throwable) {
         super(s, throwable);
     }
 }

@@ -2,71 +2,72 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import java.io.Serializable;
 
 /**
- * @author michalo
- *         <p>
- *         POJO class for storing RuntimeData description
+ * A bean containing general purpose runtime data.
  */
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RuntimeData {
+class RuntimeData implements Serializable {
+    private static final long serialVersionUID = 2473352732801435794L;
     private String name;
     private String value;
     private String description;
     private String creation;
     private String lastChange;
 
-    public String getValue() {
+    public final String getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public final void setValue(final String value) {
         this.value = value;
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public final void setName(final String name) {
         this.name = name;
     }
 
-    public String getDescription() {
+    public final String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public final void setDescription(final String description) {
         this.description = description;
     }
 
-    public String getCreation() {
+    public final String getCreation() {
         return creation;
     }
 
-    public void setCreation(String creation) {
+    public final void setCreation(final String creation) {
         this.creation = creation;
     }
 
     @JsonProperty("last_change")
-    public String getLastChange() {
+    public final String getLastChange() {
         return lastChange;
     }
 
     @JsonProperty("last_change")
-    public void setLastChange(String lastChange) {
+    public final void setLastChange(final String lastChange) {
         this.lastChange = lastChange;
     }
 
     @Override
-    public String toString() {
-        return "RuntimeData{" +
-                "name='" + name + '\'' +
-                ", value='" + value + '\'' +
-                ", description='" + description + '\'' +
-                ", creation='" + creation + '\'' +
-                ", lastChange='" + lastChange + '\'' +
-                '}';
+    public final String toString() {
+        return new ToStringBuilder(this).append("name", name)
+                                        .append("value", value)
+                                        .append("description", description)
+                                        .append("creation", creation)
+                                        .append("lastChange", lastChange)
+                                        .toString();
     }
 }

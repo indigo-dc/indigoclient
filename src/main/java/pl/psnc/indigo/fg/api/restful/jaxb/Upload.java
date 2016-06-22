@@ -1,62 +1,62 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * @author michalo
- *         <p>
- *         POJO class for storing Upload description
+ * A bean representing status of file upload.
  */
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Upload implements Serializable {
+    private static final long serialVersionUID = 7633975185368095752L;
     private List<InputFile> files;
     private String message;
     private String task;
     private String status;
 
-    public List<InputFile> getFiles() {
-        return files;
+    public final List<InputFile> getFiles() {
+        return Collections.unmodifiableList(files);
     }
 
-    public void setFiles(List<InputFile> files) {
-        this.files = files;
+    public final void setFiles(final List<InputFile> files) {
+        this.files = new ArrayList<>(files);
     }
 
-    public String getMessage() {
+    public final String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public final void setMessage(final String message) {
         this.message = message;
     }
 
-    public String getTask() {
+    public final String getTask() {
         return task;
     }
 
-    public void setTask(String task) {
+    public final void setTask(final String task) {
         this.task = task;
     }
 
-    public String getStatus() {
+    public final String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public final void setStatus(final String status) {
         this.status = status;
     }
 
     @Override
-    public String toString() {
-        return "Upload{" +
-                "files=" + files +
-                ", message='" + message + '\'' +
-                ", task='" + task + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+    public final String toString() {
+        return new ToStringBuilder(this).append("files", files)
+                                        .append("message", message)
+                                        .append("task", task)
+                                        .append("status", status).toString();
     }
 }

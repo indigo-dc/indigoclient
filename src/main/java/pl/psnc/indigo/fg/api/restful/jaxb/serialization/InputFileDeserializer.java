@@ -8,19 +8,21 @@ import pl.psnc.indigo.fg.api.restful.jaxb.InputFile;
 
 import java.io.IOException;
 
-@SuppressWarnings("unchecked")
-public class InputFileDeserializer extends JsonDeserializer<InputFile> {
+/**
+ * Deserializes information about input files from JSON objects.
+ */
+public final class InputFileDeserializer extends JsonDeserializer<InputFile> {
     @Override
-    public InputFile deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        JsonNode node = jp.readValueAsTree();
+    public InputFile deserialize(final JsonParser jsonParser,
+                                 final DeserializationContext
+                                         deserializationContext)
+            throws IOException {
+        JsonNode node = jsonParser.readValueAsTree();
         InputFile inputFile = new InputFile();
 
-        if (node.isObject()) {
-            // TODO: check what will happen here if we get file name and status of the file
-            // we have to wait for the final version of server side results
-            // at the moment we return null values
-        } else {
-            inputFile.setName(node.asText());
+        if (!node.isObject()) {
+            String name = node.asText();
+            inputFile.setName(name);
         }
 
         return inputFile;

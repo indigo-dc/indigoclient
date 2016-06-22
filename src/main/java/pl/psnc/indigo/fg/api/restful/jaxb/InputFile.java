@@ -2,43 +2,42 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.InputFileDeserializer;
 
 import java.io.Serializable;
 
 /**
- * @author michalo
- *         <p>
- *         POJO class for storing InputFile description
+ * A bean storing information about input files used in job submission and
+ * status checking.
  */
 @FutureGatewayBean
 @JsonDeserialize(using = InputFileDeserializer.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InputFile implements Serializable {
+    private static final long serialVersionUID = -8629464708321890767L;
     private String name;
     private String status;
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public final void setName(final String name) {
         this.name = name;
     }
 
-    public String getStatus() {
+    public final String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public final void setStatus(final String status) {
         this.status = status;
     }
 
     @Override
-    public String toString() {
-        return "InputFile{" +
-                "name='" + name + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+    public final String toString() {
+        return new ToStringBuilder(this).append("name", name)
+                                        .append("status", status).toString();
     }
 }
