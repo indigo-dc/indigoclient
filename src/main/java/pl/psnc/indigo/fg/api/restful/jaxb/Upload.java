@@ -55,7 +55,7 @@ public class Upload implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -73,10 +73,9 @@ public class Upload implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(files).append(message)
-                                          .append(task).append(status)
-                                          .toHashCode();
+    public final int hashCode() {
+        return new HashCodeBuilder().append(files).append(message).append(task)
+                                    .append(status).toHashCode();
     }
 
     @Override

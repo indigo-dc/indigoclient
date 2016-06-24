@@ -46,10 +46,12 @@ public class RootAPI {
     private final Root root;
 
     /**
-     * Construct an instance for a given URI protocol://host:port. Refer to
+     * Construct an instance for a given URI protocol://host:port and with
+     * non-default {@link Client}. Refer to
      * constants DEFAULT_ADDRESS and LOCALHOST_ADDRESS.
      *
      * @param baseUri URI of Future Gateway server.
+     * @param client  Implementation of REST client.
      * @throws FutureGatewayException If failed to communicate with Future
      *                                Gateway.
      */
@@ -67,17 +69,25 @@ public class RootAPI {
         rootUri = UriBuilder.fromUri(baseUri).path(version).build();
     }
 
+    /**
+     * Construct an instance for a given URI protocol://host:port. Refer to
+     * constants DEFAULT_ADDRESS and LOCALHOST_ADDRESS.
+     *
+     * @param baseUri URI of Future Gateway server.
+     * @throws FutureGatewayException If failed to communicate with Future
+     *                                Gateway.
+     */
     protected RootAPI(final URI baseUri) throws FutureGatewayException {
         this(baseUri,
              ClientBuilder.newBuilder().register(MultiPartFeature.class)
                           .build());
     }
 
-    public Root getRoot() {
+    public final Root getRoot() {
         return root;
     }
 
-    public URI getRootUri() {
+    public final URI getRootUri() {
         return rootUri;
     }
 
@@ -117,11 +127,11 @@ public class RootAPI {
         }
     }
 
-    public Client getClient() {
+    public final Client getClient() {
         return client;
     }
 
-    public ObjectMapper getMapper() {
+    public final ObjectMapper getMapper() {
         return mapper;
     }
 }

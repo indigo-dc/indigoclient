@@ -43,7 +43,7 @@ public class Parameter implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -61,9 +61,9 @@ public class Parameter implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(name).append(value)
-                                          .append(description).toHashCode();
+    public final int hashCode() {
+        return new HashCodeBuilder().append(name).append(value)
+                                    .append(description).toHashCode();
     }
 
     @Override

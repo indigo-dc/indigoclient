@@ -28,7 +28,7 @@ public class MediaType {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -43,8 +43,8 @@ public class MediaType {
     }
 
     @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(type).toHashCode();
+    public final int hashCode() {
+        return new HashCodeBuilder().append(type).toHashCode();
     }
 
     @Override

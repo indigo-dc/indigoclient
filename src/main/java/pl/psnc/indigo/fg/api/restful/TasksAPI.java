@@ -40,9 +40,11 @@ public class TasksAPI extends RootAPI {
     private final URI tasksUri;
 
     /**
-     * Construct an instance which allows to communicate with Future Gateway.
+     * Construct an instance which allows to communicate with Future Gateway
+     * using non-default {@link Client}.
      *
      * @param baseUri Base URI of Future Gateway i.e. protocol://host:port
+     * @param client  Implementation of REST client.
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
@@ -54,6 +56,13 @@ public class TasksAPI extends RootAPI {
         tasksUri = UriBuilder.fromUri(rootUri).path(TasksAPI.TASKS).build();
     }
 
+    /**
+     * Construct an instance which allows to communicate with Future Gateway.
+     *
+     * @param baseUri Base URI of Future Gateway i.e. protocol://host:port
+     * @throws FutureGatewayException If communication with Future Gateway
+     *                                fails.
+     */
     public TasksAPI(final URI baseUri) throws FutureGatewayException {
         super(baseUri);
 

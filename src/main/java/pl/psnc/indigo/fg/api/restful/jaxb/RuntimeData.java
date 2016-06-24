@@ -64,7 +64,7 @@ class RuntimeData implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -84,10 +84,10 @@ class RuntimeData implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(name).append(value)
-                                          .append(description).append(creation)
-                                          .append(lastChange).toHashCode();
+    public final int hashCode() {
+        return new HashCodeBuilder().append(name).append(value)
+                                    .append(description).append(creation)
+                                    .append(lastChange).toHashCode();
     }
 
     @Override

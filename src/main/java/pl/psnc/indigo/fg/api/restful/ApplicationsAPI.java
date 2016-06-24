@@ -29,9 +29,10 @@ public class ApplicationsAPI extends RootAPI {
 
     /**
      * Construct an instance configured to communicate with given Future
-     * Gateway instance.
+     * Gateway instance using non-default {@link Client}.
      *
      * @param baseUri URI (protocol://host:port) of a Future Gateway instance
+     * @param client  Implementation of REST client.
      * @throws FutureGatewayException If communication with Future Gateway
      *                                instance fails.
      */
@@ -44,6 +45,14 @@ public class ApplicationsAPI extends RootAPI {
                                     .build();
     }
 
+    /**
+     * Construct an instance configured to communicate with given Future
+     * Gateway instance.
+     *
+     * @param baseUri URI (protocol://host:port) of a Future Gateway instance
+     * @throws FutureGatewayException If communication with Future Gateway
+     *                                instance fails.
+     */
     public ApplicationsAPI(final URI baseUri) throws FutureGatewayException {
         super(baseUri);
 
@@ -59,7 +68,7 @@ public class ApplicationsAPI extends RootAPI {
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
-    public List<Application> getAllApplications()
+    public final List<Application> getAllApplications()
             throws FutureGatewayException {
         Response response = null;
 
@@ -112,7 +121,7 @@ public class ApplicationsAPI extends RootAPI {
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
-    public Application getApplication(final String id)
+    public final Application getApplication(final String id)
             throws FutureGatewayException {
         URI uri = UriBuilder.fromUri(applicationsUri).path(id).build();
         Response response = null;

@@ -22,7 +22,7 @@ class ErrorMessage {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -38,7 +38,7 @@ class ErrorMessage {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(message).toHashCode();
+        return new HashCodeBuilder().append(message).toHashCode();
     }
 
     @Override

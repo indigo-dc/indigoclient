@@ -78,7 +78,7 @@ public class Version {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -98,11 +98,10 @@ public class Version {
     }
 
     @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(status).append(updated)
-                                          .append(build).append(mediaTypes)
-                                          .append(links).append(id)
-                                          .toHashCode();
+    public final int hashCode() {
+        return new HashCodeBuilder().append(status).append(updated)
+                                    .append(build).append(mediaTypes)
+                                    .append(links).append(id).toHashCode();
     }
 
     @Override

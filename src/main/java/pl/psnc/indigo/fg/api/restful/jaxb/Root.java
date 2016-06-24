@@ -37,7 +37,7 @@ public class Root {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -53,9 +53,9 @@ public class Root {
     }
 
     @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(links).append(versions)
-                                          .toHashCode();
+    public final int hashCode() {
+        return new HashCodeBuilder().append(links).append(versions)
+                                    .toHashCode();
     }
 
     @Override

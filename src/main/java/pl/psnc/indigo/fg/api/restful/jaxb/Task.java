@@ -175,7 +175,7 @@ public class Task implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -204,18 +204,16 @@ public class Task implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(id).append(date)
-                                          .append(lastChange)
-                                          .append(application)
-                                          .append(infrastructureTask)
-                                          .append(description).append(status)
-                                          .append(user).append(arguments)
-                                          .append(inputFiles)
-                                          .append(outputFiles)
-                                          .append(runtimeData).append(creation)
-                                          .append(iosandbox).append(links)
-                                          .toHashCode();
+    public final int hashCode() {
+        return new HashCodeBuilder().append(id).append(date).append(lastChange)
+                                    .append(application)
+                                    .append(infrastructureTask)
+                                    .append(description).append(status)
+                                    .append(user).append(arguments)
+                                    .append(inputFiles).append(outputFiles)
+                                    .append(runtimeData).append(creation)
+                                    .append(iosandbox).append(links)
+                                    .toHashCode();
     }
 
     @Override
