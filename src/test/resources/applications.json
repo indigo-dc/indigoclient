@@ -1,0 +1,235 @@
+{
+  "applications": [
+    {
+      "infrastructures": [
+        {
+          "description": "hostname application localhost (SSH)",
+          "parameters": [
+            {
+              "name": "jobservice",
+              "value": "ssh://localhost:22"
+            },
+            {
+              "name": "username",
+              "value": "jobtest"
+            },
+            {
+              "name": "password",
+              "value": "t/BMPSqOoRpr"
+            }
+          ],
+          "creation": "2016-05-06 14:08:06",
+          "enabled": 1,
+          "virtual": false,
+          "id": "1",
+          "name": "hello@csgfsdk"
+        },
+        {
+          "description": "hostname application eumed (wms)",
+          "parameters": [
+            {
+              "name": "jobservice",
+              "value": "wms://wms.ulakbim.gov.tr:7443/glite_wms_wmproxy_server"
+            },
+            {
+              "name": "bdii",
+              "value": "ldap://bdii.eumedgrid.eu:2170"
+            },
+            {
+              "name": "eToken_host",
+              "value": "etokenserver2.ct.infn.it"
+            },
+            {
+              "name": "eToken_port",
+              "value": "8082"
+            },
+            {
+              "name": "eToken_id",
+              "value": "bc681e2bd4c3ace2a4c54907ea0c379b"
+            },
+            {
+              "name": "voms",
+              "value": "eumed"
+            },
+            {
+              "name": "voms_role",
+              "value": "eumed"
+            },
+            {
+              "name": "rfc_proxy",
+              "value": "false"
+            }
+          ],
+          "creation": "2016-05-06 14:08:06",
+          "enabled": 0,
+          "virtual": false,
+          "id": "3",
+          "name": "hello@eumed"
+        }
+      ],
+      "_links": [
+        {
+          "href": "/v1.0/application/1",
+          "rel": "self"
+        }
+      ],
+      "name": "hostname",
+      "parameters": [
+        {
+          "name": "jobdesc_executable",
+          "value": "/bin/hostname",
+          "description": ""
+        },
+        {
+          "name": "jobdesc_arguments",
+          "value": "-f",
+          "description": ""
+        },
+        {
+          "name": "jobdesc_output",
+          "value": "stdout.txt",
+          "description": ""
+        },
+        {
+          "name": "jobdesc_error",
+          "value": "stderr.txt",
+          "description": ""
+        },
+        {
+          "name": "target_executor",
+          "value": "GridEngine",
+          "description": ""
+        }
+      ],
+      "input_files": [],
+      "enabled": 1,
+      "id": "1",
+      "description": "hostname tester application"
+    },
+    {
+      "infrastructures": [
+        {
+          "description": "sayhello application localhost (SSH)",
+          "parameters": [
+            {
+              "name": "jobservice",
+              "value": "ssh://localhost:22"
+            },
+            {
+              "name": "username",
+              "value": "jobtest"
+            },
+            {
+              "name": "password",
+              "value": "t/BMPSqOoRpr"
+            }
+          ],
+          "creation": "2016-05-06 14:08:06",
+          "enabled": 1,
+          "virtual": false,
+          "id": "1",
+          "name": "sayhello@csgfsdk"
+        },
+        {
+          "description": "hostname application nebula-1 (rOCCI)",
+          "parameters": [
+            {
+              "name": "jobservice",
+              "value": "rocci://nebula-server-01.ct.infn.it:9000"
+            },
+            {
+              "name": "os_tpl",
+              "value": "uuid_chain_reds_generic_vm_centos_6_6_kvm_103"
+            },
+            {
+              "name": "resource_tpl",
+              "value": "small"
+            },
+            {
+              "name": "attributes_title",
+              "value": "sayhello"
+            },
+            {
+              "name": "eToken_host",
+              "value": "etokenserver.ct.infn.it"
+            },
+            {
+              "name": "eToken_port",
+              "value": "8082"
+            },
+            {
+              "name": "eToken_id",
+              "value": "bc681e2bd4c3ace2a4c54907ea0c379b"
+            },
+            {
+              "name": "voms",
+              "value": "vo.chain-project.eu"
+            },
+            {
+              "name": "voms_role",
+              "value": "vo.chain-project.eu"
+            },
+            {
+              "name": "rfc_proxy",
+              "value": "true"
+            }
+          ],
+          "creation": "2016-05-06 14:08:06",
+          "enabled": 0,
+          "virtual": false,
+          "id": "2",
+          "name": "sayhello@nebula"
+        }
+      ],
+      "_links": [
+        {
+          "href": "/v1.0/application/2",
+          "rel": "self"
+        }
+      ],
+      "name": "SayHello",
+      "parameters": [
+        {
+          "name": "jobdesc_executable",
+          "value": "/bin/bash",
+          "description": ""
+        },
+        {
+          "name": "jobdesc_arguments",
+          "value": "sayhello.sh",
+          "description": ""
+        },
+        {
+          "name": "jobdesc_output",
+          "value": "sayhello.out",
+          "description": ""
+        },
+        {
+          "name": "jobdesc_error",
+          "value": "sayhello.err",
+          "description": ""
+        },
+        {
+          "name": "target_executor",
+          "value": "GridEngine",
+          "description": ""
+        }
+      ],
+      "input_files": [
+        {
+          "override": 0,
+          "path": "/home/futuregateway/FutureGateway/fgAPIServer/apps/sayhello",
+          "name": "sayhello.sh"
+        },
+        {
+          "override": 0,
+          "path": "/home/futuregateway/FutureGateway/fgAPIServer/apps/sayhello",
+          "name": "sayhello.txt"
+        }
+      ],
+      "enabled": 1,
+      "id": "2",
+      "description": "A more complex app using I/O Sandboxing"
+    }
+  ]
+}

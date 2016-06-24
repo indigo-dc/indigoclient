@@ -2,6 +2,8 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
@@ -59,6 +61,33 @@ class RuntimeData implements Serializable {
     @JsonProperty("last_change")
     public final void setLastChange(final String lastChange) {
         this.lastChange = lastChange;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        RuntimeData that = (RuntimeData) o;
+
+        return new EqualsBuilder().append(name, that.name)
+                                  .append(value, that.value)
+                                  .append(description, that.description)
+                                  .append(creation, that.creation)
+                                  .append(lastChange, that.lastChange)
+                                  .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(name).append(value)
+                                          .append(description).append(creation)
+                                          .append(lastChange).toHashCode();
     }
 
     @Override

@@ -1,6 +1,5 @@
 package pl.psnc.indigo.fg.api.restful;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.slf4j.Logger;
@@ -10,6 +9,7 @@ import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -46,7 +46,15 @@ public class TasksAPI extends RootAPI {
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
-    public TasksAPI(final String baseUri) throws FutureGatewayException {
+    public TasksAPI(final URI baseUri, final Client client)
+            throws FutureGatewayException {
+        super(baseUri, client);
+
+        URI rootUri = getRootUri();
+        tasksUri = UriBuilder.fromUri(rootUri).path(TasksAPI.TASKS).build();
+    }
+
+    public TasksAPI(final URI baseUri) throws FutureGatewayException {
         super(baseUri);
 
         URI rootUri = getRootUri();
@@ -56,11 +64,13 @@ public class TasksAPI extends RootAPI {
     /**
      * Creates a task on Future Gateway.
      * <p>
-     * To submit task we have to pass Task object filled with description of the
+     * To submit task we have to pass Task object filled with description
+     * of the
      * task: user, application id, arguments, description, input files,
      * output files
      * <p>
-     * The set of parameters might be application dependant. For example some
+     * The set of parameters might be application dependant. For example
+     * some
      * applications might require inputs and some other, not.
      *
      * @param task A bean containing all information about the task.
@@ -390,9 +400,4 @@ public class TasksAPI extends RootAPI {
         }
     }
 
-    @Override
-    public final String toString() {
-        return new ToStringBuilder(this).append("tasksUri", tasksUri)
-                                        .toString();
-    }
 }

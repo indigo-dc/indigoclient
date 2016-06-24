@@ -2,6 +2,8 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
@@ -170,6 +172,50 @@ public class Task implements Serializable {
     @JsonProperty("_links")
     public final void setLinks(final List<Link> links) {
         this.links = new ArrayList<>(links);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Task task = (Task) o;
+
+        return new EqualsBuilder().append(id, task.id).append(date, task.date)
+                                  .append(lastChange, task.lastChange)
+                                  .append(application, task.application)
+                                  .append(infrastructureTask,
+                                          task.infrastructureTask)
+                                  .append(description, task.description)
+                                  .append(status, task.status)
+                                  .append(user, task.user)
+                                  .append(arguments, task.arguments)
+                                  .append(inputFiles, task.inputFiles)
+                                  .append(outputFiles, task.outputFiles)
+                                  .append(runtimeData, task.runtimeData)
+                                  .append(creation, task.creation)
+                                  .append(iosandbox, task.iosandbox)
+                                  .append(links, task.links).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(id).append(date)
+                                          .append(lastChange)
+                                          .append(application)
+                                          .append(infrastructureTask)
+                                          .append(description).append(status)
+                                          .append(user).append(arguments)
+                                          .append(inputFiles)
+                                          .append(outputFiles)
+                                          .append(runtimeData).append(creation)
+                                          .append(iosandbox).append(links)
+                                          .toHashCode();
     }
 
     @Override

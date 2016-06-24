@@ -1,12 +1,12 @@
 package pl.psnc.indigo.fg.api.restful;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Application;
 
+import javax.ws.rs.client.Client;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -35,7 +35,16 @@ public class ApplicationsAPI extends RootAPI {
      * @throws FutureGatewayException If communication with Future Gateway
      *                                instance fails.
      */
-    public ApplicationsAPI(final String baseUri) throws FutureGatewayException {
+    public ApplicationsAPI(final URI baseUri, final Client client)
+            throws FutureGatewayException {
+        super(baseUri, client);
+
+        URI rootUri = getRootUri();
+        applicationsUri = UriBuilder.fromUri(rootUri).path("applications")
+                                    .build();
+    }
+
+    public ApplicationsAPI(final URI baseUri) throws FutureGatewayException {
         super(baseUri);
 
         URI rootUri = getRootUri();
@@ -50,7 +59,7 @@ public class ApplicationsAPI extends RootAPI {
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
-    public final List<Application> getAllApplications()
+    public List<Application> getAllApplications()
             throws FutureGatewayException {
         Response response = null;
 
@@ -103,7 +112,7 @@ public class ApplicationsAPI extends RootAPI {
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
-    public final Application getApplication(final String id)
+    public Application getApplication(final String id)
             throws FutureGatewayException {
         URI uri = UriBuilder.fromUri(applicationsUri).path(id).build();
         Response response = null;
@@ -144,11 +153,5 @@ public class ApplicationsAPI extends RootAPI {
                 response.close();
             }
         }
-    }
-
-    @Override
-    public final String toString() {
-        return new ToStringBuilder(this)
-                .append("applicationsUri", applicationsUri).toString();
     }
 }

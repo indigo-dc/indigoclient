@@ -18,9 +18,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * A base class which contains HTTP client and JSON mapper objects with
@@ -30,54 +28,61 @@ public class RootAPI {
     /**
      * A public IP of a production-level Future Gateway.
      */
-    public static final String DEFAULT_ADDRESS = "http://90.147.74.77:8888";
+    public static final URI DEFAULT_ADDRESS = URI
+            .create("http://90.147.74.77:8888");
+
     /**
      * A localhost version of Future Gateway. Useful for tunnelled connections:
      * $ ssh -L 8080:localhost:8080 -L 8888:localhost:8888 futuregateway@IP
      */
-    public static final String LOCALHOST_ADDRESS = "http://localhost:8888";
+    public static final URI LOCALHOST_ADDRESS = URI
+            .create("http://localhost:8888");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RootAPI.class);
-    private static final Map<String, RootAPI> ROOT_API_MAP = new HashMap<>(1);
 
-    static RootAPI getRootForAddress(final String httpAddress)
-            throws FutureGatewayException {
-        if (!RootAPI.ROOT_API_MAP.containsKey(httpAddress)) {
-            RootAPI.ROOT_API_MAP.put(httpAddress, new RootAPI(httpAddress));
-        }
-        return RootAPI.ROOT_API_MAP.get(httpAddress);
-    }
-
-    private final Client client = ClientBuilder.newBuilder()
-                                               .register(MultiPartFeature.class)
-                                               .build();
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final Client client;
+    private final ObjectMapper mapper;
     private final URI rootUri;
+    private final Root root;
 
     /**
      * Construct an instance for a given URI protocol://host:port. Refer to
      * constants DEFAULT_ADDRESS and LOCALHOST_ADDRESS.
      *
-     * @param uriString URI of Future Gateway server.
+     * @param baseUri URI of Future Gateway server.
      * @throws FutureGatewayException If failed to communicate with Future
      *                                Gateway.
      */
-    protected RootAPI(final String uriString) throws FutureGatewayException {
-        URI baseUri = UriBuilder.fromUri(uriString).build();
-        Root wsRoot = getRoot(baseUri);
-        String version = wsRoot.getVersions().get(0).getId();
-        rootUri = UriBuilder.fromUri(uriString).path(version).build();
+    protected RootAPI(final URI baseUri, final Client client)
+            throws FutureGatewayException {
+        this.client = client;
 
+        mapper = new ObjectMapper();
         mapper.setSerializationInclusion(Include.NON_NULL);
         mapper.setDateFormat(
                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US));
+
+        root = getRootForUri(baseUri);
+        String version = root.getVersions().get(0).getId();
+        rootUri = UriBuilder.fromUri(baseUri).path(version).build();
     }
 
-    public final URI getRootUri() {
+    protected RootAPI(final URI baseUri) throws FutureGatewayException {
+        this(baseUri,
+             ClientBuilder.newBuilder().register(MultiPartFeature.class)
+                          .build());
+    }
+
+    public Root getRoot() {
+        return root;
+    }
+
+    public URI getRootUri() {
         return rootUri;
     }
 
-    private Root getRoot(final URI baseUri) throws FutureGatewayException {
+    private Root getRootForUri(final URI baseUri)
+            throws FutureGatewayException {
         Response response = null;
 
         try {
@@ -112,11 +117,11 @@ public class RootAPI {
         }
     }
 
-    public final Client getClient() {
+    public Client getClient() {
         return client;
     }
 
-    public final ObjectMapper getMapper() {
+    public ObjectMapper getMapper() {
         return mapper;
     }
 }

@@ -1,186 +1,197 @@
 package pl.psnc.indigo.fg.api.restful;
 
-import org.junit.Assert;
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
-import pl.psnc.indigo.fg.api.restful.jaxb.InputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task.Status;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TasksAPITest {
-    public static final String USERNAME = "brunor";
+    private MockRestSession session;
     private TasksAPI api;
 
     @Before
-    public final void initialize()
-            throws FutureGatewayException, URISyntaxException {
-        api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS);
-    }
-
-    @Test
-    public final void testCreateTask() throws FutureGatewayException {
-        Task task = new Task();
-        task.setUser(TasksAPITest.USERNAME);
-        task.setApplication("1");
-        task.setDescription("hello");
-        Task result = api.createTask(task);
-
-        // Check the status of this task
-        String id = result.getId();
-        api.getTask(id);
-    }
-
-    @Test
-    public final void testFileAccess() {
-        String fileName = getClass().getResource("/sayhello.sh").getFile();
-        Assert.assertThat(new File(fileName).canRead(), is(true));
-    }
-
-    @Test
-    public final void testSubmitTaskWithFiles() throws FutureGatewayException {
-        Task newTask = new Task();
-        newTask.setUser(TasksAPITest.USERNAME);
-        newTask.setApplication("2");
-        newTask.setDescription("Test with files");
-
-        List<String> arguments = new ArrayList<>(1);
-        arguments.add("I am saying hello");
-
-        List<OutputFile> outputFiles = new ArrayList<>(1);
-        OutputFile oFile = new OutputFile();
-        oFile.setName("sayhello.data");
-        outputFiles.add(oFile);
-
-        List<InputFile> inputFiles = new ArrayList<>(2);
-        InputFile iFileSH = new InputFile();
-        iFileSH.setName("sayhello.sh");
-
-        InputFile iFileTXT = new InputFile();
-        iFileTXT.setName("sayhello.txt");
-
-        inputFiles.add(iFileSH);
-        inputFiles.add(iFileTXT);
-
-        newTask.setOutputFiles(outputFiles);
-        newTask.setInputFiles(inputFiles);
-
-        newTask.setArguments(arguments);
-        Task result = api.createTask(newTask);
-
-        // Once task is created, we can upload files
-        String fileNameSH = getClass().getResource("/sayhello.sh").getFile();
-        String fileNameTXT = getClass().getResource("/sayhello.txt").getFile();
-        api.uploadFileForTask(result, new File(fileNameSH));
-        api.uploadFileForTask(result, new File(fileNameTXT));
-    }
-
-    /**
-     * This test is a complete scenario where job is submitted, executed
-     * and all outputs are retrieved.
-     */
-    @Test
-    public final void testSubmitTaskWithFilesWaitGetOutputs()
-            throws FutureGatewayException, InterruptedException,
-                   URISyntaxException, IOException {
-        Task newTask = new Task();
-        newTask.setUser(TasksAPITest.USERNAME);
-        newTask.setApplication("2");
-        newTask.setDescription("Test with files");
-
-        List<String> arguments = new ArrayList<>(1);
-        arguments.add("I am saying hello");
-
-        List<OutputFile> outputFiles = new ArrayList<>(1);
-        OutputFile oFile = new OutputFile();
-        oFile.setName("sayhello.data");
-        outputFiles.add(oFile);
-
-        List<InputFile> inputFiles = new ArrayList<>(2);
-        InputFile iFileSH = new InputFile();
-        iFileSH.setName("sayhello.sh");
-
-        InputFile iFileTXT = new InputFile();
-        iFileTXT.setName("sayhello.txt");
-
-        inputFiles.add(iFileSH);
-        inputFiles.add(iFileTXT);
-
-        newTask.setOutputFiles(outputFiles);
-        newTask.setInputFiles(inputFiles);
-
-        newTask.setArguments(arguments);
-        Task result = api.createTask(newTask);
-
-        // Once task is created, we can upload files
-        String fileNameSH = getClass().getResource("/sayhello.sh").getFile();
-        String fileNameTXT = getClass().getResource("/sayhello.txt").getFile();
-        api.uploadFileForTask(result, new File(fileNameSH));
-        api.uploadFileForTask(result, new File(fileNameTXT));
-
-        // We can check status and wait for "DONE"
-        Status status;
-        int retry = 100;
-
-        do {
-            String id = result.getId();
-            Task tmp = api.getTask(id);
-            status = tmp.getStatus();
-            Thread.sleep(5000L);
-            retry--;
-        } while ((status != Status.DONE) && (retry > 0));
-
-        if (retry == 0) {
-            fail("To many retries");
-        }
-
-        String id = result.getId();
-        List<OutputFile> files = api.getOutputsForTask(id);
-        String file = getClass().getResource("/outputs").getFile();
-        File outputDir = new File(file);
-
-        for (OutputFile outputFile : files) {
-            api.downloadOutputFile(outputFile, outputDir);
-        }
-    }
-
-    @Test
-    public final void testGetTask() throws FutureGatewayException {
-        // TODO: make sure to set proper task ID below
-        // this one is an arbitrary value from previous calls to
-        // TaskAPI
-        Task newTask = new Task();
-        newTask.setUser(TasksAPITest.USERNAME);
-        newTask.setId("1");
-        api.getTask("1");
+    public void before() throws IOException, FutureGatewayException {
+        session = new MockRestSession();
+        api = new TasksAPI(MockRestSession.MOCK_ADDRESS, session.getClient());
     }
 
     @Test
     public final void testGetAllTasks() throws FutureGatewayException {
-        api.getAllTasks(TasksAPITest.USERNAME);
+        List<Task> tasks = api.getAllTasks("all-tasks");
+        assertEquals(3, tasks.size());
+
+        Task task = tasks.get(0);
+        assertEquals(2, task.getOutputFiles().size());
+        assertEquals(2, task.getLinks().size());
     }
 
     @Test
-    public final void testDeleteTask() throws FutureGatewayException {
-        Task task = new Task();
-        task.setApplication("1");
-        task.setUser(TasksAPITest.USERNAME);
-        task = api.createTask(task);
+    public final void testGetTask() throws FutureGatewayException {
+        Task task = api.getTask("1");
+        assertEquals("1", task.getId());
+        assertEquals("2", task.getApplication());
+        assertEquals("Test with files", task.getDescription());
+        assertEquals("brunor", task.getUser());
+        assertEquals(Status.DONE, task.getStatus());
+    }
 
-        String id = task.getId();
-        assertTrue(api.deleteTask(id));
-        assertFalse(api.deleteTask(id));
+    @Test(expected = FutureGatewayException.class)
+    public void testGetTaskInvalidUri() throws FutureGatewayException {
+        api.getTask("invalid-uri");
+    }
+
+    @Test(expected = FutureGatewayException.class)
+    public void testGetTaskInvalidBody() throws FutureGatewayException {
+        api.getTask("invalid-body");
+    }
+
+    @Test
+    public void testUploadFileForTask() throws FutureGatewayException {
+        Task task = new Task();
+        task.setUser("brunor");
+        task.setId("1");
+
+        File file = mock(File.class);
+        api.uploadFileForTask(task, file);
+    }
+
+    @Test(expected = FutureGatewayException.class)
+    public void testUploadFileForTaskInvalidUser()
+            throws FutureGatewayException {
+        Task task = new Task();
+        task.setUser("invalid-uri");
+        task.setId("1");
+
+        File file = mock(File.class);
+        api.uploadFileForTask(task, file);
+    }
+
+    @Test(expected = FutureGatewayException.class)
+    public void testUploadFileForTaskInvalidBody()
+            throws FutureGatewayException {
+        Task task = new Task();
+        task.setUser("invalid-body");
+        task.setId("1");
+
+        File file = mock(File.class);
+        api.uploadFileForTask(task, file);
+    }
+
+    @Test
+    public void testGetOutputsForTask() throws FutureGatewayException {
+        List<OutputFile> outputFiles = api.getOutputsForTask("1");
+        assertEquals(3, outputFiles.size());
+
+        OutputFile outputFile = outputFiles.get(0);
+        assertEquals("sayhello.data", outputFile.getName());
+        assertEquals(URI.create(
+                "file?path=%2Ftmp%2Fba3a8d88-1e71-11e6-92fb-fa163e26496e"
+                + "%2F1tmpba3a8d881e7111e692fbfa163e26496e_2&name=sayhello"
+                + ".data"), outputFile.getUrl());
+    }
+
+    @Test
+    public void testGetOutputsForTaskNotDone() throws FutureGatewayException {
+        List<OutputFile> outputFiles = api.getOutputsForTask("2");
+        assertEquals(0, outputFiles.size());
+    }
+
+    @Test
+    public void testDeleteTask() throws FutureGatewayException {
+        assertFalse(api.deleteTask("non-existing-task"));
+        assertTrue(api.deleteTask("existing-task"));
+    }
+
+    @Test
+    public void testDownloadOutputFile()
+            throws FutureGatewayException, IOException {
+        OutputFile outputFile = new OutputFile();
+        outputFile.setName("test.txt");
+        outputFile.setUrl(URI.create("file?path=%2Ftmp&name=test.txt"));
+
+        File directory = new File(System.getProperty("java.io.tmpdir"));
+        api.downloadOutputFile(outputFile, directory);
+
+        File file = new File(directory, "test.txt");
+        assertTrue(file.exists());
+        assertEquals("TEST", FileUtils
+                .readFileToString(file, Charset.defaultCharset()));
+        file.delete();
+    }
+
+    @Test(expected = FutureGatewayException.class)
+    public void testDownloadOutputFileNonExisting()
+            throws FutureGatewayException, IOException {
+        OutputFile outputFile = new OutputFile();
+        outputFile.setName("test.txt");
+        outputFile.setUrl(URI.create(
+                "file?path=%2Ftmp" + "&name=non-existing-file"));
+
+        File directory = new File(System.getProperty("java.io.tmpdir"));
+        api.downloadOutputFile(outputFile, directory);
+    }
+
+    @Test(expected = IOException.class)
+    public void testDownloadOutputFileNotDirectory()
+            throws FutureGatewayException, IOException {
+        File file = mock(File.class);
+        when(file.exists()).thenReturn(true);
+        when(file.isDirectory()).thenReturn(false);
+        api.downloadOutputFile(new OutputFile(), file);
+    }
+
+    @Test(expected = IOException.class)
+    public void testDownloadOutputFileCannotWrite()
+            throws FutureGatewayException, IOException {
+        File file = mock(File.class);
+        when(file.exists()).thenReturn(true);
+        when(file.isDirectory()).thenReturn(true);
+        when(file.canWrite()).thenReturn(false);
+        api.downloadOutputFile(new OutputFile(), file);
+    }
+
+    @Test(expected = IOException.class)
+    public void testDownloadOutputFileCannotMkdir()
+            throws FutureGatewayException, IOException {
+        File file = mock(File.class);
+        when(file.exists()).thenReturn(false);
+        when(file.mkdirs()).thenReturn(false);
+        api.downloadOutputFile(new OutputFile(), file);
+    }
+
+    @Test
+    public void testCreateTask() throws FutureGatewayException {
+        Task mockTask = MockRestSession.getMockTask();
+        Task task = api.createTask(mockTask);
+        assertEquals(mockTask, task);
+    }
+
+    @Test(expected = FutureGatewayException.class)
+    public void testCreateTaskInvalidUser() throws FutureGatewayException {
+        Task mockTask = new Task();
+        mockTask.setUser("invalid-uri");
+        api.createTask(mockTask);
+    }
+
+    @Test(expected = FutureGatewayException.class)
+    public void testCreateTaskInvalidBody() throws FutureGatewayException {
+        Task mockTask = new Task();
+        mockTask.setUser("invalid-body");
+        api.createTask(mockTask);
     }
 }

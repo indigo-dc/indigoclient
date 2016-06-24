@@ -1,6 +1,8 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
@@ -15,7 +17,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Upload implements Serializable {
     private static final long serialVersionUID = 7633975185368095752L;
-    private List<InputFile> files;
+    private List<InputFile> files = Collections.emptyList();
     private String message;
     private String task;
     private String status;
@@ -50,6 +52,31 @@ public class Upload implements Serializable {
 
     public final void setStatus(final String status) {
         this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Upload upload = (Upload) o;
+
+        return new EqualsBuilder().append(files, upload.files)
+                                  .append(message, upload.message)
+                                  .append(task, upload.task)
+                                  .append(status, upload.status).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(files).append(message)
+                                          .append(task).append(status)
+                                          .toHashCode();
     }
 
     @Override

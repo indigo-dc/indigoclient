@@ -1,6 +1,8 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
@@ -38,6 +40,30 @@ public class Parameter implements Serializable {
 
     public final void setDescription(final String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Parameter parameter = (Parameter) o;
+
+        return new EqualsBuilder().append(name, parameter.name)
+                                  .append(value, parameter.value)
+                                  .append(description, parameter.description)
+                                  .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(name).append(value)
+                                          .append(description).toHashCode();
     }
 
     @Override

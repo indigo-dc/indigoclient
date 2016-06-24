@@ -2,6 +2,8 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.OutputFileDeserializer;
 
@@ -33,6 +35,28 @@ public class OutputFile implements Serializable {
 
     public final void setUrl(final URI url) {
         this.url = url;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        OutputFile that = (OutputFile) o;
+
+        return new EqualsBuilder().append(name, that.name).append(url, that.url)
+                                  .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(name).append(url)
+                                          .toHashCode();
     }
 
     @Override

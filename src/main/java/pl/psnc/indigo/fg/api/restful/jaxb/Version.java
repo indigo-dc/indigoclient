@@ -2,6 +2,8 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.ArrayList;
@@ -73,6 +75,34 @@ public class Version {
 
     public final void setId(final String id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Version version = (Version) o;
+
+        return new EqualsBuilder().append(status, version.status)
+                                  .append(updated, version.updated)
+                                  .append(build, version.build)
+                                  .append(mediaTypes, version.mediaTypes)
+                                  .append(links, version.links)
+                                  .append(id, version.id).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37).append(status).append(updated)
+                                          .append(build).append(mediaTypes)
+                                          .append(links).append(id)
+                                          .toHashCode();
     }
 
     @Override
