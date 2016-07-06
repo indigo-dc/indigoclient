@@ -2,6 +2,7 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -83,12 +84,10 @@ public class Infrastructure implements Serializable {
 
     @Override
     public final String toString() {
-        return new ToStringBuilder(this).append("id", id).append("name", name)
-                                        .append("description", description)
-                                        .append("date", date)
-                                        .append("enabled", enabled)
-                                        .append("virtual", virtual)
-                                        .append("parameters", parameters)
-                                        .toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("id", id).append("name", name)
+                .append("description", description).append("date", date)
+                .append("enabled", enabled).append("virtual", virtual)
+                .append("parameters", parameters).toString();
     }
 }

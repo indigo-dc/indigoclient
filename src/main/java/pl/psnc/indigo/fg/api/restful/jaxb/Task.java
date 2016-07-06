@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -218,20 +219,17 @@ public class Task implements Serializable {
 
     @Override
     public final String toString() {
-        return new ToStringBuilder(this).append("id", id).append("date", date)
-                                        .append("lastChange", lastChange)
-                                        .append("application", application)
-                                        .append("infrastructureTask",
-                                                infrastructureTask)
-                                        .append("description", description)
-                                        .append("status", status)
-                                        .append("user", user)
-                                        .append("arguments", arguments)
-                                        .append("inputFiles", inputFiles)
-                                        .append("outputFiles", outputFiles)
-                                        .append("runtimeData", runtimeData)
-                                        .append("creation", creation)
-                                        .append("iosandbox", iosandbox)
-                                        .append("links", links).toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("id", id).append("date", date)
+                .append("lastChange", lastChange)
+                .append("application", application)
+                .append("infrastructureTask", infrastructureTask)
+                .append("description", description).append("status", status)
+                .append("user", user).append("arguments", arguments)
+                .append("inputFiles", inputFiles)
+                .append("outputFiles", outputFiles)
+                .append("runtimeData", runtimeData).append("creation", creation)
+                .append("iosandbox", iosandbox).append("links", links)
+                .toString();
     }
 }

@@ -19,12 +19,7 @@ public final class InputFileDeserializer extends JsonDeserializer<InputFile> {
             throws IOException {
         JsonNode node = jsonParser.readValueAsTree();
         InputFile inputFile = new InputFile();
-
-        if (!node.isObject()) {
-            String name = node.asText();
-            inputFile.setName(name);
-        }
-
+        inputFile.setName(node.asText());
         return inputFile;
     }
 }

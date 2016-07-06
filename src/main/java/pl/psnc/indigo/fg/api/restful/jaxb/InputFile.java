@@ -3,6 +3,7 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.InputFileDeserializer;
 
 import java.io.Serializable;
@@ -37,7 +38,7 @@ public class InputFile implements Serializable {
 
     @Override
     public final String toString() {
-        return new ToStringBuilder(this).append("name", name)
-                                        .append("status", status).toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("name", name).append("status", status).toString();
     }
 }

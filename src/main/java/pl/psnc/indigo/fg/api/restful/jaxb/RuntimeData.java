@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 
@@ -13,7 +14,7 @@ import java.io.Serializable;
  */
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
-class RuntimeData implements Serializable {
+public class RuntimeData implements Serializable {
     private static final long serialVersionUID = 2473352732801435794L;
     private String name;
     private String value;
@@ -92,11 +93,9 @@ class RuntimeData implements Serializable {
 
     @Override
     public final String toString() {
-        return new ToStringBuilder(this).append("name", name)
-                                        .append("value", value)
-                                        .append("description", description)
-                                        .append("creation", creation)
-                                        .append("lastChange", lastChange)
-                                        .toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("name", name).append("value", value)
+                .append("description", description).append("creation", creation)
+                .append("lastChange", lastChange).toString();
     }
 }

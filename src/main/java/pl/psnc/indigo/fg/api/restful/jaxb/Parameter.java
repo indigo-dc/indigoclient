@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 
@@ -68,9 +69,8 @@ public class Parameter implements Serializable {
 
     @Override
     public final String toString() {
-        return new ToStringBuilder(this).append("name", name)
-                                        .append("value", value)
-                                        .append("description", description)
-                                        .toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("name", name).append("value", value)
+                .append("description", description).toString();
     }
 }
