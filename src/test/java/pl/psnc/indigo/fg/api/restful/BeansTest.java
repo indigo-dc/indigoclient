@@ -66,6 +66,17 @@ public class BeansTest {
         inputFile.setStatus("Status");
         assertEquals("InputFile[name=Name,status=Status]",
                      inputFile.toString());
+
+        InputFile other = new InputFile();
+        other.setName(inputFile.getName());
+        other.setStatus(inputFile.getStatus());
+
+        assertEquals(inputFile, inputFile);
+        assertEquals(inputFile, other);
+        assertEquals(inputFile.hashCode(), other.hashCode());
+
+        assertNotEquals(inputFile, null);
+        assertNotEquals(inputFile, "");
     }
 
     @Test

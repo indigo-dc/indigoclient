@@ -2,6 +2,8 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.InputFileDeserializer;
@@ -34,6 +36,27 @@ public class InputFile implements Serializable {
 
     public final void setStatus(final String status) {
         this.status = status;
+    }
+
+    @Override
+    public final boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        InputFile inputFile = (InputFile) o;
+
+        return new EqualsBuilder().append(name, inputFile.name)
+                                  .append(status, inputFile.status).isEquals();
+    }
+
+    @Override
+    public final int hashCode() {
+        return new HashCodeBuilder().append(name).append(status).toHashCode();
     }
 
     @Override
