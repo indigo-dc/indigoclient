@@ -50,8 +50,7 @@ public class RootAPITest {
         assertEquals("prototype", version.getStatus());
         assertEquals("2016-04-20", version.getUpdated());
         assertEquals("v0.0.2-29-ge0d90af-e0d90af-34", version.getBuild());
-        assertEquals(MediaType.APPLICATION_JSON,
-                     version.getMediaTypes().getType());
+        assertEquals(MediaType.APPLICATION_JSON_TYPE, version.getMediaType());
         assertEquals("v1.0", version.getId());
 
         links = version.getLinks();

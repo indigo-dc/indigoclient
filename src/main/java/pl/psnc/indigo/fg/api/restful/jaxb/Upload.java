@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -80,9 +81,8 @@ public class Upload implements Serializable {
 
     @Override
     public final String toString() {
-        return new ToStringBuilder(this).append("files", files)
-                                        .append("message", message)
-                                        .append("task", task)
-                                        .append("status", status).toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("files", files).append("message", message)
+                .append("task", task).append("status", status).toString();
     }
 }

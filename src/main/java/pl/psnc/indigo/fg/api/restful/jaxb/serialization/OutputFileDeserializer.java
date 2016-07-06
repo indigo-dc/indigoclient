@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 
-import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
 
@@ -22,18 +21,8 @@ public final class OutputFileDeserializer extends JsonDeserializer<OutputFile> {
             throws IOException {
         JsonNode node = jsonParser.readValueAsTree();
         OutputFile outputFile = new OutputFile();
-
-        if (node.isObject()) {
-            String name = node.get("name").asText();
-            String url = node.get("url").asText();
-            URI uri = UriBuilder.fromUri(url).build();
-            outputFile.setName(name);
-            outputFile.setUrl(uri);
-        } else {
-            String name = node.asText();
-            outputFile.setName(name);
-        }
-
+        outputFile.setName(node.get("name").asText());
+        outputFile.setUrl(URI.create(node.get("url").asText()));
         return outputFile;
     }
 

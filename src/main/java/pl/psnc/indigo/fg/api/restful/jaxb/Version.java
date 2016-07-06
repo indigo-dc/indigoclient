@@ -2,10 +2,14 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import pl.psnc.indigo.fg.api.restful.jaxb.serialization.MediaTypeDeserializer;
 
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,12 +18,14 @@ import java.util.List;
  * A bean containing information about version of the Future Gateway.
  */
 @FutureGatewayBean
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Version {
     private String status;
     private String updated;
     private String build;
-    private MediaType mediaTypes;
+    @JsonDeserialize(using = MediaTypeDeserializer.class)
+    private MediaType mediaType;
     private List<Link> links;
     private String id;
 
@@ -50,13 +56,13 @@ public class Version {
     }
 
     @JsonProperty("media-types")
-    public final MediaType getMediaTypes() {
-        return mediaTypes;
+    public final MediaType getMediaType() {
+        return mediaType;
     }
 
     @JsonProperty("media-types")
-    public final void setMediaTypes(final MediaType mediaTypes) {
-        this.mediaTypes = mediaTypes;
+    public final void setMediaType(final MediaType mediaType) {
+        this.mediaType = mediaType;
     }
 
     @JsonProperty("_links")
@@ -92,7 +98,7 @@ public class Version {
         return new EqualsBuilder().append(status, version.status)
                                   .append(updated, version.updated)
                                   .append(build, version.build)
-                                  .append(mediaTypes, version.mediaTypes)
+                                  .append(mediaType, version.mediaType)
                                   .append(links, version.links)
                                   .append(id, version.id).isEquals();
     }
@@ -100,17 +106,15 @@ public class Version {
     @Override
     public final int hashCode() {
         return new HashCodeBuilder().append(status).append(updated)
-                                    .append(build).append(mediaTypes)
+                                    .append(build).append(mediaType)
                                     .append(links).append(id).toHashCode();
     }
 
     @Override
     public final String toString() {
-        return new ToStringBuilder(this).append("status", status)
-                                        .append("updated", updated)
-                                        .append("build", build)
-                                        .append("mediaTypes", mediaTypes)
-                                        .append("links", links).append("id", id)
-                                        .toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("status", status).append("updated", updated)
+                .append("build", build).append("mediaType", mediaType)
+                .append("links", links).append("id", id).toString();
     }
 }

@@ -2,6 +2,7 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 
@@ -33,7 +34,7 @@ public class Link implements Serializable {
 
     @Override
     public final String toString() {
-        return new ToStringBuilder(this).append("rel", rel).append("href", href)
-                                        .toString();
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("rel", rel).append("href", href).toString();
     }
 }
