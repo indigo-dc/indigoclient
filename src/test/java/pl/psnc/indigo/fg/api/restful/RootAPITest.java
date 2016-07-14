@@ -2,6 +2,8 @@ package pl.psnc.indigo.fg.api.restful;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import pl.psnc.indigo.fg.api.restful.category.UnitTests;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Link;
 import pl.psnc.indigo.fg.api.restful.jaxb.Root;
@@ -18,6 +20,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 @SuppressWarnings("NestedMethodCall")
+@Category(UnitTests.class)
 public class RootAPITest {
     private MockRestSession session;
 

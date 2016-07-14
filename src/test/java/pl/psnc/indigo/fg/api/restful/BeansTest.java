@@ -1,6 +1,8 @@
 package pl.psnc.indigo.fg.api.restful;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import pl.psnc.indigo.fg.api.restful.category.UnitTests;
 import pl.psnc.indigo.fg.api.restful.jaxb.Application;
 import pl.psnc.indigo.fg.api.restful.jaxb.Application.Outcome;
 import pl.psnc.indigo.fg.api.restful.jaxb.Infrastructure;
@@ -25,6 +27,7 @@ import static org.junit.Assert.assertNotEquals;
 /**
  * This class holds tests for beans used in communication with FG.
  */
+@Category(UnitTests.class)
 public class BeansTest {
     @Test
     public void testApplication() {
@@ -66,6 +69,17 @@ public class BeansTest {
         inputFile.setStatus("Status");
         assertEquals("InputFile[name=Name,status=Status]",
                      inputFile.toString());
+
+        InputFile other = new InputFile();
+        other.setName(inputFile.getName());
+        other.setStatus(inputFile.getStatus());
+
+        assertEquals(inputFile, inputFile);
+        assertEquals(inputFile, other);
+        assertEquals(inputFile.hashCode(), other.hashCode());
+
+        assertNotEquals(inputFile, null);
+        assertNotEquals(inputFile, "");
     }
 
     @Test
