@@ -1,5 +1,6 @@
 package pl.psnc.indigo.fg.api.restful;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.slf4j.Logger;
@@ -364,7 +365,9 @@ public class TasksAPI extends RootAPI {
             if (statusCode == Status.OK.getStatusCode()) {
                 String body = response.readEntity(String.class);
                 TasksAPI.LOGGER.trace("Body: {}", body);
-                Task[] tasks = getMapper().readValue(body, Task[].class);
+                JsonNode jsonNode = getMapper().readTree(body);
+                jsonNode = jsonNode.get("tasks");
+                Task[] tasks = getMapper().treeToValue(jsonNode, Task[].class);
                 return Arrays.asList(tasks);
             } else {
                 String message = "Failed to get all tasks. Response: "
