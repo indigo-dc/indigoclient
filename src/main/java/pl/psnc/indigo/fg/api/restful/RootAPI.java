@@ -1,7 +1,8 @@
 package pl.psnc.indigo.fg.api.restful;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,13 +13,9 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 /**
  * A base class which contains HTTP client and JSON mapper objects with
@@ -29,7 +26,7 @@ public class RootAPI {
      * A public IP of a production-level Future Gateway.
      */
     public static final URI DEFAULT_ADDRESS = URI
-            .create("http://90.147.74.77:8888");
+            .create("http://192.92.149.135:8888");
 
     /**
      * A localhost version of Future Gateway. Useful for tunnelled connections:
@@ -57,12 +54,17 @@ public class RootAPI {
      */
     protected RootAPI(final URI baseUri, final Client client)
             throws FutureGatewayException {
+        super();
         this.client = client;
 
+        // If TRACE level is enabled, log whole requests, headers & body
+        if (RootAPI.LOGGER.isTraceEnabled()) {
+            client.register(new RequestLogger());
+        }
+
         mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(Include.NON_NULL);
-        mapper.setDateFormat(
-                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US));
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.setDateFormat(new ISO8601DateFormat());
 
         root = getRootForUri(baseUri);
         String version = root.getVersions().get(0).getId();
@@ -100,12 +102,12 @@ public class RootAPI {
             response = client.target(baseUri).request(MediaType.TEXT_PLAIN_TYPE)
                              .get();
 
-            StatusType status = response.getStatusInfo();
+            Response.StatusType status = response.getStatusInfo();
             int statusCode = status.getStatusCode();
             String reasonPhrase = status.getReasonPhrase();
             RootAPI.LOGGER.debug("Status: {} {}", statusCode, reasonPhrase);
 
-            if (statusCode == Status.OK.getStatusCode()) {
+            if (statusCode == Response.Status.OK.getStatusCode()) {
                 String body = response.readEntity(String.class);
                 RootAPI.LOGGER.trace("Body: {}", body);
                 return mapper.readValue(body, Root.class);
