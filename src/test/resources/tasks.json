@@ -3,7 +3,7 @@
     "status": "DONE",
     "description": "hello",
     "user": "brunor",
-    "date": "2016-05-20 10:03:15",
+    "date": "2016-05-20T10:03:15Z",
     "id": "3",
     "output_files": [
       {
@@ -28,13 +28,13 @@
     ],
     "arguments": [],
     "input_files": [],
-    "last_change": "2016-05-20 10:04:08"
+    "last_change": "2016-05-20T10:04:08Z"
   },
   {
     "status": "DONE",
     "description": "hello",
     "user": "brunor",
-    "date": "2016-05-20 10:22:15",
+    "date": "2016-05-20T10:22:15Z",
     "id": "6",
     "output_files": [
       {
@@ -59,13 +59,13 @@
     ],
     "arguments": [],
     "input_files": [],
-    "last_change": "2016-05-20 10:23:09"
+    "last_change": "2016-05-20T10:23:09Z"
   },
   {
     "status": "DONE",
     "description": "hello",
     "user": "brunor",
-    "date": "2016-05-20 10:54:56",
+    "date": "2016-05-20T10:54:56Z",
     "id": "9",
     "output_files": [
       {
@@ -90,6 +90,6 @@
     ],
     "arguments": [],
     "input_files": [],
-    "last_change": "2016-05-20 10:55:50"
+    "last_change": "2016-05-20T10:55:50Z"
   }
 ]
