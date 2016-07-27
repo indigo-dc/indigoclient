@@ -1,95 +1,97 @@
-[
-  {
-    "status": "DONE",
-    "description": "hello",
-    "user": "brunor",
-    "date": "2016-05-20 10:03:15",
-    "id": "3",
-    "output_files": [
-      {
-        "url": "file?path=%2Ftmp%2F11d6f1a8-1e72-11e6-92fb-fa163e26496e%2F3tmp11d6f1a81e7211e692fbfa163e26496e_3&name=stdout.txt",
-        "name": "stdout.txt"
-      },
-      {
-        "url": "file?path=%2Ftmp%2F11d6f1a8-1e72-11e6-92fb-fa163e26496e%2F3tmp11d6f1a81e7211e692fbfa163e26496e_3&name=stderr.txt",
-        "name": "stderr.txt"
-      }
-    ],
-    "application": "1",
-    "_links": [
-      {
-        "href": "/v1.0/tasks/3",
-        "rel": "self"
-      },
-      {
-        "href": "/v1.0/tasks/3/input",
-        "rel": "input"
-      }
-    ],
-    "arguments": [],
-    "input_files": [],
-    "last_change": "2016-05-20 10:04:08"
-  },
-  {
-    "status": "DONE",
-    "description": "hello",
-    "user": "brunor",
-    "date": "2016-05-20 10:22:15",
-    "id": "6",
-    "output_files": [
-      {
-        "url": "file?path=%2Ftmp%2Fb982617e-1e74-11e6-92fb-fa163e26496e%2F6tmpb982617e1e7411e692fbfa163e26496e_6&name=stdout.txt",
-        "name": "stdout.txt"
-      },
-      {
-        "url": "file?path=%2Ftmp%2Fb982617e-1e74-11e6-92fb-fa163e26496e%2F6tmpb982617e1e7411e692fbfa163e26496e_6&name=stderr.txt",
-        "name": "stderr.txt"
-      }
-    ],
-    "application": "1",
-    "_links": [
-      {
-        "href": "/v1.0/tasks/6",
-        "rel": "self"
-      },
-      {
-        "href": "/v1.0/tasks/6/input",
-        "rel": "input"
-      }
-    ],
-    "arguments": [],
-    "input_files": [],
-    "last_change": "2016-05-20 10:23:09"
-  },
-  {
-    "status": "DONE",
-    "description": "hello",
-    "user": "brunor",
-    "date": "2016-05-20 10:54:56",
-    "id": "9",
-    "output_files": [
-      {
-        "url": "file?path=%2Ftmp%2F4a5bb854-1e79-11e6-92fb-fa163e26496e%2F9tmp4a5bb8541e7911e692fbfa163e26496e_9&name=stdout.txt",
-        "name": "stdout.txt"
-      },
-      {
-        "url": "file?path=%2Ftmp%2F4a5bb854-1e79-11e6-92fb-fa163e26496e%2F9tmp4a5bb8541e7911e692fbfa163e26496e_9&name=stderr.txt",
-        "name": "stderr.txt"
-      }
-    ],
-    "application": "1",
-    "_links": [
-      {
-        "href": "/v1.0/tasks/9",
-        "rel": "self"
-      },
-      {
-        "href": "/v1.0/tasks/9/input",
-        "rel": "input"
-      }
-    ],
-    "arguments": [],
-    "input_files": [],
-    "last_change": "2016-05-20 10:55:50"
-  }
-]
+{
+  "tasks": [
+    {
+      "status": "DONE",
+      "description": "hello",
+      "user": "brunor",
+      "date": "2016-05-20T10:03:15Z",
+      "id": "3",
+      "output_files": [
+        {
+          "url": "file?path=%2Ftmp%2F11d6f1a8-1e72-11e6-92fb-fa163e26496e%2F3tmp11d6f1a81e7211e692fbfa163e26496e_3&name=stdout.txt",
+          "name": "stdout.txt"
+        },
+        {
+          "url": "file?path=%2Ftmp%2F11d6f1a8-1e72-11e6-92fb-fa163e26496e%2F3tmp11d6f1a81e7211e692fbfa163e26496e_3&name=stderr.txt",
+          "name": "stderr.txt"
+        }
+      ],
+      "application": "1",
+      "_links": [
+        {
+          "href": "/v1.0/tasks/3",
+          "rel": "self"
+        },
+        {
+          "href": "/v1.0/tasks/3/input",
+          "rel": "input"
+        }
+      ],
+      "arguments": [],
+      "input_files": [],
+      "last_change": "2016-05-20T10:04:08Z"
+    },
+    {
+      "status": "DONE",
+      "description": "hello",
+      "user": "brunor",
+      "date": "2016-05-20T10:22:15Z",
+      "id": "6",
+      "output_files": [
+        {
+          "url": "file?path=%2Ftmp%2Fb982617e-1e74-11e6-92fb-fa163e26496e%2F6tmpb982617e1e7411e692fbfa163e26496e_6&name=stdout.txt",
+          "name": "stdout.txt"
+        },
+        {
+          "url": "file?path=%2Ftmp%2Fb982617e-1e74-11e6-92fb-fa163e26496e%2F6tmpb982617e1e7411e692fbfa163e26496e_6&name=stderr.txt",
+          "name": "stderr.txt"
+        }
+      ],
+      "application": "1",
+      "_links": [
+        {
+          "href": "/v1.0/tasks/6",
+          "rel": "self"
+        },
+        {
+          "href": "/v1.0/tasks/6/input",
+          "rel": "input"
+        }
+      ],
+      "arguments": [],
+      "input_files": [],
+      "last_change": "2016-05-20T10:23:09Z"
+    },
+    {
+      "status": "DONE",
+      "description": "hello",
+      "user": "brunor",
+      "date": "2016-05-20T10:54:56Z",
+      "id": "9",
+      "output_files": [
+        {
+          "url": "file?path=%2Ftmp%2F4a5bb854-1e79-11e6-92fb-fa163e26496e%2F9tmp4a5bb8541e7911e692fbfa163e26496e_9&name=stdout.txt",
+          "name": "stdout.txt"
+        },
+        {
+          "url": "file?path=%2Ftmp%2F4a5bb854-1e79-11e6-92fb-fa163e26496e%2F9tmp4a5bb8541e7911e692fbfa163e26496e_9&name=stderr.txt",
+          "name": "stderr.txt"
+        }
+      ],
+      "application": "1",
+      "_links": [
+        {
+          "href": "/v1.0/tasks/9",
+          "rel": "self"
+        },
+        {
+          "href": "/v1.0/tasks/9/input",
+          "rel": "input"
+        }
+      ],
+      "arguments": [],
+      "input_files": [],
+      "last_change": "2016-05-20T10:55:50Z"
+    }
+  ]
+}
