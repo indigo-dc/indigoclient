@@ -30,6 +30,13 @@ public class RequestLogger implements ClientRequestFilter {
         RequestLogger.LOGGER.trace(builder.toString());
     }
 
+    /**
+     * Fill information about the body of message i.e. its content of
+     * filename in case of file upload.
+     *
+     * @param context Context of the HTTP request.
+     * @param builder Where the output will be appended.
+     */
     private static void describeBody(final ClientRequestContext context,
                                      final StringBuilder builder) {
         if ((context != null) && context.hasEntity()) {
@@ -51,6 +58,12 @@ public class RequestLogger implements ClientRequestFilter {
         }
     }
 
+    /**
+     * Fill information about the headers of an HTTP request.
+     *
+     * @param context Context of the HTTP request.
+     * @param builder Where the output will be appended.
+     */
     private static void describeHeaders(final ClientRequestContext context,
                                         final StringBuilder builder) {
         MultivaluedMap<String, String> headers = context.getStringHeaders();
