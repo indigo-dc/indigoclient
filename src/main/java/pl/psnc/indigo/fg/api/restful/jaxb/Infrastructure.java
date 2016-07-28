@@ -86,8 +86,9 @@ public class Infrastructure implements Serializable {
     public final String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("id", id).append("name", name)
-                .append("description", description).append("date", date)
-                .append("enabled", enabled).append("virtual", virtual)
-                .append("parameters", parameters).toString();
+                .append("description", description)
+                .append("date", date.toInstant()).append("enabled", enabled)
+                .append("virtual", virtual).append("parameters", parameters)
+                .toString();
     }
 }
