@@ -41,8 +41,8 @@ public class BeansTest {
         application.setEnabled(true);
         application.setParameters(Collections.emptyList());
         assertEquals(
-                "Application[id=Id,description=Description,name=Name,date=Thu "
-                + "Jan 01 01:00:00 CET 1970,infrastructures=[],outcome=JOB,"
+                "Application[id=Id,description=Description,name=Name,"
+                + "date=1970-01-01T00:00:00Z,infrastructures=[],outcome=JOB,"
                 + "enabled=true,parameters=[]]", application.toString());
     }
 
@@ -57,7 +57,7 @@ public class BeansTest {
         infrastructure.setVirtual(true);
         infrastructure.setParameters(Collections.emptyList());
         assertEquals("Infrastructure[id=Id,name=Name,description=Description,"
-                     + "date=Thu Jan 01 01:00:00 CET 1970,enabled=true,"
+                     + "date=1970-01-01T00:00:00Z,enabled=true,"
                      + "virtual=true,parameters=[]]",
                      infrastructure.toString());
     }

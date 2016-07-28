@@ -105,7 +105,7 @@ public class Application implements Serializable {
     public final String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("id", id).append("description", description)
-                .append("name", name).append("date", date)
+                .append("name", name).append("date", date.toInstant())
                 .append("infrastructures", infrastructures)
                 .append("outcome", outcome).append("enabled", enabled)
                 .append("parameters", parameters).toString();
