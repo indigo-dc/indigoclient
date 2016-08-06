@@ -10,12 +10,13 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Infrastructure;
 import pl.psnc.indigo.fg.api.restful.jaxb.Parameter;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(UnitTests.class)
 public class ApplicationsAPITest {
@@ -26,7 +27,7 @@ public class ApplicationsAPITest {
     public void before() throws IOException, FutureGatewayException {
         session = new MockRestSession();
         Client client = session.getClient();
-        api = new ApplicationsAPI(MockRestSession.MOCK_ADDRESS, client);
+        api = new ApplicationsAPI(MockRestSession.MOCK_ADDRESS, client, "");
     }
 
     @Test
@@ -45,6 +46,16 @@ public class ApplicationsAPITest {
         parameters = application.getParameters();
         assertEquals(2, infrastructures.size());
         assertEquals(5, parameters.size());
+    }
+
+    /* This test exceptionally needs to ad-hoc add new response to the mock. */
+    @Test(expected = FutureGatewayException.class)
+    public final void testGetAllApplicationsError()
+            throws FutureGatewayException {
+        URI uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
+                            .path("applications").build();
+        session.mockGetPostResponse(uri, Status.NOT_FOUND, "");
+        api.getAllApplications();
     }
 
     @Test

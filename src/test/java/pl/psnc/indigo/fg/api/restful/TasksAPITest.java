@@ -30,7 +30,8 @@ public class TasksAPITest {
     @Before
     public void before() throws IOException, FutureGatewayException {
         session = new MockRestSession();
-        api = new TasksAPI(MockRestSession.MOCK_ADDRESS, session.getClient());
+        api = new TasksAPI(MockRestSession.MOCK_ADDRESS, session.getClient(),
+                           "");
     }
 
     @Test

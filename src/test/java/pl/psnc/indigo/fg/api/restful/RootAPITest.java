@@ -33,10 +33,11 @@ public class RootAPITest {
     public void testGetRoot()
             throws FutureGatewayException, URISyntaxException {
         Client client = session.getClient();
-        RootAPI rootApi = new RootAPI(MockRestSession.MOCK_ADDRESS, client);
+        RootAPI rootApi = new RootAPI(MockRestSession.MOCK_ADDRESS, client, "");
 
-        URI expectedUri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS)
-                                    .path("v1.0").build();
+        URI expectedUri =
+                UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
+                          .build();
         assertEquals(expectedUri, rootApi.getRootUri());
 
         Root root = rootApi.getRoot();
@@ -68,7 +69,7 @@ public class RootAPITest {
         URI uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS)
                             .path("invalid-uri").build();
         Client client = session.getClient();
-        new RootAPI(uri, client);
+        new RootAPI(uri, client, "");
     }
 
     @Test(expected = FutureGatewayException.class)
@@ -76,6 +77,6 @@ public class RootAPITest {
         URI uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS)
                             .path("invalid-body").build();
         Client client = session.getClient();
-        new RootAPI(uri, client);
+        new RootAPI(uri, client, "");
     }
 }

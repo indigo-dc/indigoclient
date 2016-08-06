@@ -28,18 +28,20 @@ public class FutureGatewayTest {
 
     @Test
     public final void testGetRoot() throws FutureGatewayException {
-        new RootAPI(RootAPI.LOCALHOST_ADDRESS);
+        new RootAPI(RootAPI.LOCALHOST_ADDRESS, "");
     }
 
     @Test
     public final void testGetAllApplications() throws FutureGatewayException {
-        ApplicationsAPI api = new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS);
+        ApplicationsAPI api = new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS,
+                                                  "");
         api.getAllApplications();
     }
 
     @Test
     public final void testGetApplication() throws FutureGatewayException {
-        ApplicationsAPI api = new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS);
+        ApplicationsAPI api = new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS,
+                                                  "");
         Application application = api.getApplication("1");
         String name = application.getName();
         Assert.assertThat("hostname", is(name));
@@ -47,7 +49,7 @@ public class FutureGatewayTest {
 
     @Test
     public final void testCreateTask() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS);
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
 
         Task task = new Task();
         task.setUser(FutureGatewayTest.USERNAME);
@@ -62,7 +64,7 @@ public class FutureGatewayTest {
 
     @Test
     public final void testSubmitTaskWithFiles() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS);
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
 
         Task newTask = new Task();
         newTask.setUser(FutureGatewayTest.USERNAME);
@@ -108,7 +110,7 @@ public class FutureGatewayTest {
     public final void testSubmitTaskWithFilesWaitGetOutputs()
             throws FutureGatewayException, InterruptedException,
                    URISyntaxException, IOException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS);
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
 
         Task newTask = new Task();
         newTask.setUser(FutureGatewayTest.USERNAME);
@@ -173,7 +175,7 @@ public class FutureGatewayTest {
 
     @Test
     public final void testGetTask() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS);
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
 
         Task newTask = new Task();
         newTask.setUser(FutureGatewayTest.USERNAME);
@@ -183,13 +185,13 @@ public class FutureGatewayTest {
 
     @Test
     public final void testGetAllTasks() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS);
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
         api.getAllTasks(FutureGatewayTest.USERNAME);
     }
 
     @Test
     public final void testDeleteTask() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS);
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
 
         Task task = new Task();
         task.setApplication("1");

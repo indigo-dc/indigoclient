@@ -78,8 +78,8 @@ public class MockRestSession {
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("file").queryParam("path", "/tmp")
                         .queryParam("name", "test.txt").build();
-        InputStream streamBody = IOUtils
-                .toInputStream("TEST", Charset.defaultCharset());
+        InputStream streamBody =
+                IOUtils.toInputStream("TEST", Charset.defaultCharset());
         mockGetPostResponse(uri, Status.OK, streamBody);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
@@ -168,7 +168,7 @@ public class MockRestSession {
         return client;
     }
 
-    private void mockGetPostResponse(URI uri, Status status, Object body) {
+    public void mockGetPostResponse(URI uri, Status status, Object body) {
         Response response = mock(Response.class);
         when(response.getStatusInfo()).thenReturn(status);
         when(response.readEntity(any(Class.class))).thenReturn(body);
@@ -186,7 +186,7 @@ public class MockRestSession {
         when(client.target(uri)).thenReturn(target);
     }
 
-    private void mockDeleteResponse(URI uri, Status status) {
+    public void mockDeleteResponse(URI uri, Status status) {
         Response response = mock(Response.class);
         when(response.getStatusInfo()).thenReturn(status);
 
