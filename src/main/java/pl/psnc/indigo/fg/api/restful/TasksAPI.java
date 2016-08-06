@@ -1,5 +1,6 @@
 package pl.psnc.indigo.fg.api.restful;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
@@ -34,8 +35,8 @@ import java.util.List;
  * Allows to manipulate tasks via Future Gateway: list, submit, delete.
  */
 public class TasksAPI extends RootAPI {
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(TasksAPI.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(TasksAPI.class);
     private static final String TASKS = "tasks";
 
     private final URI tasksUri;
@@ -44,14 +45,18 @@ public class TasksAPI extends RootAPI {
      * Construct an instance which allows to communicate with Future Gateway
      * using non-default {@link Client}.
      *
-     * @param baseUri Base URI of Future Gateway i.e. protocol://host:port
-     * @param client  Implementation of REST client.
+     * @param baseUri            Base URI of Future Gateway i.e.
+     *                           protocol://host:port
+     * @param client             Implementation of REST client.
+     * @param authorizationToken Token which identifies the user to services.
+     *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
-    public TasksAPI(final URI baseUri, final Client client)
+    public TasksAPI(final URI baseUri, final Client client,
+                    final String authorizationToken)
             throws FutureGatewayException {
-        super(baseUri, client);
+        super(baseUri, client, authorizationToken);
 
         URI rootUri = getRootUri();
         tasksUri = UriBuilder.fromUri(rootUri).path(TasksAPI.TASKS).build();
@@ -60,12 +65,16 @@ public class TasksAPI extends RootAPI {
     /**
      * Construct an instance which allows to communicate with Future Gateway.
      *
-     * @param baseUri Base URI of Future Gateway i.e. protocol://host:port
+     * @param baseUri            Base URI of Future Gateway i.e.
+     *                           protocol://host:port
+     * @param authorizationToken Token which identifies the user to services.
+     *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
-    public TasksAPI(final URI baseUri) throws FutureGatewayException {
-        super(baseUri);
+    public TasksAPI(final URI baseUri, final String authorizationToken)
+            throws FutureGatewayException {
+        super(baseUri, authorizationToken);
 
         URI rootUri = getRootUri();
         tasksUri = UriBuilder.fromUri(rootUri).path(TasksAPI.TASKS).build();
@@ -84,33 +93,40 @@ public class TasksAPI extends RootAPI {
      * applications might require inputs and some other, not.
      *
      * @param task A bean containing all information about the task.
+     *
      * @return A bean with details about task submission.
+     *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
     public final Task createTask(final Task task)
             throws FutureGatewayException {
+        Entity<String> entity;
+        try {
+            String taskJson = getMapper().writeValueAsString(task);
+            entity = Entity.json(taskJson);
+        } catch (JsonProcessingException e) {
+            throw new FutureGatewayException("Failed to prepare JSON for task",
+                                             e);
+        }
+
         String user = task.getUser();
         URI uri = UriBuilder.fromUri(tasksUri).queryParam("user", user).build();
-        Response response = null;
+        TasksAPI.LOGGER.debug("POST {}", uri);
+        Response response =
+                getClient().target(uri).request(MediaType.APPLICATION_JSON_TYPE)
+                           .accept(MediaType.APPLICATION_JSON_TYPE)
+                           .header(HttpHeaders.CONTENT_TYPE,
+                                   MediaType.APPLICATION_JSON)
+                           .header(HttpHeaders.AUTHORIZATION,
+                                   getAuthorizationToken()).post(entity);
+
+        StatusType status = response.getStatusInfo();
+        int statusCode = status.getStatusCode();
+        String reasonPhrase = status.getReasonPhrase();
+        TasksAPI.LOGGER.debug("Status: {} {}", statusCode, reasonPhrase);
 
         try {
-            TasksAPI.LOGGER.debug("POST {}", uri);
-            String taskJson = getMapper().writeValueAsString(task);
-            Entity<String> entity = Entity.json(taskJson);
-            response = getClient().target(uri)
-                                  .request(MediaType.APPLICATION_JSON_TYPE)
-                                  .accept(MediaType.APPLICATION_JSON_TYPE)
-                                  .header(HttpHeaders.CONTENT_TYPE,
-                                          MediaType.APPLICATION_JSON)
-                                  .header(HttpHeaders.AUTHORIZATION,
-                                          "Bearer {access_token}").post(entity);
-
-            StatusType status = response.getStatusInfo();
-            int statusCode = status.getStatusCode();
-            String reasonPhrase = status.getReasonPhrase();
-            TasksAPI.LOGGER.debug("Status: {} {}", statusCode, reasonPhrase);
-
             if (statusCode == Status.OK.getStatusCode()) {
                 String body = response.readEntity(String.class);
                 TasksAPI.LOGGER.trace("Body: {}", body);
@@ -126,9 +142,7 @@ public class TasksAPI extends RootAPI {
             TasksAPI.LOGGER.error(message, e);
             throw new FutureGatewayException(message, e);
         } finally {
-            if (response != null) {
-                response.close();
-            }
+            response.close();
         }
     }
 
@@ -137,7 +151,9 @@ public class TasksAPI extends RootAPI {
      *
      * @param task A bean describing task id and user.
      * @param file A file to upload.
+     *
      * @return A bean containing status information about the uploaded file.
+     *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
@@ -148,22 +164,22 @@ public class TasksAPI extends RootAPI {
         URI uri = UriBuilder.fromUri(tasksUri).path(id).path("input")
                             .queryParam("user", user).build();
         FileDataBodyPart fileDataBodyPart = null;
-        Response response = null;
 
         try (MultiPart multiPart = new MultiPart()) {
             MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
             fileDataBodyPart = new FileDataBodyPart("file[]", file, mediaType);
 
-            multiPart.setMediaType(MediaType.MULTIPART_FORM_DATA_TYPE);
+            mediaType = MediaType.MULTIPART_FORM_DATA_TYPE;
+            multiPart.setMediaType(mediaType);
             multiPart.bodyPart(fileDataBodyPart);
+            Entity<MultiPart> entity = Entity.entity(multiPart, mediaType);
 
             TasksAPI.LOGGER.debug("POST {}", uri);
-            Entity<MultiPart> entity = Entity
-                    .entity(multiPart, MediaType.MULTIPART_FORM_DATA_TYPE);
-            response = getClient().target(uri)
-                                  .request(MediaType.APPLICATION_JSON_TYPE)
-                                  .accept(MediaType.APPLICATION_JSON_TYPE)
-                                  .post(entity);
+            mediaType = MediaType.APPLICATION_JSON_TYPE;
+            Response response =
+                    getClient().target(uri).request(mediaType).accept(mediaType)
+                               .header(HttpHeaders.AUTHORIZATION,
+                                       getAuthorizationToken()).post(entity);
 
             StatusType status = response.getStatusInfo();
             int statusCode = status.getStatusCode();
@@ -175,23 +191,22 @@ public class TasksAPI extends RootAPI {
                 TasksAPI.LOGGER.trace("Body: {}", body);
                 return getMapper().readValue(body, Upload.class);
             } else {
-                String message = "Failed to upload file for task. Response: "
-                                 + response.getStatus() + ' ' + response
-                                 + " Task: " + task + " File: " + file;
+                String message =
+                        "Failed to upload file for task. Response: " + response
+                                .getStatus() + ' ' + response + " Task: " + task
+                        + " File: " + file;
                 TasksAPI.LOGGER.error(message);
                 throw new FutureGatewayException(message);
             }
         } catch (IOException e) {
-            String message = "Failed to upload file for task: " + task
-                             + " File: " + file;
+            String message =
+                    "Failed to upload file for task: " + task + " File: "
+                    + file;
             TasksAPI.LOGGER.error(message, e);
             throw new FutureGatewayException(message, e);
         } finally {
             if (fileDataBodyPart != null) {
                 fileDataBodyPart.cleanup();
-            }
-            if (response != null) {
-                response.close();
             }
         }
 
@@ -202,36 +217,38 @@ public class TasksAPI extends RootAPI {
      *
      * @param id Id of a task as returned from Future Gateway during its
      *           creation.
+     *
      * @return A bean with details about a task.
+     *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
     public final Task getTask(final String id) throws FutureGatewayException {
         URI uri = UriBuilder.fromUri(tasksUri).path(id).build();
-        Response response = null;
+
+        TasksAPI.LOGGER.debug("GET {}", uri);
+        Response response =
+                getClient().target(uri).request(MediaType.APPLICATION_JSON_TYPE)
+                           .accept(MediaType.APPLICATION_JSON_TYPE)
+                           .header(HttpHeaders.CONTENT_TYPE,
+                                   MediaType.APPLICATION_JSON)
+                           .header(HttpHeaders.AUTHORIZATION,
+                                   getAuthorizationToken()).get();
+
+        StatusType status = response.getStatusInfo();
+        int statusCode = status.getStatusCode();
+        String reasonPhrase = status.getReasonPhrase();
+        TasksAPI.LOGGER.debug("Status: {} {}", statusCode, reasonPhrase);
 
         try {
-            TasksAPI.LOGGER.debug("GET {}", uri);
-            response = getClient().target(uri)
-                                  .request(MediaType.APPLICATION_JSON_TYPE)
-                                  .accept(MediaType.APPLICATION_JSON_TYPE)
-                                  .header(HttpHeaders.CONTENT_TYPE,
-                                          MediaType.APPLICATION_JSON)
-                                  .header(HttpHeaders.AUTHORIZATION,
-                                          "Bearer {access_token}").get();
-
-            StatusType status = response.getStatusInfo();
-            int statusCode = status.getStatusCode();
-            String reasonPhrase = status.getReasonPhrase();
-            TasksAPI.LOGGER.debug("Status: {} {}", statusCode, reasonPhrase);
-
             if (statusCode == Status.OK.getStatusCode()) {
                 String body = response.readEntity(String.class);
                 TasksAPI.LOGGER.trace("Body: {}", body);
                 return getMapper().readValue(body, Task.class);
             } else {
-                String message = "Failed to get task. Response: " + response
-                        .getStatus() + ' ' + response + " Task: " + id;
+                String message =
+                        "Failed to get task. Response: " + response.getStatus()
+                        + ' ' + response + " Task: " + id;
                 TasksAPI.LOGGER.error(message);
                 throw new FutureGatewayException(message);
             }
@@ -251,7 +268,9 @@ public class TasksAPI extends RootAPI {
      * information only when task status is DONE.
      *
      * @param id An id of a task.
+     *
      * @return A list of beans with information about task output files.
+     *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
@@ -274,6 +293,7 @@ public class TasksAPI extends RootAPI {
      *
      * @param outputFile A bean describing task output file.
      * @param directory  A directory where file will be downloaded.
+     *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      * @throws IOException            If I/O operations fail (directory
@@ -303,34 +323,33 @@ public class TasksAPI extends RootAPI {
         URI rootUri = getRootUri();
         URI uri = UriBuilder.fromUri(rootUri).path(path).replaceQuery(query)
                             .build();
-        Response response = null;
+
+        TasksAPI.LOGGER.debug("GET {}", uri);
+        Response response = getClient().target(uri).request()
+                                       .header(HttpHeaders.AUTHORIZATION,
+                                               getAuthorizationToken()).get();
+
+        StatusType status = response.getStatusInfo();
+        int statusCode = status.getStatusCode();
+        String reasonPhrase = status.getReasonPhrase();
+        TasksAPI.LOGGER.debug("Status: {} {}", statusCode, reasonPhrase);
 
         try {
-            TasksAPI.LOGGER.debug("GET {}", uri);
-            response = getClient().target(uri).request().get();
-
-            StatusType status = response.getStatusInfo();
-            int statusCode = status.getStatusCode();
-            String reasonPhrase = status.getReasonPhrase();
-            TasksAPI.LOGGER.debug("Status: {} {}", statusCode, reasonPhrase);
-
             if (statusCode == Status.OK.getStatusCode()) {
                 InputStream is = response.readEntity(InputStream.class);
                 String name = outputFile.getName();
                 Path filePath = new File(directory, name).toPath();
                 Files.copy(is, filePath, StandardCopyOption.REPLACE_EXISTING);
             } else {
-                String message = "Failed to download file. Response: "
-                                 + response.getStatus() + ' ' + response
-                                 + " Output file: " + outputFile
-                                 + " Directory: " + directory;
+                String message =
+                        "Failed to download file. Response: " + response
+                                .getStatus() + ' ' + response + " Output file: "
+                        + outputFile + " Directory: " + directory;
                 TasksAPI.LOGGER.error(message);
                 throw new FutureGatewayException(message);
             }
         } finally {
-            if (response != null) {
-                response.close();
-            }
+            response.close();
         }
     }
 
@@ -338,30 +357,31 @@ public class TasksAPI extends RootAPI {
      * Get all tasks belonging to a user.
      *
      * @param user An id of a user.
+     *
      * @return A collection of tasks belonging to a user.
+     *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
     public final List<Task> getAllTasks(final String user)
             throws FutureGatewayException {
         URI uri = UriBuilder.fromUri(tasksUri).queryParam("user", user).build();
-        Response response = null;
+
+        TasksAPI.LOGGER.debug("GET {}", uri);
+        Response response =
+                getClient().target(uri).request(MediaType.APPLICATION_JSON_TYPE)
+                           .accept(MediaType.APPLICATION_JSON_TYPE)
+                           .header(HttpHeaders.CONTENT_TYPE,
+                                   MediaType.APPLICATION_JSON)
+                           .header(HttpHeaders.AUTHORIZATION,
+                                   getAuthorizationToken()).get();
+
+        StatusType status = response.getStatusInfo();
+        int statusCode = status.getStatusCode();
+        String reasonPhrase = status.getReasonPhrase();
+        TasksAPI.LOGGER.debug("Status: {} {}", statusCode, reasonPhrase);
 
         try {
-            TasksAPI.LOGGER.debug("GET {}", uri);
-            response = getClient().target(uri)
-                                  .request(MediaType.APPLICATION_JSON_TYPE)
-                                  .accept(MediaType.APPLICATION_JSON_TYPE)
-                                  .header(HttpHeaders.CONTENT_TYPE,
-                                          MediaType.APPLICATION_JSON)
-                                  .header(HttpHeaders.AUTHORIZATION,
-                                          "Bearer {access_token}").get();
-
-            StatusType status = response.getStatusInfo();
-            int statusCode = status.getStatusCode();
-            String reasonPhrase = status.getReasonPhrase();
-            TasksAPI.LOGGER.debug("Status: {} {}", statusCode, reasonPhrase);
-
             if (statusCode == Status.OK.getStatusCode()) {
                 String body = response.readEntity(String.class);
                 TasksAPI.LOGGER.trace("Body: {}", body);
@@ -370,8 +390,9 @@ public class TasksAPI extends RootAPI {
                 Task[] tasks = getMapper().treeToValue(jsonNode, Task[].class);
                 return Arrays.asList(tasks);
             } else {
-                String message = "Failed to get all tasks. Response: "
-                                 + response.getStatus() + ' ' + response;
+                String message =
+                        "Failed to get all tasks. Response: " + response
+                                .getStatus() + ' ' + response;
                 TasksAPI.LOGGER.error(message);
                 throw new FutureGatewayException(message);
             }
@@ -390,16 +411,19 @@ public class TasksAPI extends RootAPI {
      * Delete a single task.
      *
      * @param id An id of a task.
+     *
      * @return Whether deletion was successful.
      */
     public final boolean deleteTask(final String id) {
         URI uri = UriBuilder.fromUri(tasksUri).path(id).build();
-        Response response = null;
+
+        TasksAPI.LOGGER.debug("DELETE {}", uri);
+        Response response = getClient().target(uri).request()
+                                       .header(HttpHeaders.AUTHORIZATION,
+                                               getAuthorizationToken())
+                                       .delete();
 
         try {
-            TasksAPI.LOGGER.debug("DELETE {}", uri);
-            response = getClient().target(uri).request().delete();
-
             StatusType status = response.getStatusInfo();
             int statusCode = status.getStatusCode();
             String reasonPhrase = status.getReasonPhrase();

@@ -11,6 +11,7 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Root;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
@@ -25,15 +26,15 @@ public class RootAPI {
     /**
      * A public IP of a production-level Future Gateway.
      */
-    public static final URI DEFAULT_ADDRESS = URI
-            .create("http://192.92.149.135:8888");
+    public static final URI DEFAULT_ADDRESS =
+            URI.create("http://192.92.149.135:8888");
 
     /**
      * A localhost version of Future Gateway. Useful for tunnelled connections:
      * $ ssh -L 8080:localhost:8080 -L 8888:localhost:8888 futuregateway@IP
      */
-    public static final URI LOCALHOST_ADDRESS = URI
-            .create("http://localhost:8888");
+    public static final URI LOCALHOST_ADDRESS =
+            URI.create("http://localhost:8888");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RootAPI.class);
 
@@ -41,21 +42,26 @@ public class RootAPI {
     private final ObjectMapper mapper;
     private final URI rootUri;
     private final Root root;
+    private final String authorizationToken;
 
     /**
      * Construct an instance for a given URI protocol://host:port and with
      * non-default {@link Client}. Refer to
      * constants DEFAULT_ADDRESS and LOCALHOST_ADDRESS.
      *
-     * @param baseUri URI of Future Gateway server.
-     * @param client  Implementation of REST client.
+     * @param baseUri            URI of Future Gateway server.
+     * @param client             Implementation of REST client.
+     * @param authorizationToken Token which identifies the user to services.
+     *
      * @throws FutureGatewayException If failed to communicate with Future
      *                                Gateway.
      */
-    protected RootAPI(final URI baseUri, final Client client)
+    protected RootAPI(final URI baseUri, final Client client,
+                      final String authorizationToken)
             throws FutureGatewayException {
         super();
         this.client = client;
+        this.authorizationToken = "Bearer " + authorizationToken;
 
         // If TRACE level is enabled, log whole requests, headers & body
         if (RootAPI.LOGGER.isTraceEnabled()) {
@@ -75,14 +81,17 @@ public class RootAPI {
      * Construct an instance for a given URI protocol://host:port. Refer to
      * constants DEFAULT_ADDRESS and LOCALHOST_ADDRESS.
      *
-     * @param baseUri URI of Future Gateway server.
+     * @param baseUri            URI of Future Gateway server.
+     * @param authorizationToken Token which identifies the user to services.
+     *
      * @throws FutureGatewayException If failed to communicate with Future
      *                                Gateway.
      */
-    protected RootAPI(final URI baseUri) throws FutureGatewayException {
+    protected RootAPI(final URI baseUri, final String authorizationToken)
+            throws FutureGatewayException {
         this(baseUri,
              ClientBuilder.newBuilder().register(MultiPartFeature.class)
-                          .build());
+                          .build(), authorizationToken);
     }
 
     public final Root getRoot() {
@@ -93,20 +102,25 @@ public class RootAPI {
         return rootUri;
     }
 
+    protected final String getAuthorizationToken() {
+        return authorizationToken;
+    }
+
     private Root getRootForUri(final URI baseUri)
             throws FutureGatewayException {
-        Response response = null;
+
+        RootAPI.LOGGER.debug("GET {}", baseUri);
+        Response response =
+                client.target(baseUri).request(MediaType.TEXT_PLAIN_TYPE)
+                      .header(HttpHeaders.AUTHORIZATION, authorizationToken)
+                      .get();
+
+        Response.StatusType status = response.getStatusInfo();
+        int statusCode = status.getStatusCode();
+        String reasonPhrase = status.getReasonPhrase();
+        RootAPI.LOGGER.debug("Status: {} {}", statusCode, reasonPhrase);
 
         try {
-            RootAPI.LOGGER.debug("GET {}", baseUri);
-            response = client.target(baseUri).request(MediaType.TEXT_PLAIN_TYPE)
-                             .get();
-
-            Response.StatusType status = response.getStatusInfo();
-            int statusCode = status.getStatusCode();
-            String reasonPhrase = status.getReasonPhrase();
-            RootAPI.LOGGER.debug("Status: {} {}", statusCode, reasonPhrase);
-
             if (statusCode == Response.Status.OK.getStatusCode()) {
                 String body = response.readEntity(String.class);
                 RootAPI.LOGGER.trace("Body: {}", body);
@@ -123,9 +137,7 @@ public class RootAPI {
             RootAPI.LOGGER.error(message, e);
             throw new FutureGatewayException(message, e);
         } finally {
-            if (response != null) {
-                response.close();
-            }
+            response.close();
         }
     }
 
