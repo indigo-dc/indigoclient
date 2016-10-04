@@ -26,7 +26,7 @@ public class Task implements Serializable {
      */
     public enum Status {
         SUBMIT, SUBMITTED, WAITING, READY, SCHEDULED, RUNNING, DONE, ABORTED,
-        CANCELLED
+        CANCELLED, PROCESSING
     }
 
     private String id;
