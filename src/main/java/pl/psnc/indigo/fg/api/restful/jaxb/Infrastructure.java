@@ -1,94 +1,68 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import pl.psnc.indigo.fg.api.restful.jaxb.serialization
+        .LocalDateTimeDeserializer;
+import pl.psnc.indigo.fg.api.restful.jaxb.serialization.LocalDateTimeSerializer;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * A bean containing description of infrastructure as configured in Future
  * Gateway.
  */
+@Getter
+@Setter
+@ToString
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Infrastructure implements Serializable {
     private static final long serialVersionUID = 653000622811995083L;
+
     private String id;
     private String name;
     private String description;
-    private Date date;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime date;
     private boolean enabled;
     private boolean virtual;
     private List<Parameter> parameters;
 
-    public final String getId() {
-        return id;
-    }
+    @Override
+    public final boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
 
-    public final void setId(final String id) {
-        this.id = id;
-    }
+        if ((o == null) || (getClass() != o.getClass())) {
+            return false;
+        }
 
-    public final String getName() {
-        return name;
-    }
-
-    public final void setName(final String name) {
-        this.name = name;
-    }
-
-    public final String getDescription() {
-        return description;
-    }
-
-    public final void setDescription(final String description) {
-        this.description = description;
-    }
-
-    public final Date getDate() {
-        return (Date) date.clone();
-    }
-
-    public final void setDate(final Date date) {
-        this.date = date;
-    }
-
-    public final boolean isEnabled() {
-        return enabled;
-    }
-
-    public final void setEnabled(final boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public final boolean isVirtual() {
-        return virtual;
-    }
-
-    public final void setVirtual(final boolean virtual) {
-        this.virtual = virtual;
-    }
-
-    public final List<Parameter> getParameters() {
-        return Collections.unmodifiableList(parameters);
-    }
-
-    public final void setParameters(final List<Parameter> parameters) {
-        this.parameters = new ArrayList<>(parameters);
+        Infrastructure other = (Infrastructure) o;
+        return new EqualsBuilder().append(enabled, other.enabled)
+                                  .append(virtual, other.virtual)
+                                  .append(id, other.id).append(name, other.name)
+                                  .append(description, other.description)
+                                  .append(date, other.date)
+                                  .append(parameters, other.parameters)
+                                  .isEquals();
     }
 
     @Override
-    public final String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("id", id).append("name", name)
-                .append("description", description)
-                .append("date", date.toInstant()).append("enabled", enabled)
-                .append("virtual", virtual).append("parameters", parameters)
-                .toString();
+    public final int hashCode() {
+        return new HashCodeBuilder(17, 37).append(id).append(name)
+                                          .append(description).append(date)
+                                          .append(enabled).append(virtual)
+                                          .append(parameters).toHashCode();
     }
 }

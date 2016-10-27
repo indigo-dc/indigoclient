@@ -9,7 +9,7 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Application;
 import pl.psnc.indigo.fg.api.restful.jaxb.InputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
-import pl.psnc.indigo.fg.api.restful.jaxb.Task.Status;
+import pl.psnc.indigo.fg.api.restful.jaxb.Status;
 
 import java.io.File;
 import java.io.IOException;

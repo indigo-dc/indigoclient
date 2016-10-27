@@ -8,7 +8,7 @@ import pl.psnc.indigo.fg.api.restful.category.UnitTests;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
-import pl.psnc.indigo.fg.api.restful.jaxb.Task.Status;
+import pl.psnc.indigo.fg.api.restful.jaxb.Status;
 
 import java.io.File;
 import java.io.IOException;

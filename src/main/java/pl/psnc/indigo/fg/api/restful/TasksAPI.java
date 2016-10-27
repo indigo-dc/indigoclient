@@ -281,7 +281,7 @@ public class TasksAPI extends RootAPI {
         // There is no sense to get output files for tasks that are not DONE
         // In case of tasks that are still running we will get the same url
         // that is: "url": "file?path=&name=sayhello.out"
-        if (task.getStatus() != Task.Status.DONE) {
+        if (task.getStatus() != pl.psnc.indigo.fg.api.restful.jaxb.Status.DONE) {
             return Collections.emptyList();
         }
 

@@ -4,22 +4,23 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import pl.psnc.indigo.fg.api.restful.category.UnitTests;
 import pl.psnc.indigo.fg.api.restful.jaxb.Application;
-import pl.psnc.indigo.fg.api.restful.jaxb.Application.Outcome;
 import pl.psnc.indigo.fg.api.restful.jaxb.Infrastructure;
 import pl.psnc.indigo.fg.api.restful.jaxb.InputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Link;
+import pl.psnc.indigo.fg.api.restful.jaxb.Outcome;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Parameter;
 import pl.psnc.indigo.fg.api.restful.jaxb.Root;
 import pl.psnc.indigo.fg.api.restful.jaxb.RuntimeData;
+import pl.psnc.indigo.fg.api.restful.jaxb.Status;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 import pl.psnc.indigo.fg.api.restful.jaxb.Version;
 
 import javax.ws.rs.core.MediaType;
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -30,44 +31,94 @@ import static org.junit.Assert.assertNotEquals;
 @Category(UnitTests.class)
 public class BeansTest {
     @Test
-    public void testApplication() {
+    public final void testApplication() {
+        LocalDateTime now = LocalDateTime.now();
+
         Application application = new Application();
         application.setId("Id");
         application.setDescription("Description");
         application.setName("Name");
-        application.setDate(new Date(0));
+        application.setDate(now);
         application.setInfrastructures(Collections.emptyList());
         application.setOutcome(Outcome.JOB);
         application.setEnabled(true);
         application.setParameters(Collections.emptyList());
-        assertEquals(
-                "Application[id=Id,description=Description,name=Name,"
-                + "date=1970-01-01T00:00:00Z,infrastructures=[],outcome=JOB,"
-                + "enabled=true,parameters=[]]", application.toString());
+        // @formatter:off
+        assertEquals("Application("
+                     + "id=Id, "
+                     + "description=Description, "
+                     + "name=Name, "
+                     + "date=" + now + ", "
+                     + "infrastructures=[], "
+                     + "outcome=JOB, "
+                     + "enabled=true, "
+                     + "parameters=[])", application.toString());
+        // @formatter:on
+
+        Application other = new Application();
+        other.setId(application.getId());
+        other.setDescription(application.getDescription());
+        other.setName(application.getName());
+        other.setDate(application.getDate());
+        other.setInfrastructures(application.getInfrastructures());
+        other.setOutcome(application.getOutcome());
+        other.setEnabled(application.isEnabled());
+        other.setParameters(application.getParameters());
+
+        assertEquals(application, application);
+        assertEquals(application, other);
+        assertEquals(application.hashCode(), other.hashCode());
+
+        assertNotEquals(application, null);
+        assertNotEquals(application, "");
     }
 
     @Test
-    public void testInfrastructure() {
+    public final void testInfrastructure() {
+        LocalDateTime now = LocalDateTime.now();
+
         Infrastructure infrastructure = new Infrastructure();
         infrastructure.setId("Id");
         infrastructure.setName("Name");
         infrastructure.setDescription("Description");
-        infrastructure.setDate(new Date(0));
+        infrastructure.setDate(now);
         infrastructure.setEnabled(true);
         infrastructure.setVirtual(true);
         infrastructure.setParameters(Collections.emptyList());
-        assertEquals("Infrastructure[id=Id,name=Name,description=Description,"
-                     + "date=1970-01-01T00:00:00Z,enabled=true,"
-                     + "virtual=true,parameters=[]]",
+        // @formatter:off
+        assertEquals("Infrastructure(id=Id, "
+                     + "name=Name, "
+                     + "description=Description, "
+                     + "date=" + now + ", "
+                     + "enabled=true, "
+                     + "virtual=true, "
+                     + "parameters=[])",
                      infrastructure.toString());
+        // @formatter:on
+
+        Infrastructure other = new Infrastructure();
+        other.setId(infrastructure.getId());
+        other.setName(infrastructure.getName());
+        other.setDescription(infrastructure.getDescription());
+        other.setDate(infrastructure.getDate());
+        other.setEnabled(infrastructure.isEnabled());
+        other.setVirtual(infrastructure.isVirtual());
+        other.setParameters(infrastructure.getParameters());
+
+        assertEquals(infrastructure, infrastructure);
+        assertEquals(infrastructure, other);
+        assertEquals(infrastructure.hashCode(), other.hashCode());
+
+        assertNotEquals(infrastructure, null);
+        assertNotEquals(infrastructure, "");
     }
 
     @Test
-    public void testInputFile() {
+    public final void testInputFile() {
         InputFile inputFile = new InputFile();
         inputFile.setName("Name");
         inputFile.setStatus("Status");
-        assertEquals("InputFile[name=Name,status=Status]",
+        assertEquals("InputFile(name=Name, status=Status)",
                      inputFile.toString());
 
         InputFile other = new InputFile();
@@ -83,19 +134,30 @@ public class BeansTest {
     }
 
     @Test
-    public void testLink() {
+    public final void testLink() {
         Link link = new Link();
         link.setHref("Href");
         link.setRel("Rel");
-        assertEquals("Link[rel=Rel,href=Href]", link.toString());
+        assertEquals("Link(rel=Rel, href=Href)", link.toString());
+
+        Link other = new Link();
+        other.setHref(link.getHref());
+        other.setRel(link.getRel());
+
+        assertEquals(link, link);
+        assertEquals(link, other);
+        assertEquals(link.hashCode(), other.hashCode());
+
+        assertNotEquals(link, null);
+        assertNotEquals(link, "");
     }
 
     @Test
-    public void testOutputFile() {
+    public final void testOutputFile() {
         OutputFile outputFile = new OutputFile();
         outputFile.setName("Name");
         outputFile.setUrl(URI.create("protocol://host:port/path"));
-        assertEquals("OutputFile[name=Name,url=protocol://host:port/path]",
+        assertEquals("OutputFile(name=Name, url=protocol://host:port/path)",
                      outputFile.toString());
 
         OutputFile other = new OutputFile();
@@ -111,13 +173,17 @@ public class BeansTest {
     }
 
     @Test
-    public void testParameter() {
+    public final void testParameter() {
         Parameter parameter = new Parameter();
         parameter.setName("Name");
         parameter.setValue("Value");
         parameter.setDescription("Description");
-        assertEquals("Parameter[name=Name,value=Value,description=Description]",
-                     parameter.toString());
+        // @formatter:off
+        assertEquals("Parameter("
+                     + "name=Name, "
+                     + "value=Value, "
+                     + "description=Description)", parameter.toString());
+        // @formatter:on
 
         Parameter other = new Parameter();
         other.setName(parameter.getName());
@@ -133,11 +199,11 @@ public class BeansTest {
     }
 
     @Test
-    public void testRoot() {
+    public final void testRoot() {
         Root root = new Root();
         root.setLinks(Collections.emptyList());
         root.setVersions(Collections.emptyList());
-        assertEquals("Root[links=[],versions=[]]", root.toString());
+        assertEquals("Root(links=[], versions=[])", root.toString());
 
         Root other = new Root();
         other.setLinks(root.getLinks());
@@ -152,18 +218,24 @@ public class BeansTest {
     }
 
     @Test
-    public void testRuntimeDate() {
+    public final void testRuntimeDate() {
+        LocalDateTime now = LocalDateTime.now();
+
         RuntimeData runtimeData = new RuntimeData();
         runtimeData.setName("Name");
         runtimeData.setValue("Value");
         runtimeData.setDescription("Description");
         runtimeData.setCreation("Creation");
         runtimeData.setDescription("Description");
-        runtimeData.setLastChange("LastChange");
-        assertEquals(
-                "RuntimeData[name=Name,value=Value,description=Description,"
-                + "creation=Creation,lastChange=LastChange]",
-                runtimeData.toString());
+        runtimeData.setLastChange(now);
+        // @formatter:off
+        assertEquals("RuntimeData("
+                     + "name=Name, "
+                     + "value=Value, "
+                     + "description=Description, "
+                     + "creation=Creation, "
+                     + "lastChange=" + now + ")", runtimeData.toString());
+        // @formatter:on
 
         RuntimeData other = new RuntimeData();
         other.setName(runtimeData.getName());
@@ -181,22 +253,83 @@ public class BeansTest {
     }
 
     @Test
-    public void testTask() {
+    public final void testTask() {
+        LocalDateTime now = LocalDateTime.now();
+
         Task task = new Task();
+        task.setId("Id");
+        task.setDate(now);
+        task.setLastChange(now);
+        task.setApplication("Application");
+        task.setInfrastructureTask("InfrastructureTask");
+        task.setDescription("Description");
+        task.setStatus(Status.DONE);
+        task.setUser("User");
+        task.setArguments(Collections.emptyList());
+        task.setInputFiles(Collections.emptyList());
+        task.setOutputFiles(Collections.emptyList());
+        task.setRuntimeData(Collections.emptyList());
+        task.setCreation("Creation");
+        task.setIosandbox("IOSandbox");
+        task.setLinks(Collections.emptyList());
+        // @formatter:off
+        assertEquals("Task("
+                     + "id=Id, "
+                     + "date=" + now + ", "
+                     + "lastChange=" + now + ", "
+                     + "application=Application, "
+                     + "infrastructureTask=InfrastructureTask, "
+                     + "description=Description, "
+                     + "status=DONE, "
+                     + "user=User, "
+                     + "arguments=[], "
+                     + "inputFiles=[], "
+                     + "outputFiles=[], "
+                     + "runtimeData=[], "
+                     + "creation=Creation, "
+                     + "iosandbox=IOSandbox, "
+                     + "links=[])", task.toString());
+        // @formatter:on
+
+        Task other = new Task();
+        other.setId(task.getId());
+        other.setDate(task.getDate());
+        other.setLastChange(task.getLastChange());
+        other.setApplication(task.getApplication());
+        other.setInfrastructureTask(task.getInfrastructureTask());
+        other.setDescription(task.getDescription());
+        other.setStatus(task.getStatus());
+        other.setUser(task.getUser());
+        other.setArguments(task.getArguments());
+        other.setInputFiles(task.getInputFiles());
+        other.setOutputFiles(task.getOutputFiles());
+        other.setRuntimeData(task.getRuntimeData());
+        other.setCreation(task.getCreation());
+        other.setIosandbox(task.getIosandbox());
+        other.setLinks(task.getLinks());
+
         assertEquals(task, task);
+        assertEquals(task, other);
+        assertEquals(task.hashCode(), other.hashCode());
+
         assertNotEquals(task, null);
         assertNotEquals(task, "");
     }
 
     @Test
-    public void testUpload() {
+    public final void testUpload() {
         Upload upload = new Upload();
         upload.setFiles(Collections.emptyList());
         upload.setMessage("Message");
         upload.setTask("Task");
         upload.setStatus("Status");
-        assertEquals("Upload[files=[],message=Message,task=Task,status=Status]",
+        // @formatter:off
+        assertEquals("Upload(files=[], "
+                     + "message=Message, "
+                     + "task=Task, "
+                     + "status=Status)",
                      upload.toString());
+        // @formatter:on
 
         Upload other = new Upload();
         other.setFiles(upload.getFiles());
@@ -213,7 +346,7 @@ public class BeansTest {
     }
 
     @Test
-    public void testVersion() {
+    public final void testVersion() {
         Version version = new Version();
         version.setStatus("Status");
         version.setUpdated("Updated");
@@ -221,8 +354,14 @@ public class BeansTest {
         version.setMediaType(MediaType.WILDCARD_TYPE);
         version.setLinks(Collections.emptyList());
         version.setId("Id");
-        assertEquals("Version[status=Status,updated=Updated,build=Build,"
-                     + "mediaType=*/*,links=[],id=Id]", version.toString());
+        // @formatter:off
+        assertEquals("Version(status=Status, "
+                     + "updated=Updated, "
+                     + "build=Build, "
+                     + "mediaType=*/*, "
+                     + "links=[], "
+                     + "id=Id)", version.toString());
+        // @formatter:on
 
         Version other = new Version();
         other.setStatus(version.getStatus());
