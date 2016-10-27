@@ -8,7 +8,7 @@ import pl.psnc.indigo.fg.api.restful.category.UnitTests;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
-import pl.psnc.indigo.fg.api.restful.jaxb.Status;
+import pl.psnc.indigo.fg.api.restful.jaxb.TaskStatus;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class TasksAPITest {
         assertEquals("2", task.getApplication());
         assertEquals("Test with files", task.getDescription());
         assertEquals("brunor", task.getUser());
-        assertEquals(Status.DONE, task.getStatus());
+        assertEquals(TaskStatus.DONE, task.getStatus());
     }
 
     @Test(expected = FutureGatewayException.class)

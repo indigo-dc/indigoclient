@@ -57,9 +57,8 @@ public class Version implements Serializable {
 
     @Override
     public final int hashCode() {
-        return new HashCodeBuilder(17, 37).append(status).append(updated)
-                                          .append(build).append(mediaType)
-                                          .append(links).append(id)
-                                          .toHashCode();
+        return new HashCodeBuilder().append(status).append(updated)
+                                    .append(build).append(mediaType)
+                                    .append(links).append(id).toHashCode();
     }
 }

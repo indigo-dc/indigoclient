@@ -40,7 +40,6 @@ public class Link implements Serializable {
 
     @Override
     public final int hashCode() {
-        return new HashCodeBuilder(17, 37).append(rel).append(href)
-                                          .toHashCode();
+        return new HashCodeBuilder().append(rel).append(href).toHashCode();
     }
 }

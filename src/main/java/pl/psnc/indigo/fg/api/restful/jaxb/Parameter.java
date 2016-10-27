@@ -43,7 +43,7 @@ public class Parameter implements Serializable {
 
     @Override
     public final int hashCode() {
-        return new HashCodeBuilder(17, 37).append(name).append(value)
-                                          .append(description).toHashCode();
+        return new HashCodeBuilder().append(name).append(value)
+                                    .append(description).toHashCode();
     }
 }

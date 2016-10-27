@@ -12,7 +12,7 @@ import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Parameter;
 import pl.psnc.indigo.fg.api.restful.jaxb.Root;
 import pl.psnc.indigo.fg.api.restful.jaxb.RuntimeData;
-import pl.psnc.indigo.fg.api.restful.jaxb.Status;
+import pl.psnc.indigo.fg.api.restful.jaxb.TaskStatus;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 import pl.psnc.indigo.fg.api.restful.jaxb.Version;
@@ -117,8 +117,8 @@ public class BeansTest {
     public final void testInputFile() {
         InputFile inputFile = new InputFile();
         inputFile.setName("Name");
-        inputFile.setStatus("Status");
-        assertEquals("InputFile(name=Name, status=Status)",
+        inputFile.setStatus("TaskStatus");
+        assertEquals("InputFile(name=Name, status=TaskStatus)",
                      inputFile.toString());
 
         InputFile other = new InputFile();
@@ -263,7 +263,7 @@ public class BeansTest {
         task.setApplication("Application");
         task.setInfrastructureTask("InfrastructureTask");
         task.setDescription("Description");
-        task.setStatus(Status.DONE);
+        task.setStatus(TaskStatus.DONE);
         task.setUser("User");
         task.setArguments(Collections.emptyList());
         task.setInputFiles(Collections.emptyList());
@@ -322,12 +322,12 @@ public class BeansTest {
         upload.setFiles(Collections.emptyList());
         upload.setMessage("Message");
         upload.setTask("Task");
-        upload.setStatus("Status");
+        upload.setStatus("TaskStatus");
         // @formatter:off
         assertEquals("Upload(files=[], "
                      + "message=Message, "
                      + "task=Task, "
-                     + "status=Status)",
+                     + "status=TaskStatus)",
                      upload.toString());
         // @formatter:on
 
@@ -348,14 +348,14 @@ public class BeansTest {
     @Test
     public final void testVersion() {
         Version version = new Version();
-        version.setStatus("Status");
+        version.setStatus("TaskStatus");
         version.setUpdated("Updated");
         version.setBuild("Build");
         version.setMediaType(MediaType.WILDCARD_TYPE);
         version.setLinks(Collections.emptyList());
         version.setId("Id");
         // @formatter:off
-        assertEquals("Version(status=Status, "
+        assertEquals("Version(status=TaskStatus, "
                      + "updated=Updated, "
                      + "build=Build, "
                      + "mediaType=*/*, "

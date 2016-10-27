@@ -44,7 +44,6 @@ public class InputFile implements Serializable {
 
     @Override
     public final int hashCode() {
-        return new HashCodeBuilder(17, 37).append(name).append(status)
-                                          .toHashCode();
+        return new HashCodeBuilder().append(name).append(status).toHashCode();
     }
 }

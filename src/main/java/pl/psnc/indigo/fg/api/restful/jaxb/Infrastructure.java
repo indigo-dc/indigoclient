@@ -60,9 +60,9 @@ public class Infrastructure implements Serializable {
 
     @Override
     public final int hashCode() {
-        return new HashCodeBuilder(17, 37).append(id).append(name)
-                                          .append(description).append(date)
-                                          .append(enabled).append(virtual)
-                                          .append(parameters).toHashCode();
+        return new HashCodeBuilder().append(id).append(name).append(description)
+                                    .append(date).append(enabled)
+                                    .append(virtual).append(parameters)
+                                    .toHashCode();
     }
 }

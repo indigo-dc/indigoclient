@@ -55,8 +55,8 @@ public class RuntimeData implements Serializable {
 
     @Override
     public final int hashCode() {
-        return new HashCodeBuilder(17, 37).append(name).append(value)
-                                          .append(description).append(creation)
-                                          .append(lastChange).toHashCode();
+        return new HashCodeBuilder().append(name).append(value)
+                                    .append(description).append(creation)
+                                    .append(lastChange).toHashCode();
     }
 }

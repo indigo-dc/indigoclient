@@ -46,8 +46,7 @@ public class Upload implements Serializable {
 
     @Override
     public final int hashCode() {
-        return new HashCodeBuilder(17, 37).append(files).append(message)
-                                          .append(task).append(status)
-                                          .toHashCode();
+        return new HashCodeBuilder().append(files).append(message).append(task)
+                                    .append(status).toHashCode();
     }
 }

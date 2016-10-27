@@ -64,10 +64,9 @@ public class Application implements Serializable {
 
     @Override
     public final int hashCode() {
-        return new HashCodeBuilder(17, 37).append(id).append(description)
-                                          .append(name).append(date)
-                                          .append(infrastructures)
-                                          .append(outcome).append(enabled)
-                                          .append(parameters).toHashCode();
+        return new HashCodeBuilder().append(id).append(description).append(name)
+                                    .append(date).append(infrastructures)
+                                    .append(outcome).append(enabled)
+                                    .append(parameters).toHashCode();
     }
 }

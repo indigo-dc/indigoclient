@@ -9,7 +9,7 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Application;
 import pl.psnc.indigo.fg.api.restful.jaxb.InputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
-import pl.psnc.indigo.fg.api.restful.jaxb.Status;
+import pl.psnc.indigo.fg.api.restful.jaxb.TaskStatus;
 
 import java.io.File;
 import java.io.IOException;
@@ -148,7 +148,7 @@ public class FutureGatewayTest {
         api.uploadFileForTask(result, new File(fileNameTXT));
 
         // We can check status and wait for "DONE"
-        Status status;
+        TaskStatus status;
         int retry = 100;
 
         do {
@@ -157,7 +157,7 @@ public class FutureGatewayTest {
             status = tmp.getStatus();
             Thread.sleep(5000L);
             retry--;
-        } while ((status != Status.DONE) && (retry > 0));
+        } while ((status != TaskStatus.DONE) && (retry > 0));
 
         if (retry == 0) {
             fail("To many retries");

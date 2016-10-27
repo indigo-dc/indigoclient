@@ -40,7 +40,7 @@ public class Task implements Serializable {
     private String application;
     private String infrastructureTask;
     private String description;
-    private Status status;
+    private TaskStatus status;
     private String user;
     private List<String> arguments = Collections.emptyList();
     @JsonProperty("input_files")
@@ -84,16 +84,14 @@ public class Task implements Serializable {
 
     @Override
     public final int hashCode() {
-        return new HashCodeBuilder(17, 37).append(id).append(date)
-                                          .append(lastChange)
-                                          .append(application)
-                                          .append(infrastructureTask)
-                                          .append(description).append(status)
-                                          .append(user).append(arguments)
-                                          .append(inputFiles)
-                                          .append(outputFiles)
-                                          .append(runtimeData).append(creation)
-                                          .append(iosandbox).append(links)
-                                          .toHashCode();
+        return new HashCodeBuilder().append(id).append(date).append(lastChange)
+                                    .append(application)
+                                    .append(infrastructureTask)
+                                    .append(description).append(status)
+                                    .append(user).append(arguments)
+                                    .append(inputFiles).append(outputFiles)
+                                    .append(runtimeData).append(creation)
+                                    .append(iosandbox).append(links)
+                                    .toHashCode();
     }
 }

@@ -43,7 +43,7 @@ public class Root implements Serializable {
 
     @Override
     public final int hashCode() {
-        return new HashCodeBuilder(17, 37).append(links).append(versions)
-                                          .toHashCode();
+        return new HashCodeBuilder().append(links).append(versions)
+                                    .toHashCode();
     }
 }
