@@ -1,40 +1,41 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
-import java.io.Serializable;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * A bean storing information about links to resources.
  */
+@Getter
+@Setter
+@ToString
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Link implements Serializable {
-    private static final long serialVersionUID = 1841770335729950116L;
+public class Link {
     private String rel;
     private String href;
 
-    public final String getRel() {
-        return rel;
-    }
+    @Override
+    public final boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
 
-    public final void setRel(final String rel) {
-        this.rel = rel;
-    }
+        if ((o == null) || (getClass() != o.getClass())) {
+            return false;
+        }
 
-    public final String getHref() {
-        return href;
-    }
-
-    public final void setHref(final String href) {
-        this.href = href;
+        Link other = (Link) o;
+        return new EqualsBuilder().append(rel, other.rel)
+                                  .append(href, other.href).isEquals();
     }
 
     @Override
-    public final String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("rel", rel).append("href", href).toString();
+    public final int hashCode() {
+        return new HashCodeBuilder().append(rel).append(href).toHashCode();
     }
 }

@@ -8,7 +8,7 @@ import pl.psnc.indigo.fg.api.restful.category.UnitTests;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
-import pl.psnc.indigo.fg.api.restful.jaxb.Task.Status;
+import pl.psnc.indigo.fg.api.restful.jaxb.TaskStatus;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,20 +16,17 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Category(UnitTests.class)
 public class TasksAPITest {
-    private MockRestSession session;
     private TasksAPI api;
 
     @Before
     public void before() throws IOException, FutureGatewayException {
-        session = new MockRestSession();
+        MockRestSession session = new MockRestSession();
         api = new TasksAPI(MockRestSession.MOCK_ADDRESS, session.getClient(),
                            "");
     }
@@ -51,7 +48,7 @@ public class TasksAPITest {
         assertEquals("2", task.getApplication());
         assertEquals("Test with files", task.getDescription());
         assertEquals("brunor", task.getUser());
-        assertEquals(Status.DONE, task.getStatus());
+        assertEquals(TaskStatus.DONE, task.getStatus());
     }
 
     @Test(expected = FutureGatewayException.class)
@@ -150,7 +147,7 @@ public class TasksAPITest {
         api.downloadOutputFile(outputFile, directory);
     }
 
-    @Test(expected = IOException.class)
+    @Test(expected = FutureGatewayException.class)
     public void testDownloadOutputFileNotDirectory()
             throws FutureGatewayException, IOException {
         File file = mock(File.class);
@@ -159,7 +156,7 @@ public class TasksAPITest {
         api.downloadOutputFile(new OutputFile(), file);
     }
 
-    @Test(expected = IOException.class)
+    @Test(expected = FutureGatewayException.class)
     public void testDownloadOutputFileCannotWrite()
             throws FutureGatewayException, IOException {
         File file = mock(File.class);
@@ -169,7 +166,7 @@ public class TasksAPITest {
         api.downloadOutputFile(new OutputFile(), file);
     }
 
-    @Test(expected = IOException.class)
+    @Test(expected = FutureGatewayException.class)
     public void testDownloadOutputFileCannotMkdir()
             throws FutureGatewayException, IOException {
         File file = mock(File.class);

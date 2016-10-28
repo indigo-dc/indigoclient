@@ -1,8 +1,7 @@
 package pl.psnc.indigo.fg.api.restful;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Application;
 
@@ -10,8 +9,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
@@ -21,15 +18,13 @@ import java.util.List;
 /**
  * Allows to query Future Gateway about available applications.
  */
+@Slf4j
 public class ApplicationsAPI extends RootAPI {
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(ApplicationsAPI.class);
-
     private final URI applicationsUri;
 
     /**
-     * Construct an instance configured to communicate with given Future
-     * Gateway instance using non-default {@link Client}.
+     * Construct an instance configured to communicate with given Future Gateway
+     * instance using non-default {@link Client}.
      *
      * @param baseUri            URI (protocol://host:port) of a Future Gateway
      *                           instance
@@ -50,8 +45,8 @@ public class ApplicationsAPI extends RootAPI {
     }
 
     /**
-     * Construct an instance configured to communicate with given Future
-     * Gateway instance.
+     * Construct an instance configured to communicate with given Future Gateway
+     * instance.
      *
      * @param baseUri            URI (protocol://host:port) of a Future Gateway
      *                           instance
@@ -79,7 +74,7 @@ public class ApplicationsAPI extends RootAPI {
      */
     public final List<Application> getAllApplications()
             throws FutureGatewayException {
-        ApplicationsAPI.LOGGER.debug("GET {}", applicationsUri);
+        ApplicationsAPI.log.debug("GET {}", applicationsUri);
         Response response = getClient().target(applicationsUri)
                                        .request(MediaType.APPLICATION_JSON_TYPE)
                                        .accept(MediaType.APPLICATION_JSON_TYPE)
@@ -88,15 +83,15 @@ public class ApplicationsAPI extends RootAPI {
                                        .header(HttpHeaders.AUTHORIZATION,
                                                getAuthorizationToken()).get();
 
-        StatusType status = response.getStatusInfo();
+        Response.StatusType status = response.getStatusInfo();
         int statusCode = status.getStatusCode();
         String reasonPhrase = status.getReasonPhrase();
-        ApplicationsAPI.LOGGER.debug("Status: {} {}", statusCode, reasonPhrase);
+        ApplicationsAPI.log.debug("Status: {} {}", statusCode, reasonPhrase);
 
         try {
-            if (statusCode == Status.OK.getStatusCode()) {
+            if (statusCode == Response.Status.OK.getStatusCode()) {
                 String body = response.readEntity(String.class);
-                ApplicationsAPI.LOGGER.trace("Body: {}", body);
+                ApplicationsAPI.log.trace("Body: {}", body);
                 JsonNode jsonNode = getMapper().readTree(body);
                 jsonNode = jsonNode.get("applications");
                 return Arrays.asList(getMapper().treeToValue(jsonNode,
@@ -106,12 +101,12 @@ public class ApplicationsAPI extends RootAPI {
                 String message =
                         "Failed to list all applications. Response: " + response
                                 .getStatus() + ' ' + response;
-                ApplicationsAPI.LOGGER.error(message);
+                ApplicationsAPI.log.error(message);
                 throw new FutureGatewayException(message);
             }
         } catch (IOException e) {
             String message = "Failed to list all applications";
-            ApplicationsAPI.LOGGER.error(message, e);
+            ApplicationsAPI.log.error(message, e);
             throw new FutureGatewayException(message, e);
         } finally {
             response.close();
@@ -131,7 +126,7 @@ public class ApplicationsAPI extends RootAPI {
     public final Application getApplication(final String id)
             throws FutureGatewayException {
         URI uri = UriBuilder.fromUri(applicationsUri).path(id).build();
-        ApplicationsAPI.LOGGER.debug("GET {}", uri);
+        ApplicationsAPI.log.debug("GET {}", uri);
         Response response =
                 getClient().target(uri).request(MediaType.APPLICATION_JSON_TYPE)
                            .accept(MediaType.APPLICATION_JSON_TYPE)
@@ -140,26 +135,26 @@ public class ApplicationsAPI extends RootAPI {
                            .header(HttpHeaders.AUTHORIZATION,
                                    getAuthorizationToken()).get();
 
-        StatusType status = response.getStatusInfo();
+        Response.StatusType status = response.getStatusInfo();
         int statusCode = status.getStatusCode();
         String reasonPhrase = status.getReasonPhrase();
-        ApplicationsAPI.LOGGER.debug("Status: {} {}", statusCode, reasonPhrase);
+        ApplicationsAPI.log.debug("Status: {} {}", statusCode, reasonPhrase);
 
         try {
-            if (statusCode == Status.OK.getStatusCode()) {
+            if (statusCode == Response.Status.OK.getStatusCode()) {
                 String body = response.readEntity(String.class);
-                ApplicationsAPI.LOGGER.trace("Body: {}", body);
+                ApplicationsAPI.log.trace("Body: {}", body);
                 return getMapper().readValue(body, Application.class);
             } else {
                 String message =
                         "Failed to list application " + id + ". Response: "
                         + response.getStatus() + ' ' + response;
-                ApplicationsAPI.LOGGER.error(message);
+                ApplicationsAPI.log.error(message);
                 throw new FutureGatewayException(message);
             }
         } catch (IOException e) {
             String message = "Failed to list application " + id;
-            ApplicationsAPI.LOGGER.error(message, e);
+            ApplicationsAPI.log.error(message, e);
             throw new FutureGatewayException(message, e);
         } finally {
             response.close();

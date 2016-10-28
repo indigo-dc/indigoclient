@@ -1,10 +1,9 @@
 package pl.psnc.indigo.fg.api.restful;
 
+import lombok.extern.slf4j.Slf4j;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -16,9 +15,8 @@ import java.util.Map;
  * A filter for JAX-RS requests which will log both headers and body of HTTP
  * requests.
  */
+@Slf4j
 public class RequestLogger implements ClientRequestFilter {
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(RequestLogger.class);
     private static final int ONE_KB = 1024;
 
     @Override
@@ -27,12 +25,12 @@ public class RequestLogger implements ClientRequestFilter {
         RequestLogger.describeHeaders(clientRequestContext, builder);
         builder.append(System.lineSeparator());
         RequestLogger.describeBody(clientRequestContext, builder);
-        RequestLogger.LOGGER.trace(builder.toString());
+        RequestLogger.log.trace(builder.toString());
     }
 
     /**
-     * Fill information about the body of message i.e. its content of
-     * filename in case of file upload.
+     * Fill information about the body of message i.e. its content of filename
+     * in case of file upload.
      *
      * @param context Context of the HTTP request.
      * @param builder Where the output will be appended.
@@ -41,19 +39,27 @@ public class RequestLogger implements ClientRequestFilter {
                                      final StringBuilder builder) {
         if ((context != null) && context.hasEntity()) {
             Object entity = context.getEntity();
-
             if (entity instanceof MultiPart) {
-                for (final BodyPart part : ((MultiPart) entity)
-                        .getBodyParts()) {
-                    if (part instanceof FileDataBodyPart) {
-                        builder.append(
-                                ((FileDataBodyPart) part).getFileEntity());
-                    } else {
-                        builder.append(part);
-                    }
-                }
+                RequestLogger.describeMultiPart(builder, (MultiPart) entity);
             } else {
                 builder.append(entity);
+            }
+        }
+    }
+
+    /**
+     * Fill information about a multipart fragment of the body of message.
+     *
+     * @param builder Where the output will be appended.
+     * @param entity  The entity itself.
+     */
+    private static void describeMultiPart(final StringBuilder builder,
+                                          final MultiPart entity) {
+        for (final BodyPart part : entity.getBodyParts()) {
+            if (part instanceof FileDataBodyPart) {
+                builder.append(((FileDataBodyPart) part).getFileEntity());
+            } else {
+                builder.append(part);
             }
         }
     }

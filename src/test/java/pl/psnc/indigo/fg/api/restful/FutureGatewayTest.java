@@ -9,17 +9,16 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Application;
 import pl.psnc.indigo.fg.api.restful.jaxb.InputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
-import pl.psnc.indigo.fg.api.restful.jaxb.Task.Status;
+import pl.psnc.indigo.fg.api.restful.jaxb.TaskStatus;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.core.Is.is;
 
 @Category(IntegrationTests.class)
@@ -28,20 +27,20 @@ public class FutureGatewayTest {
 
     @Test
     public final void testGetRoot() throws FutureGatewayException {
-        new RootAPI(RootAPI.LOCALHOST_ADDRESS, "");
+        new RootAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
     }
 
     @Test
     public final void testGetAllApplications() throws FutureGatewayException {
-        ApplicationsAPI api = new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS,
-                                                  "");
+        ApplicationsAPI api =
+                new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
         api.getAllApplications();
     }
 
     @Test
     public final void testGetApplication() throws FutureGatewayException {
-        ApplicationsAPI api = new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS,
-                                                  "");
+        ApplicationsAPI api =
+                new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
         Application application = api.getApplication("1");
         String name = application.getName();
         Assert.assertThat("hostname", is(name));
@@ -49,7 +48,7 @@ public class FutureGatewayTest {
 
     @Test
     public final void testCreateTask() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
 
         Task task = new Task();
         task.setUser(FutureGatewayTest.USERNAME);
@@ -64,7 +63,7 @@ public class FutureGatewayTest {
 
     @Test
     public final void testSubmitTaskWithFiles() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
 
         Task newTask = new Task();
         newTask.setUser(FutureGatewayTest.USERNAME);
@@ -103,14 +102,13 @@ public class FutureGatewayTest {
     }
 
     /**
-     * This test is a complete scenario where job is submitted, executed
-     * and all outputs are retrieved.
+     * This test is a complete scenario where job is submitted, executed and all
+     * outputs are retrieved.
      */
     @Test
     public final void testSubmitTaskWithFilesWaitGetOutputs()
-            throws FutureGatewayException, InterruptedException,
-                   URISyntaxException, IOException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
+            throws FutureGatewayException {
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
 
         Task newTask = new Task();
         newTask.setUser(FutureGatewayTest.USERNAME);
@@ -140,6 +138,7 @@ public class FutureGatewayTest {
 
         newTask.setArguments(arguments);
         Task result = api.createTask(newTask);
+        String id = result.getId();
 
         // Once task is created, we can upload files
         String fileNameSH = getClass().getResource("/sayhello.sh").getFile();
@@ -147,23 +146,12 @@ public class FutureGatewayTest {
         api.uploadFileForTask(result, new File(fileNameSH));
         api.uploadFileForTask(result, new File(fileNameTXT));
 
-        // We can check status and wait for "DONE"
-        Status status;
-        int retry = 100;
+        await().atMost(10, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS)
+               .until(() -> {
+                   Task task = api.getTask(id);
+                   return task.getStatus() == TaskStatus.DONE;
+               });
 
-        do {
-            String id = result.getId();
-            Task tmp = api.getTask(id);
-            status = tmp.getStatus();
-            Thread.sleep(5000L);
-            retry--;
-        } while ((status != Status.DONE) && (retry > 0));
-
-        if (retry == 0) {
-            fail("To many retries");
-        }
-
-        String id = result.getId();
         List<OutputFile> files = api.getOutputsForTask(id);
         String file = getClass().getResource("/outputs").getFile();
         File outputDir = new File(file);
@@ -175,7 +163,7 @@ public class FutureGatewayTest {
 
     @Test
     public final void testGetTask() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
 
         Task newTask = new Task();
         newTask.setUser(FutureGatewayTest.USERNAME);
@@ -185,13 +173,13 @@ public class FutureGatewayTest {
 
     @Test
     public final void testGetAllTasks() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
         api.getAllTasks(FutureGatewayTest.USERNAME);
     }
 
     @Test
     public final void testDeleteTask() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
 
         Task task = new Task();
         task.setApplication("1");
