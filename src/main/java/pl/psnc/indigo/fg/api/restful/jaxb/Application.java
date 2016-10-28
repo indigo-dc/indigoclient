@@ -1,6 +1,7 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
@@ -26,15 +27,19 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Application {
     private String id;
-    private String description;
     private String name;
+    private String description;
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime date;
+    private LocalDateTime creation;
+    private List<Parameter> parameters;
+    @JsonProperty("input_files")
+    private List<InputFile> inputFiles;
     private List<Infrastructure> infrastructures;
     private Outcome outcome;
     private boolean enabled;
-    private List<Parameter> parameters;
+    @JsonProperty("_links")
+    private List<Link> links;
 
     @Override
     public final boolean equals(final Object o) {
@@ -48,22 +53,23 @@ public class Application {
 
         Application other = (Application) o;
         return new EqualsBuilder().append(enabled, other.enabled)
-                                  .append(id, other.id)
+                                  .append(id, other.id).append(name, other.name)
                                   .append(description, other.description)
-                                  .append(name, other.name)
-                                  .append(date, other.date)
+                                  .append(creation, other.creation)
+                                  .append(parameters, other.parameters)
+                                  .append(inputFiles, other.inputFiles)
                                   .append(infrastructures,
                                           other.infrastructures)
                                   .append(outcome, other.outcome)
-                                  .append(parameters, other.parameters)
-                                  .isEquals();
+                                  .append(links, other.links).isEquals();
     }
 
     @Override
     public final int hashCode() {
-        return new HashCodeBuilder().append(id).append(description).append(name)
-                                    .append(date).append(infrastructures)
+        return new HashCodeBuilder().append(id).append(name).append(description)
+                                    .append(creation).append(parameters)
+                                    .append(inputFiles).append(infrastructures)
                                     .append(outcome).append(enabled)
-                                    .append(parameters).toHashCode();
+                                    .append(links).toHashCode();
     }
 }

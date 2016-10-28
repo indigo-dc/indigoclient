@@ -12,8 +12,8 @@ import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Parameter;
 import pl.psnc.indigo.fg.api.restful.jaxb.Root;
 import pl.psnc.indigo.fg.api.restful.jaxb.RuntimeData;
-import pl.psnc.indigo.fg.api.restful.jaxb.TaskStatus;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
+import pl.psnc.indigo.fg.api.restful.jaxb.TaskStatus;
 import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 import pl.psnc.indigo.fg.api.restful.jaxb.Version;
 
@@ -36,34 +36,40 @@ public class BeansTest {
 
         Application application = new Application();
         application.setId("Id");
-        application.setDescription("Description");
         application.setName("Name");
-        application.setDate(now);
+        application.setDescription("Description");
+        application.setCreation(now);
+        application.setParameters(Collections.emptyList());
+        application.setInputFiles(Collections.emptyList());
         application.setInfrastructures(Collections.emptyList());
         application.setOutcome(Outcome.JOB);
         application.setEnabled(true);
-        application.setParameters(Collections.emptyList());
+        application.setLinks(Collections.emptyList());
         // @formatter:off
         assertEquals("Application("
                      + "id=Id, "
-                     + "description=Description, "
                      + "name=Name, "
-                     + "date=" + now + ", "
+                     + "description=Description, "
+                     + "creation=" + now + ", "
+                     + "parameters=[], "
+                     + "inputFiles=[], "
                      + "infrastructures=[], "
                      + "outcome=JOB, "
                      + "enabled=true, "
-                     + "parameters=[])", application.toString());
+                     + "links=[])", application.toString());
         // @formatter:on
 
         Application other = new Application();
         other.setId(application.getId());
-        other.setDescription(application.getDescription());
         other.setName(application.getName());
-        other.setDate(application.getDate());
+        other.setDescription(application.getDescription());
+        other.setCreation(application.getCreation());
+        other.setParameters(application.getParameters());
+        other.setInputFiles(application.getInputFiles());
         other.setInfrastructures(application.getInfrastructures());
         other.setOutcome(application.getOutcome());
         other.setEnabled(application.isEnabled());
-        other.setParameters(application.getParameters());
+        other.setLinks(application.getLinks());
 
         assertEquals(application, application);
         assertEquals(application, other);
@@ -81,18 +87,19 @@ public class BeansTest {
         infrastructure.setId("Id");
         infrastructure.setName("Name");
         infrastructure.setDescription("Description");
-        infrastructure.setDate(now);
+        infrastructure.setCreation(now);
+        infrastructure.setParameters(Collections.emptyList());
         infrastructure.setEnabled(true);
         infrastructure.setVirtual(true);
-        infrastructure.setParameters(Collections.emptyList());
         // @formatter:off
-        assertEquals("Infrastructure(id=Id, "
+        assertEquals("Infrastructure("
+                     + "id=Id, "
                      + "name=Name, "
                      + "description=Description, "
-                     + "date=" + now + ", "
+                     + "creation=" + now + ", "
+                     + "parameters=[], "
                      + "enabled=true, "
-                     + "virtual=true, "
-                     + "parameters=[])",
+                     + "virtual=true)",
                      infrastructure.toString());
         // @formatter:on
 
@@ -100,10 +107,10 @@ public class BeansTest {
         other.setId(infrastructure.getId());
         other.setName(infrastructure.getName());
         other.setDescription(infrastructure.getDescription());
-        other.setDate(infrastructure.getDate());
+        other.setCreation(infrastructure.getCreation());
+        other.setParameters(infrastructure.getParameters());
         other.setEnabled(infrastructure.isEnabled());
         other.setVirtual(infrastructure.isVirtual());
-        other.setParameters(infrastructure.getParameters());
 
         assertEquals(infrastructure, infrastructure);
         assertEquals(infrastructure, other);

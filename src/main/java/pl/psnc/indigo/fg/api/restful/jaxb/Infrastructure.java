@@ -1,6 +1,7 @@
 package pl.psnc.indigo.fg.api.restful.jaxb;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
@@ -30,10 +31,11 @@ public class Infrastructure {
     private String description;
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime date;
-    private boolean enabled;
-    private boolean virtual;
+    private LocalDateTime creation;
     private List<Parameter> parameters;
+    private boolean enabled;
+    @JsonProperty("vinfra")
+    private boolean virtual;
 
     @Override
     public final boolean equals(final Object o) {
@@ -50,7 +52,7 @@ public class Infrastructure {
                                   .append(virtual, other.virtual)
                                   .append(id, other.id).append(name, other.name)
                                   .append(description, other.description)
-                                  .append(date, other.date)
+                                  .append(creation, other.creation)
                                   .append(parameters, other.parameters)
                                   .isEquals();
     }
@@ -58,8 +60,8 @@ public class Infrastructure {
     @Override
     public final int hashCode() {
         return new HashCodeBuilder().append(id).append(name).append(description)
-                                    .append(date).append(enabled)
-                                    .append(virtual).append(parameters)
+                                    .append(creation).append(parameters)
+                                    .append(enabled).append(virtual)
                                     .toHashCode();
     }
 }
