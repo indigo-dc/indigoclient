@@ -12,8 +12,6 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.TaskStatus;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -29,20 +27,20 @@ public class FutureGatewayTest {
 
     @Test
     public final void testGetRoot() throws FutureGatewayException {
-        new RootAPI(RootAPI.LOCALHOST_ADDRESS, "");
+        new RootAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
     }
 
     @Test
     public final void testGetAllApplications() throws FutureGatewayException {
         ApplicationsAPI api =
-                new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS, "");
+                new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
         api.getAllApplications();
     }
 
     @Test
     public final void testGetApplication() throws FutureGatewayException {
         ApplicationsAPI api =
-                new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS, "");
+                new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
         Application application = api.getApplication("1");
         String name = application.getName();
         Assert.assertThat("hostname", is(name));
@@ -50,7 +48,7 @@ public class FutureGatewayTest {
 
     @Test
     public final void testCreateTask() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
 
         Task task = new Task();
         task.setUser(FutureGatewayTest.USERNAME);
@@ -65,7 +63,7 @@ public class FutureGatewayTest {
 
     @Test
     public final void testSubmitTaskWithFiles() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
 
         Task newTask = new Task();
         newTask.setUser(FutureGatewayTest.USERNAME);
@@ -109,9 +107,8 @@ public class FutureGatewayTest {
      */
     @Test
     public final void testSubmitTaskWithFilesWaitGetOutputs()
-            throws FutureGatewayException, InterruptedException,
-                   URISyntaxException, IOException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
+            throws FutureGatewayException {
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
 
         Task newTask = new Task();
         newTask.setUser(FutureGatewayTest.USERNAME);
@@ -149,10 +146,11 @@ public class FutureGatewayTest {
         api.uploadFileForTask(result, new File(fileNameSH));
         api.uploadFileForTask(result, new File(fileNameTXT));
 
-        await().atMost(10, TimeUnit.MINUTES).until(() -> {
-            Task task = api.getTask(id);
-            return task.getStatus() == TaskStatus.DONE;
-        });
+        await().atMost(10, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS)
+               .until(() -> {
+                   Task task = api.getTask(id);
+                   return task.getStatus() == TaskStatus.DONE;
+               });
 
         List<OutputFile> files = api.getOutputsForTask(id);
         String file = getClass().getResource("/outputs").getFile();
@@ -165,7 +163,7 @@ public class FutureGatewayTest {
 
     @Test
     public final void testGetTask() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
 
         Task newTask = new Task();
         newTask.setUser(FutureGatewayTest.USERNAME);
@@ -175,13 +173,13 @@ public class FutureGatewayTest {
 
     @Test
     public final void testGetAllTasks() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
         api.getAllTasks(FutureGatewayTest.USERNAME);
     }
 
     @Test
     public final void testDeleteTask() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "");
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
 
         Task task = new Task();
         task.setApplication("1");
