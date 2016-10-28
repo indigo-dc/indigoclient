@@ -118,7 +118,7 @@ public class TasksAPI extends RootAPI {
         Response.StatusType status = response.getStatusInfo();
         int statusCode = status.getStatusCode();
         String reasonPhrase = status.getReasonPhrase();
-        TasksAPI.log.debug("TaskStatus: {} {}", statusCode, reasonPhrase);
+        TasksAPI.log.debug("Status: {} {}", statusCode, reasonPhrase);
 
         try {
             if (statusCode == Response.Status.OK.getStatusCode()) {
@@ -178,7 +178,7 @@ public class TasksAPI extends RootAPI {
             Response.StatusType status = response.getStatusInfo();
             int statusCode = status.getStatusCode();
             String reasonPhrase = status.getReasonPhrase();
-            TasksAPI.log.debug("TaskStatus: {} {}", statusCode, reasonPhrase);
+            TasksAPI.log.debug("Status: {} {}", statusCode, reasonPhrase);
 
             if (statusCode == Response.Status.OK.getStatusCode()) {
                 String body = response.readEntity(String.class);
@@ -232,7 +232,7 @@ public class TasksAPI extends RootAPI {
         Response.StatusType status = response.getStatusInfo();
         int statusCode = status.getStatusCode();
         String reasonPhrase = status.getReasonPhrase();
-        TasksAPI.log.debug("TaskStatus: {} {}", statusCode, reasonPhrase);
+        TasksAPI.log.debug("Status: {} {}", statusCode, reasonPhrase);
 
         try {
             if (statusCode == Response.Status.OK.getStatusCode()) {
@@ -288,25 +288,15 @@ public class TasksAPI extends RootAPI {
      *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
-     * @throws IOException            If I/O operations fail (directory
-     *                                creation, file writing, etc.)
      */
     public final void downloadOutputFile(final OutputFile outputFile,
                                          final File directory)
-            throws FutureGatewayException, IOException {
-        if (directory.exists()) {
-            if (!directory.isDirectory()) {
-                throw new IOException(
-                        "Output path exists and is not a directory: "
-                        + directory);
-            } else if (!directory.canWrite()) {
-                throw new IOException("Cannot write to: " + directory);
-            }
-        } else {
-            if (!directory.mkdirs()) {
-                throw new IOException(
-                        "Failed to create directory: " + directory);
-            }
+            throws FutureGatewayException {
+        try {
+            TasksAPI.testLocalFolderPermissions(directory);
+        } catch (IOException e) {
+            throw new FutureGatewayException("Failed to download output file",
+                                             e);
         }
 
         URI outputFileUri = outputFile.getUrl();
@@ -340,8 +330,37 @@ public class TasksAPI extends RootAPI {
                 TasksAPI.log.error(message);
                 throw new FutureGatewayException(message);
             }
+        } catch (IOException e) {
+            throw new FutureGatewayException("Failed to download file", e);
         } finally {
             response.close();
+        }
+    }
+
+    /**
+     * Check if given path points to a valid directory where outputs can be
+     * downloaded.
+     *
+     * @param localFolder A path on local drive.
+     *
+     * @throws IOException If anything is found to be wrong in the given path.
+     */
+    private static void testLocalFolderPermissions(final File localFolder)
+            throws IOException {
+        if (localFolder.exists()) {
+            if (!localFolder.isDirectory()) {
+                throw new IOException(
+                        "Output path exists and is " + "not a directory: "
+                        + localFolder);
+            }
+            if (!localFolder.canWrite()) {
+                throw new IOException("Cannot write to: " + localFolder);
+            }
+        } else {
+            if (!localFolder.mkdirs()) {
+                throw new IOException(
+                        "Failed to create directory: " + localFolder);
+            }
         }
     }
 
@@ -393,9 +412,7 @@ public class TasksAPI extends RootAPI {
             TasksAPI.log.error(message, e);
             throw new FutureGatewayException(message, e);
         } finally {
-            if (response != null) {
-                response.close();
-            }
+            response.close();
         }
     }
 

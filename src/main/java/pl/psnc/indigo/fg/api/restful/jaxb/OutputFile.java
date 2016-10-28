@@ -9,7 +9,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.OutputFileDeserializer;
 
-import java.io.Serializable;
 import java.net.URI;
 
 /**
@@ -21,9 +20,7 @@ import java.net.URI;
 @FutureGatewayBean
 @JsonDeserialize(using = OutputFileDeserializer.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OutputFile implements Serializable {
-    private static final long serialVersionUID = -6923395958538037455L;
-
+public class OutputFile {
     private String name;
     private URI url;
 

@@ -1,7 +1,6 @@
 package pl.psnc.indigo.fg.api.restful.jaxb.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
@@ -17,7 +16,7 @@ public class LocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
     public final void serialize(final LocalDateTime localDateTime,
                                 final JsonGenerator jsonGenerator,
                                 final SerializerProvider serializerProvider)
-            throws IOException, JsonProcessingException {
+            throws IOException {
         jsonGenerator.writeString(
                 localDateTime.format(DateTimeFormatter.ISO_DATE_TIME));
     }

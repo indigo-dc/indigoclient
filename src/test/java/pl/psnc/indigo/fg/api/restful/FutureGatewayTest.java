@@ -16,10 +16,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.core.Is.is;
 
 @Category(IntegrationTests.class)
@@ -33,15 +34,15 @@ public class FutureGatewayTest {
 
     @Test
     public final void testGetAllApplications() throws FutureGatewayException {
-        ApplicationsAPI api = new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS,
-                                                  "");
+        ApplicationsAPI api =
+                new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS, "");
         api.getAllApplications();
     }
 
     @Test
     public final void testGetApplication() throws FutureGatewayException {
-        ApplicationsAPI api = new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS,
-                                                  "");
+        ApplicationsAPI api =
+                new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS, "");
         Application application = api.getApplication("1");
         String name = application.getName();
         Assert.assertThat("hostname", is(name));
@@ -103,8 +104,8 @@ public class FutureGatewayTest {
     }
 
     /**
-     * This test is a complete scenario where job is submitted, executed
-     * and all outputs are retrieved.
+     * This test is a complete scenario where job is submitted, executed and all
+     * outputs are retrieved.
      */
     @Test
     public final void testSubmitTaskWithFilesWaitGetOutputs()
@@ -140,6 +141,7 @@ public class FutureGatewayTest {
 
         newTask.setArguments(arguments);
         Task result = api.createTask(newTask);
+        String id = result.getId();
 
         // Once task is created, we can upload files
         String fileNameSH = getClass().getResource("/sayhello.sh").getFile();
@@ -147,23 +149,11 @@ public class FutureGatewayTest {
         api.uploadFileForTask(result, new File(fileNameSH));
         api.uploadFileForTask(result, new File(fileNameTXT));
 
-        // We can check status and wait for "DONE"
-        TaskStatus status;
-        int retry = 100;
+        await().atMost(10, TimeUnit.MINUTES).until(() -> {
+            Task task = api.getTask(id);
+            return task.getStatus() == TaskStatus.DONE;
+        });
 
-        do {
-            String id = result.getId();
-            Task tmp = api.getTask(id);
-            status = tmp.getStatus();
-            Thread.sleep(5000L);
-            retry--;
-        } while ((status != TaskStatus.DONE) && (retry > 0));
-
-        if (retry == 0) {
-            fail("To many retries");
-        }
-
-        String id = result.getId();
         List<OutputFile> files = api.getOutputsForTask(id);
         String file = getClass().getResource("/outputs").getFile();
         File outputDir = new File(file);

@@ -12,7 +12,6 @@ import pl.psnc.indigo.fg.api.restful.jaxb.serialization
         .LocalDateTimeDeserializer;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.LocalDateTimeSerializer;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,9 +24,7 @@ import java.util.List;
 @ToString
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Application implements Serializable {
-    private static final long serialVersionUID = -3560288874659978838L;
-
+public class Application {
     private String id;
     private String description;
     private String name;

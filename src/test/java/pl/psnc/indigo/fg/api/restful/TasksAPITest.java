@@ -16,20 +16,17 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Category(UnitTests.class)
 public class TasksAPITest {
-    private MockRestSession session;
     private TasksAPI api;
 
     @Before
     public void before() throws IOException, FutureGatewayException {
-        session = new MockRestSession();
+        MockRestSession session = new MockRestSession();
         api = new TasksAPI(MockRestSession.MOCK_ADDRESS, session.getClient(),
                            "");
     }
@@ -150,7 +147,7 @@ public class TasksAPITest {
         api.downloadOutputFile(outputFile, directory);
     }
 
-    @Test(expected = IOException.class)
+    @Test(expected = FutureGatewayException.class)
     public void testDownloadOutputFileNotDirectory()
             throws FutureGatewayException, IOException {
         File file = mock(File.class);
@@ -159,7 +156,7 @@ public class TasksAPITest {
         api.downloadOutputFile(new OutputFile(), file);
     }
 
-    @Test(expected = IOException.class)
+    @Test(expected = FutureGatewayException.class)
     public void testDownloadOutputFileCannotWrite()
             throws FutureGatewayException, IOException {
         File file = mock(File.class);
@@ -169,7 +166,7 @@ public class TasksAPITest {
         api.downloadOutputFile(new OutputFile(), file);
     }
 
-    @Test(expected = IOException.class)
+    @Test(expected = FutureGatewayException.class)
     public void testDownloadOutputFileCannotMkdir()
             throws FutureGatewayException, IOException {
         File file = mock(File.class);

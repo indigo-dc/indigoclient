@@ -7,8 +7,6 @@ import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import java.io.Serializable;
-
 /**
  * A bean storing information about links to resources.
  */
@@ -17,9 +15,7 @@ import java.io.Serializable;
 @ToString
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Link implements Serializable {
-    private static final long serialVersionUID = 1841770335729950116L;
-
+public class Link {
     private String rel;
     private String href;
 

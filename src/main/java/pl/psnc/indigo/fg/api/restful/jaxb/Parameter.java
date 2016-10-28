@@ -7,8 +7,6 @@ import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import java.io.Serializable;
-
 /**
  * A bean containing name, value and description of a parameter.
  */
@@ -17,9 +15,7 @@ import java.io.Serializable;
 @ToString
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Parameter implements Serializable {
-    private static final long serialVersionUID = -5116819489641098653L;
-
+public class Parameter {
     private String name;
     private String value;
     private String description;

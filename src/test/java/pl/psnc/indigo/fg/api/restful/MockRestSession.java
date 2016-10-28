@@ -7,11 +7,10 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,16 +26,16 @@ import static org.mockito.Mockito.when;
 public class MockRestSession {
     public static final URI MOCK_ADDRESS = URI.create("http://mock:8888");
 
-    private static Task MOCK_TASK;
+    private static Task mockTask;
 
-    public static final Task getMockTask() {
-        if (MockRestSession.MOCK_TASK == null) {
-            MOCK_TASK = new Task();
-            MOCK_TASK.setUser("brunor");
-            MOCK_TASK.setApplication("1");
-            MOCK_TASK.setDescription("hello");
+    public static synchronized Task getMockTask() {
+        if (MockRestSession.mockTask == null) {
+            MockRestSession.mockTask = new Task();
+            MockRestSession.mockTask.setUser("brunor");
+            MockRestSession.mockTask.setApplication("1");
+            MockRestSession.mockTask.setDescription("hello");
         }
-        return MockRestSession.MOCK_TASK;
+        return MockRestSession.mockTask;
     }
 
     private final Client client = mock(Client.class);
@@ -44,6 +43,7 @@ public class MockRestSession {
     private final ObjectMapper mapper = new ObjectMapper();
 
     public MockRestSession() throws IOException {
+        super();
         mockRootAPI();
         mockApplicationsAPI();
         mockTasksAPI();
@@ -54,126 +54,128 @@ public class MockRestSession {
                             .path("tasks").queryParam("user", "all-tasks")
                             .build();
         String body = readResource("tasks.json");
-        mockGetPostResponse(uri, Status.OK, body);
+        mockGetPostResponse(uri, Response.Status.OK, body);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("tasks").path("1").build();
         body = readResource("tasks_1.json");
-        mockGetPostResponse(uri, Status.OK, body);
+        mockGetPostResponse(uri, Response.Status.OK, body);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("tasks").path("2").build();
         body = readResource("tasks_2.json");
-        mockGetPostResponse(uri, Status.OK, body);
+        mockGetPostResponse(uri, Response.Status.OK, body);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("tasks").path("invalid-uri").build();
-        mockGetPostResponse(uri, Status.NOT_FOUND, "");
+        mockGetPostResponse(uri, Response.Status.NOT_FOUND, "");
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("tasks").path("invalid-body").build();
         body = "invalid-JSON-body";
-        mockGetPostResponse(uri, Status.OK, body);
+        mockGetPostResponse(uri, Response.Status.OK, body);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("file").queryParam("path", "/tmp")
                         .queryParam("name", "test.txt").build();
         InputStream streamBody =
                 IOUtils.toInputStream("TEST", Charset.defaultCharset());
-        mockGetPostResponse(uri, Status.OK, streamBody);
+        mockGetPostResponse(uri, Response.Status.OK, streamBody);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("file").queryParam("path", "/tmp")
                         .queryParam("name", "non-existing-file").build();
-        mockGetPostResponse(uri, Status.NOT_FOUND, "");
+        mockGetPostResponse(uri, Response.Status.NOT_FOUND, "");
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("tasks").queryParam("user", "brunor").build();
         body = mapper.writeValueAsString(MockRestSession.getMockTask());
-        mockGetPostResponse(uri, Status.OK, body);
+        mockGetPostResponse(uri, Response.Status.OK, body);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("tasks").queryParam("user", "invalid-uri")
                         .build();
-        mockGetPostResponse(uri, Status.FORBIDDEN, "");
+        mockGetPostResponse(uri, Response.Status.FORBIDDEN, "");
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("tasks").queryParam("user", "invalid-body")
                         .build();
-        mockGetPostResponse(uri, Status.OK, "invalid-JSON-body");
+        mockGetPostResponse(uri, Response.Status.OK, "invalid-JSON-body");
 
-        uri = UriBuilder.fromUri(MOCK_ADDRESS).path("v1.0").path("tasks")
-                        .path("1").path("input").queryParam("user", "brunor")
-                        .build();
+        uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
+                        .path("tasks").path("1").path("input")
+                        .queryParam("user", "brunor").build();
         body = mapper.writeValueAsString(new Upload());
-        mockGetPostResponse(uri, Status.OK, body);
+        mockGetPostResponse(uri, Response.Status.OK, body);
 
-        uri = UriBuilder.fromUri(MOCK_ADDRESS).path("v1.0").path("tasks")
-                        .path("1").path("input")
+        uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
+                        .path("tasks").path("1").path("input")
                         .queryParam("user", "invalid-uri").build();
-        mockGetPostResponse(uri, Status.FORBIDDEN, "");
+        mockGetPostResponse(uri, Response.Status.FORBIDDEN, "");
 
-        uri = UriBuilder.fromUri(MOCK_ADDRESS).path("v1.0").path("tasks")
-                        .path("1").path("input")
+        uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
+                        .path("tasks").path("1").path("input")
                         .queryParam("user", "invalid-body").build();
         body = "invalid-JSON-body";
-        mockGetPostResponse(uri, Status.OK, body);
+        mockGetPostResponse(uri, Response.Status.OK, body);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("tasks").path("non-existing-task").build();
-        mockDeleteResponse(uri, Status.NOT_FOUND);
+        mockDeleteResponse(uri, Response.Status.NOT_FOUND);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("tasks").path("existing-task").build();
-        mockDeleteResponse(uri, Status.OK);
+        mockDeleteResponse(uri, Response.Status.OK);
     }
 
     private void mockApplicationsAPI() throws IOException {
         URI uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                             .path("applications").build();
         String body = readResource("applications.json");
-        mockGetPostResponse(uri, Status.OK, body);
+        mockGetPostResponse(uri, Response.Status.OK, body);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("applications").path("1").build();
         body = readResource("applications_1.json");
-        mockGetPostResponse(uri, Status.OK, body);
+        mockGetPostResponse(uri, Response.Status.OK, body);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("applications").path("invalid-uri").build();
-        mockGetPostResponse(uri, Status.NOT_FOUND, "");
+        mockGetPostResponse(uri, Response.Status.NOT_FOUND, "");
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("applications").path("invalid-body").build();
         body = "invalid-JSON-body";
-        mockGetPostResponse(uri, Status.OK, body);
+        mockGetPostResponse(uri, Response.Status.OK, body);
     }
 
     private void mockRootAPI() throws IOException {
         URI uri = MockRestSession.MOCK_ADDRESS;
         String body = readResource("root.json");
-        mockGetPostResponse(uri, Status.OK, body);
+        mockGetPostResponse(uri, Response.Status.OK, body);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS)
                         .path("invalid-uri").build();
-        mockGetPostResponse(uri, Status.NOT_FOUND, "");
+        mockGetPostResponse(uri, Response.Status.NOT_FOUND, "");
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS)
                         .path("invalid-body").build();
         body = "invalid-JSON-body";
-        mockGetPostResponse(uri, Status.OK, body);
+        mockGetPostResponse(uri, Response.Status.OK, body);
     }
 
-    public Client getClient() {
+    public final Client getClient() {
         return client;
     }
 
-    public void mockGetPostResponse(URI uri, Status status, Object body) {
+    public final void mockGetPostResponse(final URI uri,
+                                          final Response.StatusType status,
+                                          final Object body) {
         Response response = mock(Response.class);
         when(response.getStatusInfo()).thenReturn(status);
         when(response.readEntity(any(Class.class))).thenReturn(body);
 
-        Builder builder = mock(Builder.class);
+        Invocation.Builder builder = mock(Invocation.Builder.class);
         when(builder.accept(any(MediaType.class))).thenReturn(builder);
         when(builder.header(anyString(), any())).thenReturn(builder);
         when(builder.post(any(Entity.class))).thenReturn(response);
@@ -186,11 +188,12 @@ public class MockRestSession {
         when(client.target(uri)).thenReturn(target);
     }
 
-    public void mockDeleteResponse(URI uri, Status status) {
+    public final void mockDeleteResponse(final URI uri,
+                                         final Response.StatusType status) {
         Response response = mock(Response.class);
         when(response.getStatusInfo()).thenReturn(status);
 
-        Builder builder = mock(Builder.class);
+        Invocation.Builder builder = mock(Invocation.Builder.class);
         when(builder.accept(any(MediaType.class))).thenReturn(builder);
         when(builder.header(anyString(), any())).thenReturn(builder);
         when(builder.delete()).thenReturn(response);
@@ -202,7 +205,7 @@ public class MockRestSession {
         when(client.target(uri)).thenReturn(target);
     }
 
-    private String readResource(String resource) throws IOException {
+    private String readResource(final String resource) throws IOException {
         try (InputStream stream = classLoader.getResourceAsStream(resource)) {
             return IOUtils.toString(stream, Charset.defaultCharset());
         }

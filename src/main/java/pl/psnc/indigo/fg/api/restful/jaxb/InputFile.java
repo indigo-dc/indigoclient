@@ -9,8 +9,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.InputFileDeserializer;
 
-import java.io.Serializable;
-
 /**
  * A bean storing information about input files used in job submission and
  * status checking.
@@ -21,9 +19,7 @@ import java.io.Serializable;
 @FutureGatewayBean
 @JsonDeserialize(using = InputFileDeserializer.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class InputFile implements Serializable {
-    private static final long serialVersionUID = -8629464708321890767L;
-
+public class InputFile {
     private String name;
     private String status;
 

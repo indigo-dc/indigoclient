@@ -24,12 +24,6 @@ import java.net.URI;
 @Slf4j
 public class RootAPI {
     /**
-     * A public IP of a production-level Future Gateway.
-     */
-    public static final URI DEFAULT_ADDRESS =
-            URI.create("http://192.92.149.135:8888");
-
-    /**
      * A localhost version of Future Gateway. Useful for tunnelled connections:
      * $ ssh -L 8080:localhost:8080 -L 8888:localhost:8888 futuregateway@IP
      */

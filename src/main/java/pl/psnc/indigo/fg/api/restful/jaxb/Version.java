@@ -11,7 +11,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.MediaTypeDeserializer;
 
 import javax.ws.rs.core.MediaType;
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -22,9 +21,7 @@ import java.util.List;
 @ToString
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Version implements Serializable {
-    private static final long serialVersionUID = -3831342777464028231L;
-
+public class Version {
     private String status;
     private String updated;
     @JsonProperty("build:")

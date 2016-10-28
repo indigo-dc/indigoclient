@@ -1,7 +1,6 @@
 package pl.psnc.indigo.fg.api.restful.jaxb.serialization;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
@@ -17,7 +16,7 @@ public class LocalDateTimeDeserializer extends JsonDeserializer<LocalDateTime> {
     public final LocalDateTime deserialize(final JsonParser jsonParser,
                                            final DeserializationContext
                                                    deserializationContext)
-            throws IOException, JsonProcessingException {
+            throws IOException {
         String dateString = jsonParser.readValueAs(String.class);
         return LocalDateTime.parse(dateString, DateTimeFormatter.ISO_DATE_TIME);
     }

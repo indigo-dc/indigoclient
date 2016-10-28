@@ -7,7 +7,6 @@ import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,9 +18,7 @@ import java.util.List;
 @ToString
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Upload implements Serializable {
-    private static final long serialVersionUID = 7633975185368095752L;
-
+public class Upload {
     private List<InputFile> files = Collections.emptyList();
     private String message;
     private String task;
