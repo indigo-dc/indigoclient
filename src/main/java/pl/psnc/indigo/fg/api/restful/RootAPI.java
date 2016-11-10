@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Root;
@@ -151,10 +150,5 @@ public class RootAPI {
 
     final ObjectMapper getMapper() {
         return mapper;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("rootUri", rootUri).toString();
     }
 }
