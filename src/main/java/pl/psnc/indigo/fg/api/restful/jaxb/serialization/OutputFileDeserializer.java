@@ -15,15 +15,19 @@ import java.net.URI;
  */
 public final class OutputFileDeserializer extends JsonDeserializer<OutputFile> {
     @Override
-    public OutputFile deserialize(final JsonParser jsonParser,
-                                  final DeserializationContext
-                                          deserializationContext)
+    public OutputFile deserialize(
+            final JsonParser jsonParser,
+            final DeserializationContext deserializationContext)
             throws IOException {
         JsonNode node = jsonParser.readValueAsTree();
+        JsonNode nameNode = node.get("name");
+        String name = nameNode.asText();
+        JsonNode urlNode = node.get("url");
+        String url = urlNode.asText();
+
         OutputFile outputFile = new OutputFile();
-        outputFile.setName(node.get("name").asText());
-        outputFile.setUrl(URI.create(node.get("url").asText()));
+        outputFile.setName(name);
+        outputFile.setUrl(URI.create(url));
         return outputFile;
     }
-
 }

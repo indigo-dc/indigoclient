@@ -13,12 +13,12 @@ import java.io.IOException;
  */
 public class MediaTypeDeserializer extends JsonDeserializer<MediaType> {
     @Override
-    public final MediaType deserialize(final JsonParser jsonParser,
-                                       final DeserializationContext
-                                               deserializationContext)
+    public final MediaType deserialize(
+            final JsonParser jsonParser,
+            final DeserializationContext deserializationContext)
             throws IOException {
         JsonNode jsonNode = jsonParser.readValueAsTree();
-        String type = jsonNode.get("type").asText();
+        String type = jsonNode.get("type").asText(); //NON-NLS
         return MediaType.valueOf(type);
     }
 }

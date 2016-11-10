@@ -10,13 +10,14 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Infrastructure;
 import pl.psnc.indigo.fg.api.restful.jaxb.Parameter;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @Category(UnitTests.class)
 public class ApplicationsAPITest {
@@ -24,7 +25,7 @@ public class ApplicationsAPITest {
     private ApplicationsAPI api;
 
     @Before
-    public void before() throws IOException, FutureGatewayException {
+    public final void before() throws IOException, FutureGatewayException {
         session = new MockRestSession();
         Client client = session.getClient();
         api = new ApplicationsAPI(MockRestSession.MOCK_ADDRESS, client, "");
@@ -33,19 +34,20 @@ public class ApplicationsAPITest {
     @Test
     public final void testGetAllApplications() throws FutureGatewayException {
         List<Application> applications = api.getAllApplications();
-        assertEquals(2, applications.size());
+        assertThat(2, is(applications.size()));
 
         Application application = applications.get(0);
         List<Infrastructure> infrastructures = application.getInfrastructures();
         List<Parameter> parameters = application.getParameters();
-        assertEquals(2, infrastructures.size());
-        assertEquals(5, parameters.size());
+        assertThat(2, is(infrastructures.size()));
+        assertThat(5, is(parameters.size()));
 
-        application = applications.get(1);
-        infrastructures = application.getInfrastructures();
-        parameters = application.getParameters();
-        assertEquals(2, infrastructures.size());
-        assertEquals(5, parameters.size());
+        Application application1 = applications.get(1);
+        List<Infrastructure> infrastructures1 =
+                application1.getInfrastructures();
+        List<Parameter> parameters1 = application1.getParameters();
+        assertThat(2, is(infrastructures1.size()));
+        assertThat(5, is(parameters1.size()));
     }
 
     /* This test exceptionally needs to ad-hoc add new response to the mock. */
@@ -54,53 +56,57 @@ public class ApplicationsAPITest {
             throws FutureGatewayException {
         URI uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                             .path("applications").build();
-        session.mockGetPostResponse(uri, Status.NOT_FOUND, "");
+        session.mockGetPostResponse(uri, Response.Status.NOT_FOUND, "");
         api.getAllApplications();
     }
 
     @Test
     public final void testGetApplication() throws FutureGatewayException {
         Application application = api.getApplication("1");
-        assertEquals("1", application.getId());
-        assertEquals("hostname", application.getName());
-        assertEquals("hostname tester application",
-                     application.getDescription());
-        assertTrue(application.isEnabled());
+        assertThat("1", is(application.getId()));
+        assertThat("hostname", is(application.getName()));
+        assertThat("hostname tester application",
+                   is(application.getDescription()));
+        assertThat(application.isEnabled(), is(true));
 
         List<Infrastructure> infrastructures = application.getInfrastructures();
-        assertEquals(2, infrastructures.size());
+        assertThat(2, is(infrastructures.size()));
 
         Infrastructure infrastructure = infrastructures.get(0);
-        assertEquals("1", infrastructure.getId());
-        assertEquals("hello@csgfsdk", infrastructure.getName());
-        assertEquals("hostname application localhost (SSH)",
-                     infrastructure.getDescription());
-        assertTrue(infrastructure.isEnabled());
-        assertFalse(infrastructure.isVirtual());
+        assertThat("1", is(infrastructure.getId()));
+        assertThat("hello@csgfsdk", is(infrastructure.getName()));
+        assertThat("hostname application localhost (SSH)",
+                   is(infrastructure.getDescription()));
+        assertThat(infrastructure.isEnabled(), is(true));
+        assertThat(infrastructure.isVirtual(), is(false));
 
-        List<Parameter> parameters = infrastructure.getParameters();
-        assertEquals(3, parameters.size());
+        List<Parameter> infrastructureParameters =
+                infrastructure.getParameters();
+        assertThat(3, is(infrastructureParameters.size()));
 
-        Parameter parameter = parameters.get(0);
-        assertEquals("jobservice", parameter.getName());
-        assertEquals("ssh://localhost:22", parameter.getValue());
+        Parameter infrastructureParameter = infrastructureParameters.get(0);
+        assertThat("jobservice", is(infrastructureParameter.getName()));
+        assertThat("ssh://localhost:22",
+                   is(infrastructureParameter.getValue()));
 
-        parameters = application.getParameters();
-        assertEquals(5, parameters.size());
+        List<Parameter> applicationParameters = application.getParameters();
+        assertThat(5, is(applicationParameters.size()));
 
-        parameter = parameters.get(0);
-        assertEquals("jobdesc_executable", parameter.getName());
-        assertEquals("/bin/hostname", parameter.getValue());
-        assertEquals("", parameter.getDescription());
+        Parameter applicationParameter = applicationParameters.get(0);
+        assertThat("jobdesc_executable", is(applicationParameter.getName()));
+        assertThat("/bin/hostname", is(applicationParameter.getValue()));
+        assertThat("", is(applicationParameter.getDescription()));
     }
 
     @Test(expected = FutureGatewayException.class)
-    public void testGetApplicationInvalidUri() throws FutureGatewayException {
+    public final void testGetApplicationInvalidUri()
+            throws FutureGatewayException {
         api.getApplication("invalid-uri");
     }
 
     @Test(expected = FutureGatewayException.class)
-    public void testGetApplicationInvalidBody() throws FutureGatewayException {
+    public final void testGetApplicationInvalidBody()
+            throws FutureGatewayException {
         api.getApplication("invalid-body");
     }
 }

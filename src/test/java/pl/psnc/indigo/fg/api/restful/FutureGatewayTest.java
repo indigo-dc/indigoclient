@@ -152,7 +152,7 @@ public class FutureGatewayTest {
                    return task.getStatus() == TaskStatus.DONE;
                });
 
-        List<OutputFile> files = api.getOutputsForTask(id);
+        List<OutputFile> files = api.getTask(id).getOutputFiles();
         String file = getClass().getResource("/outputs").getFile();
         File outputDir = new File(file);
 
@@ -187,7 +187,7 @@ public class FutureGatewayTest {
         task = api.createTask(task);
 
         String id = task.getId();
-        assertTrue(api.deleteTask(id));
-        assertFalse(api.deleteTask(id));
+        assertTrue(api.removeTask(id));
+        assertFalse(api.removeTask(id));
     }
 }

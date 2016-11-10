@@ -13,13 +13,15 @@ import java.io.IOException;
  */
 public final class InputFileDeserializer extends JsonDeserializer<InputFile> {
     @Override
-    public InputFile deserialize(final JsonParser jsonParser,
-                                 final DeserializationContext
-                                         deserializationContext)
+    public InputFile deserialize(
+            final JsonParser jsonParser,
+            final DeserializationContext deserializationContext)
             throws IOException {
         JsonNode node = jsonParser.readValueAsTree();
+        String name = node.asText();
+
         InputFile inputFile = new InputFile();
-        inputFile.setName(node.asText());
+        inputFile.setName(name);
         return inputFile;
     }
 }

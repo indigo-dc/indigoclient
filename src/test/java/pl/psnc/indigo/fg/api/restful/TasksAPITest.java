@@ -9,6 +9,7 @@ import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.TaskStatus;
+import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,9 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -25,7 +28,7 @@ public class TasksAPITest {
     private TasksAPI api;
 
     @Before
-    public void before() throws IOException, FutureGatewayException {
+    public final void before() throws IOException, FutureGatewayException {
         MockRestSession session = new MockRestSession();
         api = new TasksAPI(MockRestSession.MOCK_ADDRESS, session.getClient(),
                            "");
@@ -34,45 +37,45 @@ public class TasksAPITest {
     @Test
     public final void testGetAllTasks() throws FutureGatewayException {
         List<Task> tasks = api.getAllTasks("all-tasks");
-        assertEquals(3, tasks.size());
+        assertThat(3, is(tasks.size()));
 
         Task task = tasks.get(0);
-        assertEquals(2, task.getOutputFiles().size());
-        assertEquals(2, task.getLinks().size());
+        assertThat(2, is(task.getOutputFiles().size()));
+        assertThat(2, is(task.getLinks().size()));
     }
 
     @Test
     public final void testGetTask() throws FutureGatewayException {
         Task task = api.getTask("1");
-        assertEquals("1", task.getId());
-        assertEquals("2", task.getApplication());
-        assertEquals("Test with files", task.getDescription());
-        assertEquals("brunor", task.getUser());
-        assertEquals(TaskStatus.DONE, task.getStatus());
+        assertThat("1", is(task.getId()));
+        assertThat("2", is(task.getApplication()));
+        assertThat("Test with files", is(task.getDescription()));
+        assertThat("brunor", is(task.getUser()));
+        assertThat(TaskStatus.DONE, is(task.getStatus()));
     }
 
     @Test(expected = FutureGatewayException.class)
-    public void testGetTaskInvalidUri() throws FutureGatewayException {
+    public final void testGetTaskInvalidUri() throws FutureGatewayException {
         api.getTask("invalid-uri");
     }
 
     @Test(expected = FutureGatewayException.class)
-    public void testGetTaskInvalidBody() throws FutureGatewayException {
+    public final void testGetTaskInvalidBody() throws FutureGatewayException {
         api.getTask("invalid-body");
     }
 
     @Test
-    public void testUploadFileForTask() throws FutureGatewayException {
+    public final void testUploadFileForTask() throws FutureGatewayException {
         Task task = new Task();
         task.setUser("brunor");
         task.setId("1");
 
         File file = mock(File.class);
-        api.uploadFileForTask(task, file);
+        assertThat(api.uploadFileForTask(task, file), not(is((Upload) null)));
     }
 
     @Test(expected = FutureGatewayException.class)
-    public void testUploadFileForTaskInvalidUser()
+    public final void testUploadFileForTaskInvalidUser()
             throws FutureGatewayException {
         Task task = new Task();
         task.setUser("invalid-uri");
@@ -83,7 +86,7 @@ public class TasksAPITest {
     }
 
     @Test(expected = FutureGatewayException.class)
-    public void testUploadFileForTaskInvalidBody()
+    public final void testUploadFileForTaskInvalidBody()
             throws FutureGatewayException {
         Task task = new Task();
         task.setUser("invalid-body");
@@ -94,33 +97,33 @@ public class TasksAPITest {
     }
 
     @Test
-    public void testGetOutputsForTask() throws FutureGatewayException {
-        List<OutputFile> outputFiles = api.getOutputsForTask("1");
-        assertEquals(3, outputFiles.size());
+    public final void testGetOutputsForTask() throws FutureGatewayException {
+        List<OutputFile> outputFiles = api.getTask("1").getOutputFiles();
+        assertThat(3, is(outputFiles.size()));
 
         OutputFile outputFile = outputFiles.get(0);
-        assertEquals("sayhello.data", outputFile.getName());
-        assertEquals(URI.create(
-                "file?path=%2Ftmp%2Fba3a8d88-1e71-11e6-92fb-fa163e26496e"
-                + "%2F1tmpba3a8d881e7111e692fbfa163e26496e_2&name=sayhello"
-                + ".data"), outputFile.getUrl());
+        assertThat("sayhello.data", is(outputFile.getName()));
+        assertThat(URI.create(
+                "file?path=%2Ftmp%2Fba3a8d88-1e71-11e6-92fb" + "-fa163e26496e"
+                + "%2F1tmpba3a8d881e7111e692fbfa163e26496e_2&name" + "=sayhello"
+                + ".data"), is(outputFile.getUrl()));
     }
 
     @Test
-    public void testGetOutputsForTaskNotDone() throws FutureGatewayException {
-        List<OutputFile> outputFiles = api.getOutputsForTask("2");
-        assertEquals(0, outputFiles.size());
+    public final void testGetOutputsForTaskNotDone()
+            throws FutureGatewayException {
+        List<OutputFile> outputFiles = api.getTask("2").getOutputFiles();
+        assertThat(0, is(outputFiles.size()));
     }
 
     @Test
-    public void testDeleteTask() throws FutureGatewayException {
-        assertFalse(api.deleteTask("non-existing-task"));
-        assertTrue(api.deleteTask("existing-task"));
+    public final void testDeleteTask() {
+        assertThat(api.removeTask("non-existing-task"), is(false));
+        assertThat(api.removeTask("existing-task"), is(true));
     }
 
     @Test
-    public void testDownloadOutputFile()
-            throws FutureGatewayException, IOException {
+    public final void testDownloadOutputFile() throws Exception {
         OutputFile outputFile = new OutputFile();
         outputFile.setName("test.txt");
         outputFile.setUrl(URI.create("file?path=%2Ftmp&name=test.txt"));
@@ -129,15 +132,15 @@ public class TasksAPITest {
         api.downloadOutputFile(outputFile, directory);
 
         File file = new File(directory, "test.txt");
-        assertTrue(file.exists());
-        assertEquals("TEST", FileUtils
-                .readFileToString(file, Charset.defaultCharset()));
-        file.delete();
+        assertThat(file.exists(), is(true));
+        assertThat("TEST", is(FileUtils.readFileToString(file,
+                                                         Charset.defaultCharset())));
+        assertThat(file.delete(), is(true));
     }
 
     @Test(expected = FutureGatewayException.class)
-    public void testDownloadOutputFileNonExisting()
-            throws FutureGatewayException, IOException {
+    public final void testDownloadOutputFileNonExisting()
+            throws FutureGatewayException {
         OutputFile outputFile = new OutputFile();
         outputFile.setName("test.txt");
         outputFile.setUrl(URI.create(
@@ -148,8 +151,8 @@ public class TasksAPITest {
     }
 
     @Test(expected = FutureGatewayException.class)
-    public void testDownloadOutputFileNotDirectory()
-            throws FutureGatewayException, IOException {
+    public final void testDownloadOutputFileNotDirectory()
+            throws FutureGatewayException {
         File file = mock(File.class);
         when(file.exists()).thenReturn(true);
         when(file.isDirectory()).thenReturn(false);
@@ -157,8 +160,8 @@ public class TasksAPITest {
     }
 
     @Test(expected = FutureGatewayException.class)
-    public void testDownloadOutputFileCannotWrite()
-            throws FutureGatewayException, IOException {
+    public final void testDownloadOutputFileCannotWrite()
+            throws FutureGatewayException {
         File file = mock(File.class);
         when(file.exists()).thenReturn(true);
         when(file.isDirectory()).thenReturn(true);
@@ -167,8 +170,8 @@ public class TasksAPITest {
     }
 
     @Test(expected = FutureGatewayException.class)
-    public void testDownloadOutputFileCannotMkdir()
-            throws FutureGatewayException, IOException {
+    public final void testDownloadOutputFileCannotMkdir()
+            throws FutureGatewayException {
         File file = mock(File.class);
         when(file.exists()).thenReturn(false);
         when(file.mkdirs()).thenReturn(false);
@@ -176,21 +179,23 @@ public class TasksAPITest {
     }
 
     @Test
-    public void testCreateTask() throws FutureGatewayException {
-        Task mockTask = MockRestSession.getMockTask();
+    public final void testCreateTask() throws FutureGatewayException {
+        Task mockTask = MockRestSession.mockTask();
         Task task = api.createTask(mockTask);
-        assertEquals(mockTask, task);
+        assertThat(mockTask, is(task));
     }
 
     @Test(expected = FutureGatewayException.class)
-    public void testCreateTaskInvalidUser() throws FutureGatewayException {
+    public final void testCreateTaskInvalidUser()
+            throws FutureGatewayException {
         Task mockTask = new Task();
         mockTask.setUser("invalid-uri");
         api.createTask(mockTask);
     }
 
     @Test(expected = FutureGatewayException.class)
-    public void testCreateTaskInvalidBody() throws FutureGatewayException {
+    public final void testCreateTaskInvalidBody()
+            throws FutureGatewayException {
         Task mockTask = new Task();
         mockTask.setUser("invalid-body");
         api.createTask(mockTask);

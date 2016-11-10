@@ -1,5 +1,6 @@
 package pl.psnc.indigo.fg.api.restful;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -14,58 +15,57 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-@SuppressWarnings("NestedMethodCall")
 @Category(UnitTests.class)
 public class RootAPITest {
     private MockRestSession session;
 
     @Before
-    public void before() throws IOException {
+    public final void before() throws IOException, JsonProcessingException {
         session = new MockRestSession();
     }
 
     @Test
-    public void testGetRoot()
-            throws FutureGatewayException, URISyntaxException {
+    public final void testGetRoot() throws Exception {
         Client client = session.getClient();
         RootAPI rootApi = new RootAPI(MockRestSession.MOCK_ADDRESS, client, "");
 
         URI expectedUri =
                 UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                           .build();
-        assertEquals(expectedUri, rootApi.getRootUri());
+        assertThat(expectedUri, is(rootApi.getRootUri()));
 
         Root root = rootApi.getRoot();
 
         List<Link> links = root.getLinks();
-        assertEquals(1, links.size());
+        assertThat(1, is(links.size()));
         Link link = links.get(0);
-        assertEquals("/", link.getHref());
-        assertEquals("self", link.getRel());
+        assertThat("/", is(link.getHref()));
+        assertThat("self", is(link.getRel()));
 
         List<Version> versions = root.getVersions();
-        assertEquals(1, versions.size());
+        assertThat(1, is(versions.size()));
         Version version = versions.get(0);
-        assertEquals("prototype", version.getStatus());
-        assertEquals("2016-04-20", version.getUpdated());
-        assertEquals("v0.0.2-29-ge0d90af-e0d90af-34", version.getBuild());
-        assertEquals(MediaType.APPLICATION_JSON_TYPE, version.getMediaType());
-        assertEquals("v1.0", version.getId());
+        assertThat("prototype", is(version.getStatus()));
+        assertThat("2016-04-20", is(version.getUpdated()));
+        assertThat("v0.0.2-29-ge0d90af-e0d90af-34", is(version.getBuild()));
+        assertThat(MediaType.APPLICATION_JSON_TYPE, is(version.getMediaType()));
+        assertThat("v1.0", is(version.getId()));
 
-        links = version.getLinks();
-        assertEquals(1, links.size());
-        link = links.get(0);
-        assertEquals("v1.0", link.getHref());
-        assertEquals("self", link.getRel());
+        List<Link> versionLinks = version.getLinks();
+        assertThat(1, is(versionLinks.size()));
+        Link versionLink = versionLinks.get(0);
+        assertThat("v1.0", is(versionLink.getHref()));
+        assertThat("self", is(versionLink.getRel()));
     }
 
+
     @Test(expected = FutureGatewayException.class)
-    public void testCommunicationError() throws FutureGatewayException {
+    public final void testCommunicationError() throws FutureGatewayException {
         URI uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS)
                             .path("invalid-uri").build();
         Client client = session.getClient();
@@ -73,7 +73,7 @@ public class RootAPITest {
     }
 
     @Test(expected = FutureGatewayException.class)
-    public void testInvalidJson() throws FutureGatewayException {
+    public final void testInvalidJson() throws FutureGatewayException {
         URI uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS)
                             .path("invalid-body").build();
         Client client = session.getClient();

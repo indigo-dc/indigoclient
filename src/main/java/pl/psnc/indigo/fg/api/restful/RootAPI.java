@@ -16,6 +16,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 
 /**
  * A base class which contains HTTP client and JSON mapper objects with
@@ -28,7 +30,13 @@ public class RootAPI {
      * $ ssh -L 8080:localhost:8080 -L 8888:localhost:8888 futuregateway@IP
      */
     public static final URI LOCALHOST_ADDRESS =
-            URI.create("http://localhost:8888");
+            URI.create("http://localhost:8888"); //NON-NLS
+
+    /** A constant used for all logging of REST communication. */
+    static final String STATUS = "Status: {} {}";
+
+    private final ResourceBundle resourceBundle =
+            ResourceBundle.getBundle("messages"); //NON-NLS
 
     private final Client client;
     private final ObjectMapper mapper;
@@ -44,16 +52,19 @@ public class RootAPI {
      * @param baseUri            URI of Future Gateway server.
      * @param client             Implementation of REST client.
      * @param authorizationToken Token which identifies the user to services.
-     *
      * @throws FutureGatewayException If failed to communicate with Future
      *                                Gateway.
      */
-    protected RootAPI(final URI baseUri, final Client client,
-                      final String authorizationToken)
-            throws FutureGatewayException {
+    RootAPI(
+            final URI baseUri, final Client client,
+            final String authorizationToken) throws FutureGatewayException {
         super();
+
+        String bearer = resourceBundle.getString("bearer.0");
+
         this.client = client;
-        this.authorizationToken = "Bearer " + authorizationToken;
+        this.authorizationToken =
+                MessageFormat.format(bearer, authorizationToken);
 
         // If TRACE level is enabled, log whole requests, headers & body
         if (RootAPI.log.isTraceEnabled()) {
@@ -75,22 +86,21 @@ public class RootAPI {
      *
      * @param baseUri            URI of Future Gateway server.
      * @param authorizationToken Token which identifies the user to services.
-     *
      * @throws FutureGatewayException If failed to communicate with Future
      *                                Gateway.
      */
-    protected RootAPI(final URI baseUri, final String authorizationToken)
+    RootAPI(final URI baseUri, final String authorizationToken)
             throws FutureGatewayException {
         this(baseUri,
              ClientBuilder.newBuilder().register(MultiPartFeature.class)
                           .build(), authorizationToken);
     }
 
-    public final Root getRoot() {
+    final Root getRoot() {
         return root;
     }
 
-    public final URI getRootUri() {
+    final URI getRootUri() {
         return rootUri;
     }
 
@@ -110,7 +120,7 @@ public class RootAPI {
         Response.StatusType status = response.getStatusInfo();
         int statusCode = status.getStatusCode();
         String reasonPhrase = status.getReasonPhrase();
-        RootAPI.log.debug("Status: {} {}", statusCode, reasonPhrase);
+        RootAPI.log.debug(RootAPI.STATUS, statusCode, reasonPhrase);
 
         try {
             if (statusCode == Response.Status.OK.getStatusCode()) {
@@ -118,14 +128,15 @@ public class RootAPI {
                 RootAPI.log.trace("Body: {}", body);
                 return mapper.readValue(body, Root.class);
             } else {
-                String message =
-                        "Failed to connect to Future Gateway. Response: "
-                        + response.getStatus() + ' ' + response;
+                String message = resourceBundle.getString(
+                        "failed.to.connect.to.future.gateway.response.0.1");
+                message = MessageFormat.format(message, statusCode, response);
                 RootAPI.log.error(message);
                 throw new FutureGatewayException(message);
             }
-        } catch (IOException e) {
-            String message = "Failed to connect to Future Gateway";
+        } catch (final IOException e) {
+            String message = resourceBundle
+                    .getString("failed.to.connect.to.future.gateway");
             RootAPI.log.error(message, e);
             throw new FutureGatewayException(message, e);
         } finally {
@@ -133,11 +144,11 @@ public class RootAPI {
         }
     }
 
-    public final Client getClient() {
+    final Client getClient() {
         return client;
     }
 
-    public final ObjectMapper getMapper() {
+    final ObjectMapper getMapper() {
         return mapper;
     }
 }

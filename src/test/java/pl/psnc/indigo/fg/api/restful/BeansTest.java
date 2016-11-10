@@ -22,8 +22,9 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 
 /**
  * This class holds tests for beans used in communication with FG.
@@ -46,7 +47,7 @@ public class BeansTest {
         application.setEnabled(true);
         application.setLinks(Collections.emptyList());
         // @formatter:off
-        assertEquals("Application("
+        assertThat("Application("
                      + "id=Id, "
                      + "name=Name, "
                      + "description=Description, "
@@ -56,7 +57,7 @@ public class BeansTest {
                      + "infrastructures=[], "
                      + "outcome=JOB, "
                      + "enabled=true, "
-                     + "links=[])", application.toString());
+                     + "links=[])", is(application.toString()));
         // @formatter:on
 
         Application other = new Application();
@@ -71,12 +72,12 @@ public class BeansTest {
         other.setEnabled(application.isEnabled());
         other.setLinks(application.getLinks());
 
-        assertEquals(application, application);
-        assertEquals(application, other);
-        assertEquals(application.hashCode(), other.hashCode());
+        assertThat(application, is(application));
+        assertThat(application, is(other));
+        assertThat(application.hashCode(), is(other.hashCode()));
 
-        assertNotEquals(application, null);
-        assertNotEquals(application, "");
+        assertThat(application, not(is((Application) null)));
+        assertThat(application, not(is("")));
     }
 
     @Test
@@ -92,15 +93,14 @@ public class BeansTest {
         infrastructure.setEnabled(true);
         infrastructure.setVirtual(true);
         // @formatter:off
-        assertEquals("Infrastructure("
+        assertThat("Infrastructure("
                      + "id=Id, "
                      + "name=Name, "
                      + "description=Description, "
                      + "creation=" + now + ", "
                      + "parameters=[], "
                      + "enabled=true, "
-                     + "virtual=true)",
-                     infrastructure.toString());
+                     + "virtual=true)", is(infrastructure.toString()));
         // @formatter:on
 
         Infrastructure other = new Infrastructure();
@@ -112,12 +112,12 @@ public class BeansTest {
         other.setEnabled(infrastructure.isEnabled());
         other.setVirtual(infrastructure.isVirtual());
 
-        assertEquals(infrastructure, infrastructure);
-        assertEquals(infrastructure, other);
-        assertEquals(infrastructure.hashCode(), other.hashCode());
+        assertThat(infrastructure, is(infrastructure));
+        assertThat(infrastructure, is(other));
+        assertThat(infrastructure.hashCode(), is(other.hashCode()));
 
-        assertNotEquals(infrastructure, null);
-        assertNotEquals(infrastructure, "");
+        assertThat(infrastructure, not(is((Infrastructure) null)));
+        assertThat(infrastructure, not(is("")));
     }
 
     @Test
@@ -125,19 +125,19 @@ public class BeansTest {
         InputFile inputFile = new InputFile();
         inputFile.setName("Name");
         inputFile.setStatus("TaskStatus");
-        assertEquals("InputFile(name=Name, status=TaskStatus)",
-                     inputFile.toString());
+        assertThat("InputFile(name=Name, status=TaskStatus)",
+                   is(inputFile.toString()));
 
         InputFile other = new InputFile();
         other.setName(inputFile.getName());
         other.setStatus(inputFile.getStatus());
 
-        assertEquals(inputFile, inputFile);
-        assertEquals(inputFile, other);
-        assertEquals(inputFile.hashCode(), other.hashCode());
+        assertThat(inputFile, is(inputFile));
+        assertThat(inputFile, is(other));
+        assertThat(inputFile.hashCode(), is(other.hashCode()));
 
-        assertNotEquals(inputFile, null);
-        assertNotEquals(inputFile, "");
+        assertThat(inputFile, not(is((InputFile) null)));
+        assertThat(inputFile, not(is("")));
     }
 
     @Test
@@ -145,18 +145,18 @@ public class BeansTest {
         Link link = new Link();
         link.setHref("Href");
         link.setRel("Rel");
-        assertEquals("Link(rel=Rel, href=Href)", link.toString());
+        assertThat("Link(rel=Rel, href=Href)", is(link.toString()));
 
         Link other = new Link();
         other.setHref(link.getHref());
         other.setRel(link.getRel());
 
-        assertEquals(link, link);
-        assertEquals(link, other);
-        assertEquals(link.hashCode(), other.hashCode());
+        assertThat(link, is(link));
+        assertThat(link, is(other));
+        assertThat(link.hashCode(), is(other.hashCode()));
 
-        assertNotEquals(link, null);
-        assertNotEquals(link, "");
+        assertThat(link, not(is((Link) null)));
+        assertThat(link, not(is("")));
     }
 
     @Test
@@ -164,19 +164,19 @@ public class BeansTest {
         OutputFile outputFile = new OutputFile();
         outputFile.setName("Name");
         outputFile.setUrl(URI.create("protocol://host:port/path"));
-        assertEquals("OutputFile(name=Name, url=protocol://host:port/path)",
-                     outputFile.toString());
+        assertThat("OutputFile(name=Name, url=protocol://host:port/path)",
+                   is(outputFile.toString()));
 
         OutputFile other = new OutputFile();
         other.setName(outputFile.getName());
         other.setUrl(outputFile.getUrl());
 
-        assertEquals(outputFile, outputFile);
-        assertEquals(outputFile, other);
-        assertEquals(outputFile.hashCode(), other.hashCode());
+        assertThat(outputFile, is(outputFile));
+        assertThat(outputFile, is(other));
+        assertThat(outputFile.hashCode(), is(other.hashCode()));
 
-        assertNotEquals(outputFile, null);
-        assertNotEquals(outputFile, "");
+        assertThat(outputFile, not(is((OutputFile) null)));
+        assertThat(outputFile, not(is("")));
     }
 
     @Test
@@ -186,10 +186,10 @@ public class BeansTest {
         parameter.setValue("Value");
         parameter.setDescription("Description");
         // @formatter:off
-        assertEquals("Parameter("
+        assertThat("Parameter("
                      + "name=Name, "
                      + "value=Value, "
-                     + "description=Description)", parameter.toString());
+                     + "description=Description)", is(parameter.toString()));
         // @formatter:on
 
         Parameter other = new Parameter();
@@ -197,12 +197,12 @@ public class BeansTest {
         other.setValue(parameter.getValue());
         other.setDescription(parameter.getDescription());
 
-        assertEquals(parameter, parameter);
-        assertEquals(parameter, other);
-        assertEquals(parameter.hashCode(), other.hashCode());
+        assertThat(parameter, is(parameter));
+        assertThat(parameter, is(other));
+        assertThat(parameter.hashCode(), is(other.hashCode()));
 
-        assertNotEquals(parameter, null);
-        assertNotEquals(parameter, "");
+        assertThat(parameter, not(is((Parameter) null)));
+        assertThat(parameter, not(is("")));
     }
 
     @Test
@@ -210,18 +210,18 @@ public class BeansTest {
         Root root = new Root();
         root.setLinks(Collections.emptyList());
         root.setVersions(Collections.emptyList());
-        assertEquals("Root(links=[], versions=[])", root.toString());
+        assertThat("Root(links=[], versions=[])", is(root.toString()));
 
         Root other = new Root();
         other.setLinks(root.getLinks());
         other.setVersions(root.getVersions());
 
-        assertEquals(root, root);
-        assertEquals(root, other);
-        assertEquals(root.hashCode(), other.hashCode());
+        assertThat(root, is(root));
+        assertThat(root, is(other));
+        assertThat(root.hashCode(), is(other.hashCode()));
 
-        assertNotEquals(root, null);
-        assertNotEquals(root, "");
+        assertThat(root, not(is((Root) null)));
+        assertThat(root, not(is("")));
     }
 
     @Test
@@ -236,12 +236,12 @@ public class BeansTest {
         runtimeData.setDescription("Description");
         runtimeData.setLastChange(now);
         // @formatter:off
-        assertEquals("RuntimeData("
+        assertThat("RuntimeData("
                      + "name=Name, "
                      + "value=Value, "
                      + "description=Description, "
                      + "creation=Creation, "
-                     + "lastChange=" + now + ")", runtimeData.toString());
+                     + "lastChange=" + now + ')', is(runtimeData.toString()));
         // @formatter:on
 
         RuntimeData other = new RuntimeData();
@@ -251,12 +251,12 @@ public class BeansTest {
         other.setCreation(runtimeData.getCreation());
         other.setLastChange(runtimeData.getLastChange());
 
-        assertEquals(runtimeData, runtimeData);
-        assertEquals(runtimeData, other);
-        assertEquals(runtimeData.hashCode(), other.hashCode());
+        assertThat(runtimeData, is(runtimeData));
+        assertThat(runtimeData, is(other));
+        assertThat(runtimeData.hashCode(), is(other.hashCode()));
 
-        assertNotEquals(runtimeData, null);
-        assertNotEquals(runtimeData, "");
+        assertThat(runtimeData, not(is((RuntimeData) null)));
+        assertThat(runtimeData, not(is("")));
     }
 
     @Test
@@ -280,7 +280,7 @@ public class BeansTest {
         task.setIosandbox("IOSandbox");
         task.setLinks(Collections.emptyList());
         // @formatter:off
-        assertEquals("Task("
+        assertThat("Task("
                      + "id=Id, "
                      + "date=" + now + ", "
                      + "lastChange=" + now + ", "
@@ -295,7 +295,7 @@ public class BeansTest {
                      + "runtimeData=[], "
                      + "creation=Creation, "
                      + "iosandbox=IOSandbox, "
-                     + "links=[])", task.toString());
+                     + "links=[])", is(task.toString()));
         // @formatter:on
 
         Task other = new Task();
@@ -315,12 +315,12 @@ public class BeansTest {
         other.setIosandbox(task.getIosandbox());
         other.setLinks(task.getLinks());
 
-        assertEquals(task, task);
-        assertEquals(task, other);
-        assertEquals(task.hashCode(), other.hashCode());
+        assertThat(task, is(task));
+        assertThat(task, is(other));
+        assertThat(task.hashCode(), is(other.hashCode()));
 
-        assertNotEquals(task, null);
-        assertNotEquals(task, "");
+        assertThat(task, not(is((Task) null)));
+        assertThat(task, not(is("")));
     }
 
     @Test
@@ -331,11 +331,10 @@ public class BeansTest {
         upload.setTask("Task");
         upload.setStatus("TaskStatus");
         // @formatter:off
-        assertEquals("Upload(files=[], "
+        assertThat("Upload(files=[], "
                      + "message=Message, "
                      + "task=Task, "
-                     + "status=TaskStatus)",
-                     upload.toString());
+                     + "status=TaskStatus)", is(upload.toString()));
         // @formatter:on
 
         Upload other = new Upload();
@@ -344,12 +343,12 @@ public class BeansTest {
         other.setTask(upload.getTask());
         other.setStatus(upload.getStatus());
 
-        assertEquals(upload, upload);
-        assertEquals(upload, other);
-        assertEquals(upload.hashCode(), other.hashCode());
+        assertThat(upload, is(upload));
+        assertThat(upload, is(other));
+        assertThat(upload.hashCode(), is(other.hashCode()));
 
-        assertNotEquals(upload, null);
-        assertNotEquals(upload, "");
+        assertThat(upload, not(is((Upload) null)));
+        assertThat(upload, not(is("")));
     }
 
     @Test
@@ -362,12 +361,12 @@ public class BeansTest {
         version.setLinks(Collections.emptyList());
         version.setId("Id");
         // @formatter:off
-        assertEquals("Version(status=TaskStatus, "
+        assertThat("Version(status=TaskStatus, "
                      + "updated=Updated, "
                      + "build=Build, "
                      + "mediaType=*/*, "
                      + "links=[], "
-                     + "id=Id)", version.toString());
+                     + "id=Id)", is(version.toString()));
         // @formatter:on
 
         Version other = new Version();
@@ -378,11 +377,11 @@ public class BeansTest {
         other.setLinks(version.getLinks());
         other.setId(version.getId());
 
-        assertEquals(version, version);
-        assertEquals(version, other);
-        assertEquals(version.hashCode(), other.hashCode());
+        assertThat(version, is(version));
+        assertThat(version, is(other));
+        assertThat(version.hashCode(), is(other.hashCode()));
 
-        assertNotEquals(version, null);
-        assertNotEquals(version, "");
+        assertThat(version, not(is((Version) null)));
+        assertThat(version, not(is("")));
     }
 }
