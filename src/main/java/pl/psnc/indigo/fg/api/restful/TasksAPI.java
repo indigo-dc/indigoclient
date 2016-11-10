@@ -3,12 +3,12 @@ package pl.psnc.indigo.fg.api.restful;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
-import pl.psnc.indigo.fg.api.restful.jaxb.TaskStatus;
 import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 
 import javax.ws.rs.client.Client;
@@ -24,9 +24,10 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  * Allows to manipulate tasks via Future Gateway: list, submit, delete.
@@ -34,6 +35,9 @@ import java.util.List;
 @Slf4j
 public class TasksAPI extends RootAPI {
     private static final String TASKS = "tasks";
+
+    private final ResourceBundle resourceBundle =
+            ResourceBundle.getBundle("messages"); //NON-NLS
 
     private final URI tasksUri;
 
@@ -45,13 +49,12 @@ public class TasksAPI extends RootAPI {
      *                           protocol://host:port
      * @param client             Implementation of REST client.
      * @param authorizationToken Token which identifies the user to services.
-     *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
-    public TasksAPI(final URI baseUri, final Client client,
-                    final String authorizationToken)
-            throws FutureGatewayException {
+    public TasksAPI(
+            final URI baseUri, final Client client,
+            final String authorizationToken) throws FutureGatewayException {
         super(baseUri, client, authorizationToken);
 
         URI rootUri = getRootUri();
@@ -64,7 +67,6 @@ public class TasksAPI extends RootAPI {
      * @param baseUri            Base URI of Future Gateway i.e.
      *                           protocol://host:port
      * @param authorizationToken Token which identifies the user to services.
-     *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
@@ -87,9 +89,7 @@ public class TasksAPI extends RootAPI {
      * applications might require inputs and some other, not.
      *
      * @param task A bean containing all information about the task.
-     *
      * @return A bean with details about task submission.
-     *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
@@ -99,7 +99,7 @@ public class TasksAPI extends RootAPI {
         try {
             String taskJson = getMapper().writeValueAsString(task);
             entity = Entity.json(taskJson);
-        } catch (JsonProcessingException e) {
+        } catch (final JsonProcessingException e) {
             throw new FutureGatewayException("Failed to prepare JSON for task",
                                              e);
         }
@@ -118,7 +118,7 @@ public class TasksAPI extends RootAPI {
         Response.StatusType status = response.getStatusInfo();
         int statusCode = status.getStatusCode();
         String reasonPhrase = status.getReasonPhrase();
-        TasksAPI.log.debug("Status: {} {}", statusCode, reasonPhrase);
+        TasksAPI.log.debug(RootAPI.STATUS, statusCode, reasonPhrase);
 
         try {
             if (statusCode == Response.Status.OK.getStatusCode()) {
@@ -126,13 +126,17 @@ public class TasksAPI extends RootAPI {
                 TasksAPI.log.trace("Body: {}", body);
                 return getMapper().readValue(body, Task.class);
             } else {
-                String message = "Failed to create task. Response: " + response
-                        .getStatus() + ' ' + response + " Task: " + task;
+                String message = resourceBundle
+                        .getString("failed.to.create.task.response.0.1.task.2");
+                message = MessageFormat
+                        .format(message, statusCode, response, task);
                 TasksAPI.log.error(message);
                 throw new FutureGatewayException(message);
             }
-        } catch (IOException e) {
-            String message = "Failed to create task: " + task;
+        } catch (final IOException e) {
+            String message =
+                    resourceBundle.getString("failed.to.create.task.0");
+            message = MessageFormat.format(message, task);
             TasksAPI.log.error(message, e);
             throw new FutureGatewayException(message, e);
         } finally {
@@ -145,9 +149,7 @@ public class TasksAPI extends RootAPI {
      *
      * @param task A bean describing task id and user.
      * @param file A file to upload.
-     *
      * @return A bean containing status information about the uploaded file.
-     *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
@@ -161,41 +163,45 @@ public class TasksAPI extends RootAPI {
 
         try (MultiPart multiPart = new MultiPart()) {
             MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM_TYPE;
-            fileDataBodyPart = new FileDataBodyPart("file[]", file, mediaType);
+            fileDataBodyPart =
+                    new FileDataBodyPart("file[]", file, mediaType); //NON-NLS
 
-            mediaType = MediaType.MULTIPART_FORM_DATA_TYPE;
-            multiPart.setMediaType(mediaType);
+            MediaType multipartFormDataType =
+                    MediaType.MULTIPART_FORM_DATA_TYPE;
+            multiPart.setMediaType(multipartFormDataType);
             multiPart.bodyPart(fileDataBodyPart);
-            Entity<MultiPart> entity = Entity.entity(multiPart, mediaType);
+            Entity<MultiPart> entity =
+                    Entity.entity(multiPart, multipartFormDataType);
 
             TasksAPI.log.debug("POST {}", uri);
-            mediaType = MediaType.APPLICATION_JSON_TYPE;
+            MediaType applicationJsonType = MediaType.APPLICATION_JSON_TYPE;
             Response response =
-                    getClient().target(uri).request(mediaType).accept(mediaType)
+                    getClient().target(uri).request(applicationJsonType)
+                               .accept(applicationJsonType)
                                .header(HttpHeaders.AUTHORIZATION,
                                        getAuthorizationToken()).post(entity);
 
             Response.StatusType status = response.getStatusInfo();
             int statusCode = status.getStatusCode();
             String reasonPhrase = status.getReasonPhrase();
-            TasksAPI.log.debug("Status: {} {}", statusCode, reasonPhrase);
+            TasksAPI.log.debug(RootAPI.STATUS, statusCode, reasonPhrase);
 
             if (statusCode == Response.Status.OK.getStatusCode()) {
                 String body = response.readEntity(String.class);
                 TasksAPI.log.trace("Body: {}", body);
                 return getMapper().readValue(body, Upload.class);
             } else {
-                String message =
-                        "Failed to upload file for task. Response: " + response
-                                .getStatus() + ' ' + response + " Task: " + task
-                        + " File: " + file;
+                String message = resourceBundle.getString(
+                        "failed.to.upload.file.for.task.response.0.1.task.2.3");
+                message = MessageFormat
+                        .format(message, statusCode, response, task, file);
                 TasksAPI.log.error(message);
                 throw new FutureGatewayException(message);
             }
-        } catch (IOException e) {
-            String message =
-                    "Failed to upload file for task: " + task + " File: "
-                    + file;
+        } catch (final IOException e) {
+            String message = resourceBundle
+                    .getString("failed.to.upload.file.for.task.0.file.1");
+            message = MessageFormat.format(message, task, file);
             TasksAPI.log.error(message, e);
             throw new FutureGatewayException(message, e);
         } finally {
@@ -211,9 +217,7 @@ public class TasksAPI extends RootAPI {
      *
      * @param id Id of a task as returned from Future Gateway during its
      *           creation.
-     *
      * @return A bean with details about a task.
-     *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
@@ -232,7 +236,7 @@ public class TasksAPI extends RootAPI {
         Response.StatusType status = response.getStatusInfo();
         int statusCode = status.getStatusCode();
         String reasonPhrase = status.getReasonPhrase();
-        TasksAPI.log.debug("Status: {} {}", statusCode, reasonPhrase);
+        TasksAPI.log.debug(RootAPI.STATUS, statusCode, reasonPhrase);
 
         try {
             if (statusCode == Response.Status.OK.getStatusCode()) {
@@ -240,14 +244,16 @@ public class TasksAPI extends RootAPI {
                 TasksAPI.log.trace("Body: {}", body);
                 return getMapper().readValue(body, Task.class);
             } else {
-                String message =
-                        "Failed to get task. Response: " + response.getStatus()
-                        + ' ' + response + " Task: " + id;
+                String message = resourceBundle
+                        .getString("failed.to.get.task.response.0.1.task.2");
+                message =
+                        MessageFormat.format(message, statusCode, response, id);
                 TasksAPI.log.error(message);
                 throw new FutureGatewayException(message);
             }
-        } catch (IOException e) {
-            String message = "Failed to get task: " + id;
+        } catch (final IOException e) {
+            String message = resourceBundle.getString("failed.to.get.task.0");
+            message = MessageFormat.format(message, id);
             TasksAPI.log.error(message, e);
             throw new FutureGatewayException(message, e);
         } finally {
@@ -256,45 +262,19 @@ public class TasksAPI extends RootAPI {
     }
 
     /**
-     * Get collection of output files' information. This method returns any
-     * information only when task status is DONE.
-     *
-     * @param id An id of a task.
-     *
-     * @return A list of beans with information about task output files.
-     *
-     * @throws FutureGatewayException If communication with Future Gateway
-     *                                fails.
-     */
-    public final List<OutputFile> getOutputsForTask(final String id)
-            throws FutureGatewayException {
-        Task task = getTask(id);
-
-        // There is no sense to get output files for tasks that are not DONE
-        // In case of tasks that are still running we will get the same url
-        // that is: "url": "file?path=&name=sayhello.out"
-        if (task.getStatus() != TaskStatus.DONE) {
-            return Collections.emptyList();
-        }
-
-        return task.getOutputFiles();
-    }
-
-    /**
      * Downloads a single output file to a provided directory.
      *
      * @param outputFile A bean describing task output file.
      * @param directory  A directory where file will be downloaded.
-     *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
-    public final void downloadOutputFile(final OutputFile outputFile,
-                                         final File directory)
+    public final void downloadOutputFile(
+            final OutputFile outputFile, final File directory)
             throws FutureGatewayException {
         try {
             TasksAPI.testLocalFolderPermissions(directory);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new FutureGatewayException("Failed to download output file",
                                              e);
         }
@@ -314,7 +294,7 @@ public class TasksAPI extends RootAPI {
         Response.StatusType status = response.getStatusInfo();
         int statusCode = status.getStatusCode();
         String reasonPhrase = status.getReasonPhrase();
-        TasksAPI.log.debug("Status: {} {}", statusCode, reasonPhrase);
+        TasksAPI.log.debug(RootAPI.STATUS, statusCode, reasonPhrase);
 
         try {
             if (statusCode == Response.Status.OK.getStatusCode()) {
@@ -323,14 +303,15 @@ public class TasksAPI extends RootAPI {
                 Path filePath = new File(directory, name).toPath();
                 Files.copy(is, filePath, StandardCopyOption.REPLACE_EXISTING);
             } else {
-                String message =
-                        "Failed to download file. Response: " + response
-                                .getStatus() + ' ' + response + " Output file: "
-                        + outputFile + " Directory: " + directory;
+                String message = resourceBundle.getString(
+                        "failed.to.download.file.response.0.1.output.file.2.3");
+                message = MessageFormat
+                        .format(message, statusCode, response, outputFile,
+                                directory);
                 TasksAPI.log.error(message);
                 throw new FutureGatewayException(message);
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new FutureGatewayException("Failed to download file", e);
         } finally {
             response.close();
@@ -342,7 +323,6 @@ public class TasksAPI extends RootAPI {
      * downloaded.
      *
      * @param localFolder A path on local drive.
-     *
      * @throws IOException If anything is found to be wrong in the given path.
      */
     private static void testLocalFolderPermissions(final File localFolder)
@@ -368,9 +348,7 @@ public class TasksAPI extends RootAPI {
      * Get all tasks belonging to a user.
      *
      * @param user An id of a user.
-     *
      * @return A collection of tasks belonging to a user.
-     *
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
@@ -390,25 +368,26 @@ public class TasksAPI extends RootAPI {
         Response.StatusType status = response.getStatusInfo();
         int statusCode = status.getStatusCode();
         String reasonPhrase = status.getReasonPhrase();
-        TasksAPI.log.debug("Status: {} {}", statusCode, reasonPhrase);
+        TasksAPI.log.debug(RootAPI.STATUS, statusCode, reasonPhrase);
 
         try {
             if (statusCode == Response.Status.OK.getStatusCode()) {
                 String body = response.readEntity(String.class);
                 TasksAPI.log.trace("Body: {}", body);
                 JsonNode jsonNode = getMapper().readTree(body);
-                jsonNode = jsonNode.get("tasks");
+                jsonNode = jsonNode.get("tasks"); //NON-NLS
                 Task[] tasks = getMapper().treeToValue(jsonNode, Task[].class);
                 return Arrays.asList(tasks);
             } else {
-                String message =
-                        "Failed to get all tasks. Response: " + response
-                                .getStatus() + ' ' + response;
+                String message = resourceBundle
+                        .getString("failed.to.get.all.tasks.response.0.1");
+                message = MessageFormat.format(message, statusCode, response);
                 TasksAPI.log.error(message);
                 throw new FutureGatewayException(message);
             }
-        } catch (IOException e) {
-            String message = "Failed to get all tasks";
+        } catch (final IOException e) {
+            String message =
+                    resourceBundle.getString("failed.to.get.all.tasks");
             TasksAPI.log.error(message, e);
             throw new FutureGatewayException(message, e);
         } finally {
@@ -420,10 +399,9 @@ public class TasksAPI extends RootAPI {
      * Delete a single task.
      *
      * @param id An id of a task.
-     *
      * @return Whether deletion was successful.
      */
-    public final boolean deleteTask(final String id) {
+    public final boolean removeTask(final String id) {
         URI uri = UriBuilder.fromUri(tasksUri).path(id).build();
 
         TasksAPI.log.debug("DELETE {}", uri);
@@ -436,7 +414,7 @@ public class TasksAPI extends RootAPI {
             Response.StatusType status = response.getStatusInfo();
             int statusCode = status.getStatusCode();
             String reasonPhrase = status.getReasonPhrase();
-            TasksAPI.log.debug("Status: {} {}", statusCode, reasonPhrase);
+            TasksAPI.log.debug(RootAPI.STATUS, statusCode, reasonPhrase);
             return status.getFamily() == Response.Status.Family.SUCCESSFUL;
         } finally {
             if (response != null) {
@@ -445,4 +423,9 @@ public class TasksAPI extends RootAPI {
         }
     }
 
+    @Override
+    public final String toString() {
+        return new ToStringBuilder(this).append("tasksUri", tasksUri)
+                                        .toString();
+    }
 }

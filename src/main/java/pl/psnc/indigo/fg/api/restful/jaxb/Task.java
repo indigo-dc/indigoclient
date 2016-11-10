@@ -51,6 +51,15 @@ public class Task {
     @JsonProperty("_links")
     private List<Link> links = Collections.emptyList();
 
+    public boolean isDone() {
+        return status == TaskStatus.DONE;
+    }
+
+    public List<OutputFile> getOutputFiles() {
+        return (status == TaskStatus.DONE) ? Collections
+                .unmodifiableList(outputFiles) : Collections.emptyList();
+    }
+
     @Override
     public final boolean equals(final Object o) {
         if (this == o) {

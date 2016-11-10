@@ -95,7 +95,7 @@ public class TasksAPITest {
 
     @Test
     public void testGetOutputsForTask() throws FutureGatewayException {
-        List<OutputFile> outputFiles = api.getOutputsForTask("1");
+        List<OutputFile> outputFiles = api.getTask("1").getOutputFiles();
         assertEquals(3, outputFiles.size());
 
         OutputFile outputFile = outputFiles.get(0);
@@ -108,14 +108,14 @@ public class TasksAPITest {
 
     @Test
     public void testGetOutputsForTaskNotDone() throws FutureGatewayException {
-        List<OutputFile> outputFiles = api.getOutputsForTask("2");
+        List<OutputFile> outputFiles = api.getTask("2").getOutputFiles();
         assertEquals(0, outputFiles.size());
     }
 
     @Test
     public void testDeleteTask() throws FutureGatewayException {
-        assertFalse(api.deleteTask("non-existing-task"));
-        assertTrue(api.deleteTask("existing-task"));
+        assertFalse(api.removeTask("non-existing-task"));
+        assertTrue(api.removeTask("existing-task"));
     }
 
     @Test

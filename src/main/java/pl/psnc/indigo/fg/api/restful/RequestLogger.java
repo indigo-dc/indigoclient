@@ -7,7 +7,9 @@ import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +18,7 @@ import java.util.Map;
  * requests.
  */
 @Slf4j
-public class RequestLogger implements ClientRequestFilter {
+class RequestLogger implements ClientRequestFilter {
     private static final int ONE_KB = 1024;
 
     @Override
@@ -25,7 +27,8 @@ public class RequestLogger implements ClientRequestFilter {
         RequestLogger.describeHeaders(clientRequestContext, builder);
         builder.append(System.lineSeparator());
         RequestLogger.describeBody(clientRequestContext, builder);
-        RequestLogger.log.trace(builder.toString());
+        String logContent = builder.toString();
+        RequestLogger.log.trace(logContent);
     }
 
     /**
@@ -35,8 +38,8 @@ public class RequestLogger implements ClientRequestFilter {
      * @param context Context of the HTTP request.
      * @param builder Where the output will be appended.
      */
-    private static void describeBody(final ClientRequestContext context,
-                                     final StringBuilder builder) {
+    private static void describeBody(
+            final ClientRequestContext context, final StringBuilder builder) {
         if ((context != null) && context.hasEntity()) {
             Object entity = context.getEntity();
             if (entity instanceof MultiPart) {
@@ -53,13 +56,15 @@ public class RequestLogger implements ClientRequestFilter {
      * @param builder Where the output will be appended.
      * @param entity  The entity itself.
      */
-    private static void describeMultiPart(final StringBuilder builder,
-                                          final MultiPart entity) {
+    private static void describeMultiPart(
+            final StringBuilder builder, final MultiPart entity) {
         for (final BodyPart part : entity.getBodyParts()) {
             if (part instanceof FileDataBodyPart) {
-                builder.append(((FileDataBodyPart) part).getFileEntity());
+                File fileEntity = ((FileDataBodyPart) part).getFileEntity();
+                builder.append(fileEntity);
             } else {
-                builder.append(part);
+                MediaType mediaType = part.getMediaType();
+                builder.append(mediaType);
             }
         }
     }
@@ -70,8 +75,8 @@ public class RequestLogger implements ClientRequestFilter {
      * @param context Context of the HTTP request.
      * @param builder Where the output will be appended.
      */
-    private static void describeHeaders(final ClientRequestContext context,
-                                        final StringBuilder builder) {
+    private static void describeHeaders(
+            final ClientRequestContext context, final StringBuilder builder) {
         MultivaluedMap<String, String> headers = context.getStringHeaders();
         for (final Map.Entry<String, List<String>> entry : headers.entrySet()) {
             String key = entry.getKey();

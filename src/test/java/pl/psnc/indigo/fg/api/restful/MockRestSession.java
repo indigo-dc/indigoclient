@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("NestedMethodCall")
 public class MockRestSession {
     public static final URI MOCK_ADDRESS = URI.create("http://mock:8888");
+    private static final String APPLICATIONS = "applications";
 
     private static Task mockTask;
 
@@ -130,21 +131,21 @@ public class MockRestSession {
 
     private void mockApplicationsAPI() throws IOException {
         URI uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
-                            .path("applications").build();
+                            .path(APPLICATIONS).build();
         String body = readResource("applications.json");
         mockGetPostResponse(uri, Response.Status.OK, body);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
-                        .path("applications").path("1").build();
+                        .path(APPLICATIONS).path("1").build();
         body = readResource("applications_1.json");
         mockGetPostResponse(uri, Response.Status.OK, body);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
-                        .path("applications").path("invalid-uri").build();
+                        .path(APPLICATIONS).path("invalid-uri").build();
         mockGetPostResponse(uri, Response.Status.NOT_FOUND, "");
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
-                        .path("applications").path("invalid-body").build();
+                        .path(APPLICATIONS).path("invalid-body").build();
         body = "invalid-JSON-body";
         mockGetPostResponse(uri, Response.Status.OK, body);
     }
@@ -168,9 +169,9 @@ public class MockRestSession {
         return client;
     }
 
-    public final void mockGetPostResponse(final URI uri,
-                                          final Response.StatusType status,
-                                          final Object body) {
+    public final void mockGetPostResponse(
+            final URI uri, final Response.StatusType status,
+            final Object body) {
         Response response = mock(Response.class);
         when(response.getStatusInfo()).thenReturn(status);
         when(response.readEntity(any(Class.class))).thenReturn(body);
@@ -188,8 +189,8 @@ public class MockRestSession {
         when(client.target(uri)).thenReturn(target);
     }
 
-    public final void mockDeleteResponse(final URI uri,
-                                         final Response.StatusType status) {
+    public final void mockDeleteResponse(
+            final URI uri, final Response.StatusType status) {
         Response response = mock(Response.class);
         when(response.getStatusInfo()).thenReturn(status);
 
