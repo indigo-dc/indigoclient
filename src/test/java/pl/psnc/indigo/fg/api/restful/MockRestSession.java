@@ -1,5 +1,6 @@
 package pl.psnc.indigo.fg.api.restful;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
@@ -22,35 +23,34 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SuppressWarnings("NestedMethodCall")
 public class MockRestSession {
     public static final URI MOCK_ADDRESS = URI.create("http://mock:8888");
+
     private static final String APPLICATIONS = "applications";
+    private static final Task MOCK_TASK = new Task();
 
-    private static Task mockTask;
+    static {
+        MockRestSession.MOCK_TASK.setUser("brunor");
+        MockRestSession.MOCK_TASK.setApplication("1");
+        MockRestSession.MOCK_TASK.setDescription("hello");
+    }
 
-    public static synchronized Task getMockTask() {
-        if (MockRestSession.mockTask == null) {
-            MockRestSession.mockTask = new Task();
-            MockRestSession.mockTask.setUser("brunor");
-            MockRestSession.mockTask.setApplication("1");
-            MockRestSession.mockTask.setDescription("hello");
-        }
-        return MockRestSession.mockTask;
+    public static Task mockTask() {
+        return MockRestSession.MOCK_TASK;
     }
 
     private final Client client = mock(Client.class);
     private final ClassLoader classLoader = getClass().getClassLoader();
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public MockRestSession() throws IOException {
+    public MockRestSession() throws IOException, JsonProcessingException {
         super();
         mockRootAPI();
         mockApplicationsAPI();
         mockTasksAPI();
     }
 
-    private void mockTasksAPI() throws IOException {
+    private void mockTasksAPI() throws IOException, JsonProcessingException {
         URI uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                             .path("tasks").queryParam("user", "all-tasks")
                             .build();
@@ -90,7 +90,7 @@ public class MockRestSession {
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("tasks").queryParam("user", "brunor").build();
-        body = mapper.writeValueAsString(MockRestSession.getMockTask());
+        body = mapper.writeValueAsString(MockRestSession.mockTask());
         mockGetPostResponse(uri, Response.Status.OK, body);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
@@ -131,21 +131,23 @@ public class MockRestSession {
 
     private void mockApplicationsAPI() throws IOException {
         URI uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
-                            .path(APPLICATIONS).build();
+                            .path(MockRestSession.APPLICATIONS).build();
         String body = readResource("applications.json");
         mockGetPostResponse(uri, Response.Status.OK, body);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
-                        .path(APPLICATIONS).path("1").build();
+                        .path(MockRestSession.APPLICATIONS).path("1").build();
         body = readResource("applications_1.json");
         mockGetPostResponse(uri, Response.Status.OK, body);
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
-                        .path(APPLICATIONS).path("invalid-uri").build();
+                        .path(MockRestSession.APPLICATIONS).path("invalid-uri")
+                        .build();
         mockGetPostResponse(uri, Response.Status.NOT_FOUND, "");
 
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
-                        .path(APPLICATIONS).path("invalid-body").build();
+                        .path(MockRestSession.APPLICATIONS).path("invalid-body")
+                        .build();
         body = "invalid-JSON-body";
         mockGetPostResponse(uri, Response.Status.OK, body);
     }
