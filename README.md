@@ -14,7 +14,7 @@ This will produce indigo-fg-api and put jar into local Maven repository.
 
 If you don't want to perform tests, call:
 
-	mvn install -DskipTests
+	mvn install -DskipTests -Dcobertura.skip
 
 Note that for testing you need access to Future Gateway Web Services.
 
