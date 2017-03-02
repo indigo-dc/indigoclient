@@ -20,8 +20,8 @@ import pl.psnc.indigo.fg.api.restful.jaxb.serialization.InputFileDeserializer;
 @JsonDeserialize(using = InputFileDeserializer.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InputFile {
-    private String name;
-    private String status;
+    private String name = "";
+    private String status = "";
 
     @Override
     public final boolean equals(final Object o) {

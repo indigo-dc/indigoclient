@@ -8,6 +8,7 @@ import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -20,8 +21,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Root {
     @JsonProperty("_links")
-    private List<Link> links;
-    private List<Version> versions;
+    private List<Link> links = Collections.emptyList();
+    private List<Version> versions = Collections.emptyList();
 
     @Override
     public final boolean equals(final Object o) {

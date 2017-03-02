@@ -26,7 +26,7 @@ import java.util.List;
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Task {
-    private String id;
+    private String id = "";
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime date = LocalDateTime.now();
@@ -34,11 +34,11 @@ public class Task {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonProperty("last_change")
     private LocalDateTime lastChange = LocalDateTime.now();
-    private String application;
-    private String infrastructureTask;
-    private String description;
-    private TaskStatus status;
-    private String user;
+    private String application = "";
+    private String infrastructureTask = "";
+    private String description = "";
+    private TaskStatus status = TaskStatus.UNKNOWN;
+    private String user = "";
     private List<String> arguments = Collections.emptyList();
     @JsonProperty("input_files")
     private List<InputFile> inputFiles = Collections.emptyList();
@@ -46,21 +46,13 @@ public class Task {
     private List<OutputFile> outputFiles = Collections.emptyList();
     @JsonProperty("runtime_data")
     private List<RuntimeData> runtimeData = Collections.emptyList();
-    private String creation;
-    private String iosandbox;
+    private String creation = "";
+    private String iosandbox = "";
     @JsonProperty("_links")
     private List<Link> links = Collections.emptyList();
 
     public final boolean isDone() {
         return status == TaskStatus.DONE;
-    }
-
-    public final List<OutputFile> getOutputFiles() {
-        if (status == TaskStatus.DONE) {
-            return Collections.unmodifiableList(outputFiles);
-        } else {
-            return Collections.emptyList();
-        }
     }
 
     @Override

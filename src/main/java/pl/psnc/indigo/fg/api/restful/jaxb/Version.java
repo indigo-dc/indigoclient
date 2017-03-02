@@ -11,6 +11,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.MediaTypeDeserializer;
 
 import javax.ws.rs.core.MediaType;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,16 +23,16 @@ import java.util.List;
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Version {
-    private String status;
-    private String updated;
+    private String status = "";
+    private String updated = "";
     @JsonProperty("build:")
-    private String build;
+    private String build = "";
     @JsonDeserialize(using = MediaTypeDeserializer.class)
     @JsonProperty("media-types")
-    private MediaType mediaType;
+    private MediaType mediaType = MediaType.WILDCARD_TYPE;
     @JsonProperty("_links")
-    private List<Link> links;
-    private String id;
+    private List<Link> links = Collections.emptyList();
+    private String id = "";
 
     @Override
     public final boolean equals(final Object o) {

@@ -16,9 +16,9 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Parameter {
-    private String name;
-    private String value;
-    private String description;
+    private String name = "";
+    private String value = "";
+    private String description = "";
 
     @Override
     public final boolean equals(final Object o) {
