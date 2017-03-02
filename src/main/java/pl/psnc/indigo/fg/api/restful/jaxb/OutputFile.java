@@ -21,8 +21,8 @@ import java.net.URI;
 @JsonDeserialize(using = OutputFileDeserializer.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OutputFile {
-    private String name;
-    private URI url;
+    private String name = "";
+    private URI url = URI.create("");
 
     @Override
     public final boolean equals(final Object o) {

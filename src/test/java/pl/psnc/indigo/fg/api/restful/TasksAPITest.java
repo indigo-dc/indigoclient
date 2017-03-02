@@ -104,8 +104,8 @@ public class TasksAPITest {
         OutputFile outputFile = outputFiles.get(0);
         assertThat("sayhello.data", is(outputFile.getName()));
         assertThat(URI.create(
-                "file?path=%2Ftmp%2Fba3a8d88-1e71-11e6-92fb" + "-fa163e26496e"
-                + "%2F1tmpba3a8d881e7111e692fbfa163e26496e_2&name" + "=sayhello"
+                "file?path=%2Ftmp%2Fba3a8d88-1e71-11e6-92fb-fa163e26496e"
+                + "%2F1tmpba3a8d881e7111e692fbfa163e26496e_2&name=sayhello"
                 + ".data"), is(outputFile.getUrl()));
     }
 
@@ -113,7 +113,7 @@ public class TasksAPITest {
     public final void testGetOutputsForTaskNotDone()
             throws FutureGatewayException {
         List<OutputFile> outputFiles = api.getTask("2").getOutputFiles();
-        assertThat(0, is(outputFiles.size()));
+        assertThat(outputFiles.size(), is(3));
     }
 
     @Test

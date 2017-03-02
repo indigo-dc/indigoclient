@@ -14,6 +14,7 @@ import pl.psnc.indigo.fg.api.restful.jaxb.serialization
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.LocalDateTimeSerializer;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,20 +27,20 @@ import java.util.List;
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Application {
-    private String id;
-    private String name;
-    private String description;
+    private String id = "";
+    private String name = "";
+    private String description = "";
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime creation;
-    private List<Parameter> parameters;
+    private LocalDateTime creation = LocalDateTime.now();
+    private List<Parameter> parameters = Collections.emptyList();
     @JsonProperty("input_files")
-    private List<InputFile> inputFiles;
-    private List<Infrastructure> infrastructures;
-    private Outcome outcome;
+    private List<InputFile> inputFiles = Collections.emptyList();
+    private List<Infrastructure> infrastructures = Collections.emptyList();
+    private Outcome outcome = Outcome.JOB;
     private boolean enabled;
     @JsonProperty("_links")
-    private List<Link> links;
+    private List<Link> links = Collections.emptyList();
 
     @Override
     public final boolean equals(final Object o) {

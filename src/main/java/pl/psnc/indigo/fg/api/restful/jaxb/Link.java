@@ -16,8 +16,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Link {
-    private String rel;
-    private String href;
+    private String rel = "";
+    private String href = "";
 
     @Override
     public final boolean equals(final Object o) {

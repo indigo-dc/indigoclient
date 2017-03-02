@@ -21,10 +21,10 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Upload {
     private List<InputFile> files = Collections.emptyList();
-    private String message;
-    private String task;
+    private String message = "";
+    private String task = "";
     @JsonProperty("gestatus")
-    private String status;
+    private String status = "";
 
     @Override
     public final boolean equals(final Object o) {

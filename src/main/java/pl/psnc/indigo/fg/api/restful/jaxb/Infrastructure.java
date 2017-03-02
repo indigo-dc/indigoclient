@@ -14,6 +14,7 @@ import pl.psnc.indigo.fg.api.restful.jaxb.serialization
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.LocalDateTimeSerializer;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,13 +27,13 @@ import java.util.List;
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Infrastructure {
-    private String id;
-    private String name;
-    private String description;
+    private String id = "";
+    private String name = "";
+    private String description = "";
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime creation;
-    private List<Parameter> parameters;
+    private LocalDateTime creation = LocalDateTime.now();
+    private List<Parameter> parameters = Collections.emptyList();
     private boolean enabled;
     @JsonProperty("vinfra")
     private boolean virtual;

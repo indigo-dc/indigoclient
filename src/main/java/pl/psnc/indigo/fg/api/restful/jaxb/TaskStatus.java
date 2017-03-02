@@ -12,5 +12,6 @@ public enum TaskStatus {
     RUNNING,
     DONE,
     ABORTED,
-    CANCELLED
+    CANCELLED,
+    UNKNOWN
 }

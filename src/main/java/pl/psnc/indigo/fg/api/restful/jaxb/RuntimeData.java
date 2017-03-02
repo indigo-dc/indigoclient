@@ -23,13 +23,13 @@ import java.time.LocalDateTime;
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RuntimeData {
-    private String name;
-    private String value;
-    private String description;
-    private String creation;
+    private String name = "";
+    private String value = "";
+    private String description = "";
+    private String creation = "";
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime lastChange;
+    private LocalDateTime lastChange = LocalDateTime.now();
 
     @Override
     public final boolean equals(final Object o) {
