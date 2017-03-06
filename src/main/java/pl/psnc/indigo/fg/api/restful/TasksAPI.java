@@ -8,6 +8,7 @@ import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
+import pl.psnc.indigo.fg.api.restful.jaxb.PatchRuntimeData;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 
@@ -410,6 +411,28 @@ public class TasksAPI extends RootAPI {
                                                getAuthorizationToken())
                                        .delete();
 
+        return checkResponseGeneral(response);
+    }
+
+    /**
+     * Set Runtime Data of a given task using a PATCH request.
+     *
+     * @param taskId           An id of a task.
+     * @param patchRuntimeData A list of key-value pairs of data to be set.
+     * @return Whether request was successful
+     */
+    public final boolean patchRuntimeData(
+            final String taskId, final PatchRuntimeData patchRuntimeData) {
+        URI uri = UriBuilder.fromUri(tasksUri).path(taskId).build();
+        TasksAPI.log.debug("PATCH {}", uri);
+        Entity<?> entity = Entity.entity(patchRuntimeData,
+                                         MediaType.APPLICATION_JSON_TYPE);
+        Response response =
+                getClient().target(uri).request().method("PATCH", entity);
+        return checkResponseGeneral(response);
+    }
+
+    private boolean checkResponseGeneral(final Response response) {
         try {
             Response.StatusType status = response.getStatusInfo();
             int statusCode = status.getStatusCode();
