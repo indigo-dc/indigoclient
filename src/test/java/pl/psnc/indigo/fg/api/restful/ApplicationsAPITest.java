@@ -1,6 +1,9 @@
 package pl.psnc.indigo.fg.api.restful;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import pl.psnc.indigo.fg.api.restful.category.UnitTests;
@@ -9,30 +12,40 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Application;
 import pl.psnc.indigo.fg.api.restful.jaxb.Infrastructure;
 import pl.psnc.indigo.fg.api.restful.jaxb.Parameter;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.List;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @Category(UnitTests.class)
 public class ApplicationsAPITest {
-    private MockRestSession session;
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule();
+
     private ApplicationsAPI api;
 
     @Before
-    public final void before() throws IOException, FutureGatewayException {
-        session = new MockRestSession();
-        Client client = session.getClient();
-        api = new ApplicationsAPI(MockRestSession.MOCK_ADDRESS, client, "");
+    public final void setup() throws IOException, FutureGatewayException {
+        stubFor(get(urlEqualTo("/")).willReturn(aResponse().withBody(
+                ApplicationsAPITest.readResource("root.json"))));
+        api = new ApplicationsAPI(URI.create("http://localhost:8080/"), "");
     }
 
     @Test
-    public final void testGetAllApplications() throws FutureGatewayException {
+    public final void testGetAllApplications() throws Exception {
+        String body = ApplicationsAPITest.readResource("applications.json");
+        stubFor(get(urlEqualTo("/v1.0/applications"))
+                        .willReturn(aResponse().withBody(body)));
+
         List<Application> applications = api.getAllApplications();
         assertThat(2, is(applications.size()));
 
@@ -50,18 +63,21 @@ public class ApplicationsAPITest {
         assertThat(5, is(parameters1.size()));
     }
 
-    /* This test exceptionally needs to ad-hoc add new response to the mock. */
     @Test(expected = FutureGatewayException.class)
     public final void testGetAllApplicationsError()
             throws FutureGatewayException {
-        URI uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
-                            .path("applications").build();
-        session.mockGetPostResponse(uri, Response.Status.NOT_FOUND, "");
+        stubFor(get(urlEqualTo("/v1.0/applications"))
+                        .willReturn(aResponse().withBody("")));
+
         api.getAllApplications();
     }
 
     @Test
-    public final void testGetApplication() throws FutureGatewayException {
+    public final void testGetApplication() throws Exception {
+        String body = ApplicationsAPITest.readResource("applications_1.json");
+        stubFor(get(urlEqualTo("/v1.0/applications/1"))
+                        .willReturn(aResponse().withBody(body)));
+
         Application application = api.getApplication("1");
         assertThat("1", is(application.getId()));
         assertThat("hostname", is(application.getName()));
@@ -101,12 +117,26 @@ public class ApplicationsAPITest {
     @Test(expected = FutureGatewayException.class)
     public final void testGetApplicationInvalidUri()
             throws FutureGatewayException {
+        stubFor(get(urlEqualTo("/v1.0/applications/invalid-uri")).willReturn(
+                aResponse().withStatus(
+                        Response.Status.NOT_FOUND.getStatusCode())));
+
         api.getApplication("invalid-uri");
     }
 
     @Test(expected = FutureGatewayException.class)
     public final void testGetApplicationInvalidBody()
             throws FutureGatewayException {
+        stubFor(get(urlEqualTo("/v1.0/applications/invalid-body"))
+                        .willReturn(aResponse().withBody("")));
         api.getApplication("invalid-body");
+    }
+
+    private static String readResource(final String resource)
+            throws IOException {
+        ClassLoader classLoader = ApplicationsAPITest.class.getClassLoader();
+        try (InputStream stream = classLoader.getResourceAsStream(resource)) {
+            return IOUtils.toString(stream, Charset.defaultCharset());
+        }
     }
 }
