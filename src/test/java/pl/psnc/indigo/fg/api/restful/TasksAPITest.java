@@ -7,6 +7,8 @@ import org.junit.experimental.categories.Category;
 import pl.psnc.indigo.fg.api.restful.category.UnitTests;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
+import pl.psnc.indigo.fg.api.restful.jaxb.PatchRuntimeData;
+import pl.psnc.indigo.fg.api.restful.jaxb.RuntimeData;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.TaskStatus;
 import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
@@ -15,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -199,5 +202,21 @@ public class TasksAPITest {
         Task mockTask = new Task();
         mockTask.setUser("invalid-body");
         api.createTask(mockTask);
+    }
+
+    @Test
+    public final void testPatchRuntimeData() throws FutureGatewayException {
+        PatchRuntimeData patchRuntimeData = new PatchRuntimeData();
+        patchRuntimeData.setRuntimeData(Collections.singletonList(
+                new PatchRuntimeData.KeyValue("name", "value")));
+
+        Task task = api.getTask("3");
+        assertThat(task.getRuntimeData().isEmpty(), is(true));
+        api.patchRuntimeData(task.getId(), patchRuntimeData);
+        task = api.getTask(task.getId());
+        assertThat(task.getRuntimeData().size(), is(1));
+        RuntimeData runtimeData = task.getRuntimeData().get(0);
+        assertThat(runtimeData.getName(), is("name"));
+        assertThat(runtimeData.getValue(), is("value"));
     }
 }

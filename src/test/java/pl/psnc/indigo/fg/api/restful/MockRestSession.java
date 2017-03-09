@@ -20,6 +20,7 @@ import java.nio.charset.Charset;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -127,6 +128,11 @@ public class MockRestSession {
         uri = UriBuilder.fromUri(MockRestSession.MOCK_ADDRESS).path("v1.0")
                         .path("tasks").path("existing-task").build();
         mockDeleteResponse(uri, Response.Status.OK);
+
+        uri = UriBuilder.fromUri(MOCK_ADDRESS).path("v1.0").path("tasks")
+                        .path("3").build();
+        mockPatchResponse(uri, Response.Status.OK, readResource("tasks_3.json"),
+                          readResource("tasks_3_patched.json"));
     }
 
     private void mockApplicationsAPI() throws IOException {
@@ -176,7 +182,14 @@ public class MockRestSession {
             final Object body) {
         Response response = mock(Response.class);
         when(response.getStatusInfo()).thenReturn(status);
-        when(response.readEntity(any(Class.class))).thenReturn(body);
+
+        if (body instanceof String) {
+            when(response.readEntity(eq(String.class)))
+                    .thenReturn((String) body);
+        } else if (body instanceof InputStream) {
+            when(response.readEntity(eq(InputStream.class)))
+                    .thenReturn((InputStream) body);
+        }
 
         Invocation.Builder builder = mock(Invocation.Builder.class);
         when(builder.accept(any(MediaType.class))).thenReturn(builder);
@@ -186,6 +199,7 @@ public class MockRestSession {
 
         WebTarget target = mock(WebTarget.class);
         when(target.request(any(MediaType.class))).thenReturn(builder);
+        when(target.request(any(MediaType[].class))).thenReturn(builder);
         when(target.request()).thenReturn(builder);
 
         when(client.target(uri)).thenReturn(target);
@@ -204,6 +218,28 @@ public class MockRestSession {
         WebTarget target = mock(WebTarget.class);
         when(target.request(any(MediaType.class))).thenReturn(builder);
         when(target.request()).thenReturn(builder);
+
+        when(client.target(uri)).thenReturn(target);
+    }
+
+    public final void mockPatchResponse(
+            final URI uri, final Response.StatusType status,
+            final String bodyBefore, final String bodyAfter) {
+        Response response = mock(Response.class);
+        when(response.getStatusInfo()).thenReturn(status);
+        when(response.readEntity(eq(String.class))).thenReturn(bodyBefore)
+                                                   .thenReturn(bodyAfter);
+
+        Invocation.Builder builder = mock(Invocation.Builder.class);
+        when(builder.accept(any(MediaType[].class))).thenReturn(builder);
+        when(builder.header(anyString(), any())).thenReturn(builder);
+        when(builder.get()).thenReturn(response);
+        when(builder.method(anyString(), any(Entity.class)))
+                .thenReturn(response);
+
+        WebTarget target = mock(WebTarget.class);
+        when(target.request()).thenReturn(builder);
+        when(target.request(any(MediaType[].class))).thenReturn(builder);
 
         when(client.target(uri)).thenReturn(target);
     }

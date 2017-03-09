@@ -411,7 +411,7 @@ public class TasksAPI extends RootAPI {
                                                getAuthorizationToken())
                                        .delete();
 
-        return checkResponseGeneral(response);
+        return TasksAPI.checkResponseGeneral(response);
     }
 
     /**
@@ -422,17 +422,26 @@ public class TasksAPI extends RootAPI {
      * @return Whether request was successful
      */
     public final boolean patchRuntimeData(
-            final String taskId, final PatchRuntimeData patchRuntimeData) {
+            final String taskId, final PatchRuntimeData patchRuntimeData)
+            throws FutureGatewayException {
+        Entity<String> entity;
+        try {
+            String runtimeDataJson =
+                    getMapper().writeValueAsString(patchRuntimeData);
+            entity = Entity.json(runtimeDataJson);
+        } catch (final JsonProcessingException e) {
+            throw new FutureGatewayException("Failed to prepare JSON for task",
+                                             e);
+        }
+
         URI uri = UriBuilder.fromUri(tasksUri).path(taskId).build();
         TasksAPI.log.debug("PATCH {}", uri);
-        Entity<?> entity = Entity.entity(patchRuntimeData,
-                                         MediaType.APPLICATION_JSON_TYPE);
         Response response =
                 getClient().target(uri).request().method("PATCH", entity);
-        return checkResponseGeneral(response);
+        return TasksAPI.checkResponseGeneral(response);
     }
 
-    private boolean checkResponseGeneral(final Response response) {
+    private static boolean checkResponseGeneral(final Response response) {
         try {
             Response.StatusType status = response.getStatusInfo();
             int statusCode = status.getStatusCode();

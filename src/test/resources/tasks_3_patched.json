@@ -1,0 +1,43 @@
+{
+  "status": "SUBMITTED",
+  "description": "Test with files",
+  "creation": "2016-05-20T10:00:48Z",
+  "iosandbox": "/tmp/ba3a8d88-1e71-11e6-92fb-fa163e26496e",
+  "user": "brunor",
+  "id": "3",
+  "output_files": [
+    {
+      "url": "file?path=&name=sayhello.data",
+      "name": "sayhello.data"
+    },
+    {
+      "url": "file?path=&name=sayhello.out",
+      "name": "sayhello.out"
+    },
+    {
+      "url": "file?path=&name=sayhello.err",
+      "name": "sayhello.err"
+    }
+  ],
+  "application": "2",
+  "arguments": [
+    "I am saying hello"
+  ],
+  "runtime_data": [
+    {
+      "name": "name",
+      "value": "value"
+    }
+  ],
+  "input_files": [
+    {
+      "status": "READY",
+      "name": "sayhello.sh"
+    },
+    {
+      "status": "READY",
+      "name": "sayhello.txt"
+    }
+  ],
+  "last_change": "2016-05-20T10:03:08Z"
+}

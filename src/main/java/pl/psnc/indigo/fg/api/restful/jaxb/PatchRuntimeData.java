@@ -26,6 +26,16 @@ public class PatchRuntimeData {
         @JsonProperty("data_value")
         private String dataValue = "";
 
+        public KeyValue() {
+            super();
+        }
+
+        public KeyValue(final String dataName, final String dataValue) {
+            super();
+            this.dataName = dataName;
+            this.dataValue = dataValue;
+        }
+
         @Override
         public final boolean equals(final Object o) {
             if (this == o) {
