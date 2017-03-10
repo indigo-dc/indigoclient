@@ -1,7 +1,6 @@
 package pl.psnc.indigo.fg.api.restful;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,9 +13,7 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Parameter;
 
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
-import java.nio.charset.Charset;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -35,14 +32,14 @@ public class ApplicationsAPITest {
 
     @Before
     public final void setup() throws IOException, FutureGatewayException {
-        stubFor(get(urlEqualTo("/")).willReturn(aResponse().withBody(
-                ApplicationsAPITest.readResource("root.json"))));
+        stubFor(get(urlEqualTo("/")).willReturn(
+                aResponse().withBody(Helper.readResource("root.json"))));
         api = new ApplicationsAPI(URI.create("http://localhost:8080/"), "");
     }
 
     @Test
     public final void testGetAllApplications() throws Exception {
-        String body = ApplicationsAPITest.readResource("applications.json");
+        String body = Helper.readResource("applications.json");
         stubFor(get(urlEqualTo("/v1.0/applications"))
                         .willReturn(aResponse().withBody(body)));
 
@@ -74,7 +71,7 @@ public class ApplicationsAPITest {
 
     @Test
     public final void testGetApplication() throws Exception {
-        String body = ApplicationsAPITest.readResource("applications_1.json");
+        String body = Helper.readResource("applications_1.json");
         stubFor(get(urlEqualTo("/v1.0/applications/1"))
                         .willReturn(aResponse().withBody(body)));
 
@@ -130,13 +127,5 @@ public class ApplicationsAPITest {
         stubFor(get(urlEqualTo("/v1.0/applications/invalid-body"))
                         .willReturn(aResponse().withBody("")));
         api.getApplication("invalid-body");
-    }
-
-    private static String readResource(final String resource)
-            throws IOException {
-        ClassLoader classLoader = ApplicationsAPITest.class.getClassLoader();
-        try (InputStream stream = classLoader.getResourceAsStream(resource)) {
-            return IOUtils.toString(stream, Charset.defaultCharset());
-        }
     }
 }
