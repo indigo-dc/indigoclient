@@ -4,6 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
@@ -424,21 +428,20 @@ public class TasksAPI extends RootAPI {
     public final boolean patchRuntimeData(
             final String taskId, final PatchRuntimeData patchRuntimeData)
             throws FutureGatewayException {
-        Entity<String> entity;
+        URI uri = UriBuilder.fromUri(tasksUri).path(taskId).build();
+        TasksAPI.log.debug("PATCH {}", uri);
+
         try {
-            String runtimeDataJson =
-                    getMapper().writeValueAsString(patchRuntimeData);
-            entity = Entity.json(runtimeDataJson);
-        } catch (final JsonProcessingException e) {
+            HttpEntity entity = new StringEntity(
+                    getMapper().writeValueAsString(patchRuntimeData),
+                    ContentType.APPLICATION_JSON);
+            Request.Patch(uri).body(entity).execute().discardContent();
+        } catch (final IOException e) {
             throw new FutureGatewayException("Failed to prepare JSON for task",
                                              e);
         }
 
-        URI uri = UriBuilder.fromUri(tasksUri).path(taskId).build();
-        TasksAPI.log.debug("PATCH {}", uri);
-        Response response =
-                getClient().target(uri).request().method("PATCH", entity);
-        return TasksAPI.checkResponseGeneral(response);
+        return true;
     }
 
     private static boolean checkResponseGeneral(final Response response) {

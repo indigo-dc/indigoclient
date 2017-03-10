@@ -27,6 +27,7 @@ import java.util.List;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
@@ -282,7 +283,7 @@ public class TasksAPITest {
         String body = Helper.readResource("tasks_3.json");
         stubFor(get(urlEqualTo("/v1.0/tasks/3"))
                         .willReturn(aResponse().withBody(body)));
-        stubFor(post(urlEqualTo("/v1.0/tasks/3")).willReturn(
+        stubFor(patch(urlEqualTo("/v1.0/tasks/3")).willReturn(
                 aResponse().withStatus(Response.Status.OK.getStatusCode())));
 
         PatchRuntimeData patchRuntimeData = new PatchRuntimeData();
