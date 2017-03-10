@@ -8,14 +8,18 @@ import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Application;
 import pl.psnc.indigo.fg.api.restful.jaxb.InputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
+import pl.psnc.indigo.fg.api.restful.jaxb.PatchRuntimeData;
+import pl.psnc.indigo.fg.api.restful.jaxb.RuntimeData;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.TaskStatus;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static org.awaitility.Awaitility.await;
@@ -189,5 +193,27 @@ public class FutureGatewayTest {
         String id = task.getId();
         assertTrue(api.removeTask(id));
         assertFalse(api.removeTask(id));
+    }
+
+    @Test
+    public final void testPatchTask() throws FutureGatewayException {
+        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
+
+        Task task = new Task();
+        task.setApplication("1");
+        task.setUser(FutureGatewayTest.USERNAME);
+        task = api.createTask(task);
+        assertTrue(task.getRuntimeData().isEmpty());
+
+        PatchRuntimeData patchRuntimeData = new PatchRuntimeData();
+        patchRuntimeData.setRuntimeData(Collections.singletonList(
+                new PatchRuntimeData.KeyValue("dataName", "dataValue")));
+        api.patchRuntimeData(task.getId(), patchRuntimeData);
+        task = api.getTask(task.getId());
+
+        List<RuntimeData> runtimeData = task.getRuntimeData();
+        assertEquals(1, runtimeData.size());
+        assertEquals("dataName", runtimeData.get(0).getName());
+        assertEquals("dataValue", runtimeData.get(0).getValue());
     }
 }
