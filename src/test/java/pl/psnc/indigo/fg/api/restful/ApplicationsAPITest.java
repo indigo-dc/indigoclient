@@ -1,6 +1,7 @@
 package pl.psnc.indigo.fg.api.restful;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,7 +12,6 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Application;
 import pl.psnc.indigo.fg.api.restful.jaxb.Infrastructure;
 import pl.psnc.indigo.fg.api.restful.jaxb.Parameter;
 
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -114,8 +114,7 @@ public class ApplicationsAPITest {
     public final void testGetApplicationInvalidUri()
             throws FutureGatewayException {
         stubFor(get(urlEqualTo("/v1.0/applications/invalid-uri")).willReturn(
-                aResponse().withStatus(
-                        Response.Status.NOT_FOUND.getStatusCode())));
+                aResponse().withStatus(HttpStatus.SC_NOT_FOUND)));
 
         api.getApplication("invalid-uri");
     }

@@ -3,6 +3,7 @@ package pl.psnc.indigo.fg.api.restful;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.apache.commons.io.FileUtils;
+import org.apache.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,7 +18,6 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.TaskStatus;
 import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 
-import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -97,8 +97,7 @@ public class TasksAPITest {
     @Test(expected = FutureGatewayException.class)
     public final void testGetTaskInvalidUri() throws FutureGatewayException {
         stubFor(get(urlEqualTo("/v1.0/tasks/invalid-uri")).willReturn(
-                aResponse().withStatus(
-                        Response.Status.NOT_FOUND.getStatusCode())));
+                aResponse().withStatus(HttpStatus.SC_NOT_FOUND)));
         api.getTask("invalid-uri");
     }
 
@@ -130,7 +129,7 @@ public class TasksAPITest {
     public final void testUploadFileForTaskInvalidUser() throws Exception {
         stubFor(post(urlEqualTo("/v1.0/tasks/invalid-uri/input?user=test"))
                         .willReturn(aResponse().withStatus(
-                                Response.Status.NOT_FOUND.getStatusCode())));
+                                HttpStatus.SC_NOT_FOUND)));
 
         Task task = new Task();
         task.setId("invalid-uri");
@@ -164,10 +163,9 @@ public class TasksAPITest {
     @Test
     public final void testDeleteTask() throws FutureGatewayException {
         stubFor(delete(urlEqualTo("/v1.0/tasks/non-existing-task")).willReturn(
-                aResponse().withStatus(
-                        Response.Status.NOT_FOUND.getStatusCode())));
-        stubFor(delete(urlEqualTo("/v1.0/tasks/existing-task")).willReturn(
-                aResponse().withStatus(Response.Status.OK.getStatusCode())));
+                aResponse().withStatus(HttpStatus.SC_NOT_FOUND)));
+        stubFor(delete(urlEqualTo("/v1.0/tasks/existing-task"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
         assertFalse(api.removeTask("non-existing-task"));
         assertTrue(api.removeTask("existing-task"));
@@ -197,7 +195,7 @@ public class TasksAPITest {
             throws FutureGatewayException {
         stubFor(get(urlEqualTo("/v1.0/file?path=%2Ftmp&name=non-existing-file"))
                         .willReturn(aResponse().withStatus(
-                                Response.Status.NOT_FOUND.getStatusCode())));
+                                HttpStatus.SC_NOT_FOUND)));
 
         OutputFile outputFile = new OutputFile();
         outputFile.setName("test.txt");
@@ -254,8 +252,7 @@ public class TasksAPITest {
     public final void testCreateTaskInvalidUser()
             throws FutureGatewayException {
         stubFor(post(urlEqualTo("/v1.0/tasks?user=invalid-user")).willReturn(
-                aResponse().withStatus(
-                        Response.Status.BAD_REQUEST.getStatusCode())));
+                aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
 
         Task task = new Task();
         task.setUser("invalid-user");
@@ -284,12 +281,12 @@ public class TasksAPITest {
         String body = Helper.readResource("tasks_3.json");
         stubFor(get(urlEqualTo("/v1.0/tasks/3"))
                         .willReturn(aResponse().withBody(body)));
-        stubFor(patch(urlEqualTo("/v1.0/tasks/3")).willReturn(
-                aResponse().withStatus(Response.Status.OK.getStatusCode())));
+        stubFor(patch(urlEqualTo("/v1.0/tasks/3"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
         PatchRuntimeData patchRuntimeData = new PatchRuntimeData();
-        patchRuntimeData.setRuntimeData(Collections.singletonList(
-                new KeyValue("name", "value")));
+        patchRuntimeData.setRuntimeData(
+                Collections.singletonList(new KeyValue("name", "value")));
 
         Task task = api.getTask("3");
         assertTrue(task.getRuntimeData().isEmpty());
