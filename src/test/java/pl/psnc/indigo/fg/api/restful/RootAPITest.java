@@ -1,6 +1,7 @@
 package pl.psnc.indigo.fg.api.restful;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.apache.http.HttpStatus;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -66,6 +67,9 @@ public class RootAPITest {
 
     @Test(expected = FutureGatewayException.class)
     public final void testCommunicationError() throws FutureGatewayException {
+        stubFor(get(urlEqualTo("/invalid-uri")).willReturn(
+                aResponse().withStatus(HttpStatus.SC_NOT_FOUND)));
+
         URI uri = UriBuilder.fromUri(RootAPITest.URI_STRING).path("invalid-uri")
                             .build();
         new RootAPI(uri, "");
@@ -73,6 +77,9 @@ public class RootAPITest {
 
     @Test(expected = FutureGatewayException.class)
     public final void testInvalidJson() throws FutureGatewayException {
+        stubFor(get(urlEqualTo("/invalid-body"))
+                        .willReturn(aResponse().withBody("")));
+
         URI uri =
                 UriBuilder.fromUri(RootAPITest.URI_STRING).path("invalid-body")
                           .build();

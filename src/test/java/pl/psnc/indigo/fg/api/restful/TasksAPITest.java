@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import pl.psnc.indigo.fg.api.restful.category.UnitTests;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
+import pl.psnc.indigo.fg.api.restful.jaxb.KeyValue;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.PatchRuntimeData;
 import pl.psnc.indigo.fg.api.restful.jaxb.RuntimeData;
@@ -288,7 +289,7 @@ public class TasksAPITest {
 
         PatchRuntimeData patchRuntimeData = new PatchRuntimeData();
         patchRuntimeData.setRuntimeData(Collections.singletonList(
-                new PatchRuntimeData.KeyValue("name", "value")));
+                new KeyValue("name", "value")));
 
         Task task = api.getTask("3");
         assertTrue(task.getRuntimeData().isEmpty());

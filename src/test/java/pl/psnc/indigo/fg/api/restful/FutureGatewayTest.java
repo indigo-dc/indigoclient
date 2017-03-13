@@ -6,6 +6,7 @@ import pl.psnc.indigo.fg.api.restful.category.IntegrationTests;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Application;
 import pl.psnc.indigo.fg.api.restful.jaxb.InputFile;
+import pl.psnc.indigo.fg.api.restful.jaxb.KeyValue;
 import pl.psnc.indigo.fg.api.restful.jaxb.OutputFile;
 import pl.psnc.indigo.fg.api.restful.jaxb.PatchRuntimeData;
 import pl.psnc.indigo.fg.api.restful.jaxb.RuntimeData;
@@ -207,7 +208,7 @@ public class FutureGatewayTest {
 
         PatchRuntimeData patchRuntimeData = new PatchRuntimeData();
         patchRuntimeData.setRuntimeData(Collections.singletonList(
-                new PatchRuntimeData.KeyValue("dataName", "dataValue")));
+                new KeyValue("dataName", "dataValue")));
         api.patchRuntimeData(task.getId(), patchRuntimeData);
         task = api.getTask(task.getId());
 

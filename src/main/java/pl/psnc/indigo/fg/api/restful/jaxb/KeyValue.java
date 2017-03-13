@@ -7,21 +7,30 @@ import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 /**
- * A bean containing general purpose runtime data which are used only when
- * PATCH-ing a task.
+ * A class containing key-value pair used in {@link PatchRuntimeData}.
  */
 @Getter
 @Setter
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PatchRuntimeData {
-    @JsonProperty("runtime_data")
-    private List<KeyValue> runtimeData = Collections.emptyList();
+public class KeyValue {
+    @JsonProperty("data_name")
+    private String dataName = "";
+    @JsonProperty("data_value")
+    private String dataValue = "";
+
+    public KeyValue() {
+        super();
+    }
+
+    public KeyValue(final String dataName, final String dataValue) {
+        super();
+        this.dataName = dataName;
+        this.dataValue = dataValue;
+    }
 
     @Override
     public final boolean equals(final Object o) {
@@ -31,18 +40,20 @@ public class PatchRuntimeData {
         if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
-        PatchRuntimeData other = (PatchRuntimeData) o;
-        return Objects.equals(runtimeData, other.runtimeData);
+        KeyValue keyValue = (KeyValue) o;
+        return Objects.equals(dataName, keyValue.dataName) && Objects
+                .equals(dataValue, keyValue.dataValue);
     }
 
     @Override
     public final int hashCode() {
-        return Objects.hash(runtimeData);
+        return Objects.hash(dataName, dataValue);
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("runtimeData", runtimeData).toString();
+                .append("dataName", dataName).append("dataValue", dataValue)
+                .toString();
     }
 }
