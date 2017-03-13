@@ -35,14 +35,14 @@ public class FutureGatewayTest {
     }
 
     @Test
-    public final void testGetAllApplications() throws FutureGatewayException {
+    public final void testGetAllApplications() throws Exception {
         ApplicationsAPI api =
                 new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
         api.getAllApplications();
     }
 
     @Test
-    public final void testGetApplication() throws FutureGatewayException {
+    public final void testGetApplication() throws Exception {
         ApplicationsAPI api =
                 new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
         Application application = api.getApplication("1");
