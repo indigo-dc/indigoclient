@@ -6,9 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization
         .LocalDateTimeDeserializer;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.LocalDateTimeSerializer;
@@ -22,7 +23,6 @@ import java.util.List;
  */
 @Getter
 @Setter
-@ToString
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Task {
@@ -94,5 +94,21 @@ public class Task {
                                     .append(runtimeData).append(creation)
                                     .append(iosandbox).append(links)
                                     .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("id", id).append("date", date)
+                .append("lastChange", lastChange)
+                .append("application", application)
+                .append("infrastructureTask", infrastructureTask)
+                .append("description", description).append("status", status)
+                .append("user", user).append("arguments", arguments)
+                .append("inputFiles", inputFiles)
+                .append("outputFiles", outputFiles)
+                .append("runtimeData", runtimeData).append("creation", creation)
+                .append("iosandbox", iosandbox).append("links", links)
+                .toString();
     }
 }

@@ -3,16 +3,16 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * A bean containing name, value and description of a parameter.
  */
 @Getter
 @Setter
-@ToString
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Parameter {
@@ -41,5 +41,12 @@ public class Parameter {
     public final int hashCode() {
         return new HashCodeBuilder().append(name).append(value)
                                     .append(description).toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("name", name).append("value", value)
+                .append("description", description).toString();
     }
 }

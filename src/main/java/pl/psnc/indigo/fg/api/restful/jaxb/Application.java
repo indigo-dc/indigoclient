@@ -6,9 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization
         .LocalDateTimeDeserializer;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.LocalDateTimeSerializer;
@@ -23,7 +24,6 @@ import java.util.List;
  */
 @Getter
 @Setter
-@ToString
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Application {
@@ -72,5 +72,17 @@ public class Application {
                                     .append(inputFiles).append(infrastructures)
                                     .append(outcome).append(enabled)
                                     .append(links).toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("id", id).append("name", name)
+                .append("description", description).append("creation", creation)
+                .append("parameters", parameters)
+                .append("inputFiles", inputFiles)
+                .append("infrastructures", infrastructures)
+                .append("outcome", outcome).append("enabled", enabled)
+                .append("links", links).toString();
     }
 }
