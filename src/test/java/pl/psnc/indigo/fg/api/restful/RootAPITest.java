@@ -19,8 +19,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 @Category(UnitTests.class)
 public class RootAPITest {
@@ -38,30 +37,30 @@ public class RootAPITest {
 
         URI expectedUri =
                 UriBuilder.fromUri(RootAPITest.URI_STRING).path("v1.0").build();
-        assertThat(expectedUri, is(rootApi.getRootUri()));
+        assertEquals(expectedUri, rootApi.getRootUri());
 
         Root root = rootApi.getRoot();
 
         List<Link> links = root.getLinks();
-        assertThat(1, is(links.size()));
+        assertEquals(1, links.size());
         Link link = links.get(0);
-        assertThat("/", is(link.getHref()));
-        assertThat("self", is(link.getRel()));
+        assertEquals("/", link.getHref());
+        assertEquals("self", link.getRel());
 
         List<Version> versions = root.getVersions();
-        assertThat(1, is(versions.size()));
+        assertEquals(1, versions.size());
         Version version = versions.get(0);
-        assertThat("prototype", is(version.getStatus()));
-        assertThat("2016-04-20", is(version.getUpdated()));
-        assertThat("v0.0.2-29-ge0d90af-e0d90af-34", is(version.getBuild()));
-        assertThat(MediaType.APPLICATION_JSON_TYPE, is(version.getMediaType()));
-        assertThat("v1.0", is(version.getId()));
+        assertEquals("prototype", version.getStatus());
+        assertEquals("2016-04-20", version.getUpdated());
+        assertEquals("v0.0.2-29-ge0d90af-e0d90af-34", version.getBuild());
+        assertEquals(MediaType.APPLICATION_JSON_TYPE, version.getMediaType());
+        assertEquals("v1.0", version.getId());
 
         List<Link> versionLinks = version.getLinks();
-        assertThat(1, is(versionLinks.size()));
+        assertEquals(1, versionLinks.size());
         Link versionLink = versionLinks.get(0);
-        assertThat("v1.0", is(versionLink.getHref()));
-        assertThat("self", is(versionLink.getRel()));
+        assertEquals("v1.0", versionLink.getHref());
+        assertEquals("self", versionLink.getRel());
     }
 
 

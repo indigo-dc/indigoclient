@@ -20,8 +20,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(UnitTests.class)
 public class ApplicationsAPITest {
@@ -44,20 +45,20 @@ public class ApplicationsAPITest {
                         .willReturn(aResponse().withBody(body)));
 
         List<Application> applications = api.getAllApplications();
-        assertThat(2, is(applications.size()));
+        assertEquals(2, applications.size());
 
         Application application = applications.get(0);
         List<Infrastructure> infrastructures = application.getInfrastructures();
         List<Parameter> parameters = application.getParameters();
-        assertThat(2, is(infrastructures.size()));
-        assertThat(5, is(parameters.size()));
+        assertEquals(2, infrastructures.size());
+        assertEquals(5, parameters.size());
 
         Application application1 = applications.get(1);
         List<Infrastructure> infrastructures1 =
                 application1.getInfrastructures();
         List<Parameter> parameters1 = application1.getParameters();
-        assertThat(2, is(infrastructures1.size()));
-        assertThat(5, is(parameters1.size()));
+        assertEquals(2, infrastructures1.size());
+        assertEquals(5, parameters1.size());
     }
 
     @Test(expected = FutureGatewayException.class)
@@ -65,7 +66,6 @@ public class ApplicationsAPITest {
             throws FutureGatewayException {
         stubFor(get(urlEqualTo("/v1.0/applications"))
                         .willReturn(aResponse().withBody("")));
-
         api.getAllApplications();
     }
 
@@ -76,39 +76,38 @@ public class ApplicationsAPITest {
                         .willReturn(aResponse().withBody(body)));
 
         Application application = api.getApplication("1");
-        assertThat("1", is(application.getId()));
-        assertThat("hostname", is(application.getName()));
-        assertThat("hostname tester application",
-                   is(application.getDescription()));
-        assertThat(application.isEnabled(), is(true));
+        assertEquals("1", application.getId());
+        assertEquals("hostname", application.getName());
+        assertEquals("hostname tester application",
+                     application.getDescription());
+        assertTrue(application.isEnabled());
 
         List<Infrastructure> infrastructures = application.getInfrastructures();
-        assertThat(2, is(infrastructures.size()));
+        assertEquals(2, infrastructures.size());
 
         Infrastructure infrastructure = infrastructures.get(0);
-        assertThat("1", is(infrastructure.getId()));
-        assertThat("hello@csgfsdk", is(infrastructure.getName()));
-        assertThat("hostname application localhost (SSH)",
-                   is(infrastructure.getDescription()));
-        assertThat(infrastructure.isEnabled(), is(true));
-        assertThat(infrastructure.isVirtual(), is(false));
+        assertEquals("1", infrastructure.getId());
+        assertEquals("hello@csgfsdk", infrastructure.getName());
+        assertEquals("hostname application localhost (SSH)",
+                     infrastructure.getDescription());
+        assertTrue(infrastructure.isEnabled());
+        assertFalse(infrastructure.isVirtual());
 
         List<Parameter> infrastructureParameters =
                 infrastructure.getParameters();
-        assertThat(3, is(infrastructureParameters.size()));
+        assertEquals(3, infrastructureParameters.size());
 
         Parameter infrastructureParameter = infrastructureParameters.get(0);
-        assertThat("jobservice", is(infrastructureParameter.getName()));
-        assertThat("ssh://localhost:22",
-                   is(infrastructureParameter.getValue()));
+        assertEquals("jobservice", infrastructureParameter.getName());
+        assertEquals("ssh://localhost:22", infrastructureParameter.getValue());
 
         List<Parameter> applicationParameters = application.getParameters();
-        assertThat(5, is(applicationParameters.size()));
+        assertEquals(5, applicationParameters.size());
 
         Parameter applicationParameter = applicationParameters.get(0);
-        assertThat("jobdesc_executable", is(applicationParameter.getName()));
-        assertThat("/bin/hostname", is(applicationParameter.getValue()));
-        assertThat("", is(applicationParameter.getDescription()));
+        assertEquals("jobdesc_executable", applicationParameter.getName());
+        assertEquals("/bin/hostname", applicationParameter.getValue());
+        assertEquals("", applicationParameter.getDescription());
     }
 
     @Test(expected = FutureGatewayException.class)

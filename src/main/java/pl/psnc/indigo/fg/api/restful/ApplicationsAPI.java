@@ -74,7 +74,8 @@ public class ApplicationsAPI extends RootAPI {
                     .debug(RootAPI.STATUS, statusLine.getStatusCode(),
                            statusLine.getReasonPhrase());
 
-            if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
+            if ((statusLine.getStatusCode() == HttpStatus.SC_OK) && (
+                    response.getEntity().getContentLength() > 0)) {
                 try (ByteArrayOutputStream outputStream = new
                         ByteArrayOutputStream()) {
                     response.getEntity().writeTo(outputStream);

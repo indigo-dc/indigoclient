@@ -1,6 +1,5 @@
 package pl.psnc.indigo.fg.api.restful;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import pl.psnc.indigo.fg.api.restful.category.IntegrationTests;
@@ -19,11 +18,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTests.class)
 public class FutureGatewayTest {
@@ -47,7 +45,7 @@ public class FutureGatewayTest {
                 new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
         Application application = api.getApplication("1");
         String name = application.getName();
-        Assert.assertThat("hostname", is(name));
+        assertEquals("hostname", name);
     }
 
     @Test
@@ -77,18 +75,19 @@ public class FutureGatewayTest {
         List<String> arguments = new ArrayList<>(1);
         arguments.add("I am saying hello");
 
-        List<OutputFile> outputFiles = new ArrayList<>(1);
         OutputFile oFile = new OutputFile();
         oFile.setName("sayhello.data");
+
+        List<OutputFile> outputFiles = new ArrayList<>(1);
         outputFiles.add(oFile);
 
-        List<InputFile> inputFiles = new ArrayList<>(2);
         InputFile iFileSH = new InputFile();
         iFileSH.setName("sayhello.sh");
 
         InputFile iFileTXT = new InputFile();
         iFileTXT.setName("sayhello.txt");
 
+        List<InputFile> inputFiles = new ArrayList<>(2);
         inputFiles.add(iFileSH);
         inputFiles.add(iFileTXT);
 
@@ -122,18 +121,19 @@ public class FutureGatewayTest {
         List<String> arguments = new ArrayList<>(1);
         arguments.add("I am saying hello");
 
-        List<OutputFile> outputFiles = new ArrayList<>(1);
         OutputFile oFile = new OutputFile();
         oFile.setName("sayhello.data");
+
+        List<OutputFile> outputFiles = new ArrayList<>(1);
         outputFiles.add(oFile);
 
-        List<InputFile> inputFiles = new ArrayList<>(2);
         InputFile iFileSH = new InputFile();
         iFileSH.setName("sayhello.sh");
 
         InputFile iFileTXT = new InputFile();
         iFileTXT.setName("sayhello.txt");
 
+        List<InputFile> inputFiles = new ArrayList<>(2);
         inputFiles.add(iFileSH);
         inputFiles.add(iFileTXT);
 
@@ -160,7 +160,7 @@ public class FutureGatewayTest {
         String file = getClass().getResource("/outputs").getFile();
         File outputDir = new File(file);
 
-        for (OutputFile outputFile : files) {
+        for (final OutputFile outputFile : files) {
             api.downloadOutputFile(outputFile, outputDir);
         }
     }

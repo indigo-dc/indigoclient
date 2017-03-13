@@ -31,9 +31,10 @@ import static com.github.tomakehurst.wiremock.client.WireMock.patch;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,11 +62,11 @@ public class TasksAPITest {
                         .willReturn(aResponse().withBody(body)));
 
         List<Task> tasks = api.getAllTasks("all-tasks");
-        assertThat(3, is(tasks.size()));
+        assertEquals(3, tasks.size());
 
         Task task = tasks.get(0);
-        assertThat(2, is(task.getOutputFiles().size()));
-        assertThat(2, is(task.getLinks().size()));
+        assertEquals(2, task.getOutputFiles().size());
+        assertEquals(2, task.getLinks().size());
     }
 
     @Test
@@ -75,21 +76,21 @@ public class TasksAPITest {
                         .willReturn(aResponse().withBody(body)));
 
         Task task = api.getTask("1");
-        assertThat("1", is(task.getId()));
-        assertThat("2", is(task.getApplication()));
-        assertThat("Test with files", is(task.getDescription()));
-        assertThat("brunor", is(task.getUser()));
-        assertThat(TaskStatus.DONE, is(task.getStatus()));
+        assertEquals("1", task.getId());
+        assertEquals("2", task.getApplication());
+        assertEquals("Test with files", task.getDescription());
+        assertEquals("brunor", task.getUser());
+        assertEquals(TaskStatus.DONE, task.getStatus());
 
         List<OutputFile> outputFiles = task.getOutputFiles();
-        assertThat(3, is(outputFiles.size()));
+        assertEquals(3, outputFiles.size());
 
         OutputFile outputFile = outputFiles.get(0);
-        assertThat("sayhello.data", is(outputFile.getName()));
-        assertThat(URI.create(
+        assertEquals("sayhello.data", outputFile.getName());
+        assertEquals(URI.create(
                 "file?path=%2Ftmp%2Fba3a8d88-1e71-11e6-92fb-fa163e26496e"
                 + "%2F1tmpba3a8d881e7111e692fbfa163e26496e_2&name=sayhello"
-                + ".data"), is(outputFile.getUrl()));
+                + ".data"), outputFile.getUrl());
     }
 
     @Test(expected = FutureGatewayException.class)
@@ -118,8 +119,7 @@ public class TasksAPITest {
 
         File file = File.createTempFile("TasksAPITest", null);
         try {
-            assertThat(api.uploadFileForTask(task, file),
-                       not(is((Upload) null)));
+            assertNotNull(api.uploadFileForTask(task, file));
         } finally {
             FileUtils.forceDelete(file);
         }
@@ -168,8 +168,8 @@ public class TasksAPITest {
         stubFor(delete(urlEqualTo("/v1.0/tasks/existing-task")).willReturn(
                 aResponse().withStatus(Response.Status.OK.getStatusCode())));
 
-        assertThat(api.removeTask("non-existing-task"), is(false));
-        assertThat(api.removeTask("existing-task"), is(true));
+        assertFalse(api.removeTask("non-existing-task"));
+        assertTrue(api.removeTask("existing-task"));
     }
 
     @Test
@@ -185,10 +185,10 @@ public class TasksAPITest {
         api.downloadOutputFile(outputFile, directory);
 
         File file = new File(directory, "test.txt");
-        assertThat(file.exists(), is(true));
-        assertThat("TEST", is(FileUtils.readFileToString(file,
-                                                         Charset.defaultCharset())));
-        assertThat(file.delete(), is(true));
+        assertTrue(file.exists());
+        assertEquals("TEST", FileUtils
+                .readFileToString(file, Charset.defaultCharset()));
+        assertTrue(file.delete());
     }
 
     @Test(expected = FutureGatewayException.class)
@@ -246,7 +246,7 @@ public class TasksAPITest {
                 aResponse().withBody(mapper.writeValueAsString(task))));
 
         Task taskFG = api.createTask(task);
-        assertThat(taskFG, is(task));
+        assertEquals(task, taskFG);
     }
 
     @Test(expected = FutureGatewayException.class)
@@ -291,7 +291,7 @@ public class TasksAPITest {
                 new PatchRuntimeData.KeyValue("name", "value")));
 
         Task task = api.getTask("3");
-        assertThat(task.getRuntimeData().isEmpty(), is(true));
+        assertTrue(task.getRuntimeData().isEmpty());
         api.patchRuntimeData(task.getId(), patchRuntimeData);
 
         /*
@@ -302,9 +302,9 @@ public class TasksAPITest {
                         .willReturn(aResponse().withBody(patchedBody)));
 
         task = api.getTask(task.getId());
-        assertThat(task.getRuntimeData().size(), is(1));
+        assertEquals(1, task.getRuntimeData().size());
         RuntimeData runtimeData = task.getRuntimeData().get(0);
-        assertThat(runtimeData.getName(), is("name"));
-        assertThat(runtimeData.getValue(), is("value"));
+        assertEquals("name", runtimeData.getName());
+        assertEquals("value", runtimeData.getValue());
     }
 }
