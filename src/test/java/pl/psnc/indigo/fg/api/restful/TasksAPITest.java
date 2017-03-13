@@ -161,7 +161,7 @@ public class TasksAPITest {
     }
 
     @Test
-    public final void testDeleteTask() {
+    public final void testDeleteTask() throws FutureGatewayException {
         stubFor(delete(urlEqualTo("/v1.0/tasks/non-existing-task")).willReturn(
                 aResponse().withStatus(
                         Response.Status.NOT_FOUND.getStatusCode())));
