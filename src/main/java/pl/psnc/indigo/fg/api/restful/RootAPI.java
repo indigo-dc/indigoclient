@@ -103,8 +103,8 @@ public class RootAPI {
                 try (ByteArrayOutputStream outputStream = new
                         ByteArrayOutputStream()) {
                     response.getEntity().writeTo(outputStream);
-                    String body =
-                            outputStream.toString(Charset.defaultCharset());
+                    String body = outputStream
+                            .toString(Charset.defaultCharset().name());
                     RootAPI.LOGGER.trace("Body: {}", body);
                     return mapper.readValue(body, Root.class);
                 }

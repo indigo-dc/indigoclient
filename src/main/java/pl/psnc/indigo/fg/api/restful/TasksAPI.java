@@ -3,6 +3,7 @@ package pl.psnc.indigo.fg.api.restful;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.http.HttpEntity;
@@ -25,12 +26,8 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -127,7 +124,8 @@ public class TasksAPI extends RootAPI {
             throws IOException, JsonParseException, JsonMappingException {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             response.getEntity().writeTo(outputStream);
-            String body = outputStream.toString(Charset.defaultCharset());
+            String body =
+                    outputStream.toString(Charset.defaultCharset().name());
             TasksAPI.LOGGER.trace("Body: {}", body);
             return getMapper().readValue(body, Task.class);
         }
@@ -170,8 +168,8 @@ public class TasksAPI extends RootAPI {
                 try (ByteArrayOutputStream outputStream = new
                         ByteArrayOutputStream()) {
                     response.getEntity().writeTo(outputStream);
-                    String body =
-                            outputStream.toString(Charset.defaultCharset());
+                    String body = outputStream
+                            .toString(Charset.defaultCharset().name());
                     TasksAPI.LOGGER.trace("Body: {}", body);
                     return getMapper().readValue(body, Upload.class);
                 }
@@ -275,11 +273,9 @@ public class TasksAPI extends RootAPI {
                 try (ByteArrayOutputStream outputStream = new
                         ByteArrayOutputStream()) {
                     response.getEntity().writeTo(outputStream);
-                    InputStream is = outputStream.toInputStream();
-                    String name = outputFile.getName();
-                    Path filePath = new File(directory, name).toPath();
-                    Files.copy(is, filePath,
-                               StandardCopyOption.REPLACE_EXISTING);
+                    File file = new File(directory, outputFile.getName());
+                    FileUtils.writeByteArrayToFile(file,
+                                                   outputStream.toByteArray());
                 }
             } else {
                 String message = resourceBundle.getString(
@@ -350,8 +346,8 @@ public class TasksAPI extends RootAPI {
                 try (ByteArrayOutputStream outputStream = new
                         ByteArrayOutputStream()) {
                     response.getEntity().writeTo(outputStream);
-                    String body =
-                            outputStream.toString(Charset.defaultCharset());
+                    String body = outputStream
+                            .toString(Charset.defaultCharset().name());
                     TasksAPI.LOGGER.trace("Body: {}", body);
                     JsonNode jsonNode = getMapper().readTree(body);
                     jsonNode = jsonNode.get("tasks"); //NON-NLS

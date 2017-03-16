@@ -79,8 +79,8 @@ public class ApplicationsAPI extends RootAPI {
                 try (ByteArrayOutputStream outputStream = new
                         ByteArrayOutputStream()) {
                     response.getEntity().writeTo(outputStream);
-                    String body =
-                            outputStream.toString(Charset.defaultCharset());
+                    String body = outputStream
+                            .toString(Charset.defaultCharset().name());
                     ApplicationsAPI.LOGGER.debug("Body: {}", body);
                     JsonNode jsonNode = getMapper().readTree(body);
                     jsonNode = jsonNode.get(ApplicationsAPI.APPLICATIONS);
@@ -133,8 +133,8 @@ public class ApplicationsAPI extends RootAPI {
                 try (ByteArrayOutputStream outputStream = new
                         ByteArrayOutputStream()) {
                     response.getEntity().writeTo(outputStream);
-                    String body =
-                            outputStream.toString(Charset.defaultCharset());
+                    String body = outputStream
+                            .toString(Charset.defaultCharset().name());
                     ApplicationsAPI.LOGGER.trace("Body: {}", body);
                     return getMapper().readValue(body, Application.class);
                 }
