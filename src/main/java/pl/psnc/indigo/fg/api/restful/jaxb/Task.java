@@ -6,9 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization
         .LocalDateTimeDeserializer;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.LocalDateTimeSerializer;
@@ -22,11 +23,10 @@ import java.util.List;
  */
 @Getter
 @Setter
-@ToString
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Task {
-    private String id;
+    private String id = "";
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime date = LocalDateTime.now();
@@ -34,11 +34,11 @@ public class Task {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonProperty("last_change")
     private LocalDateTime lastChange = LocalDateTime.now();
-    private String application;
-    private String infrastructureTask;
-    private String description;
-    private TaskStatus status;
-    private String user;
+    private String application = "";
+    private String infrastructureTask = "";
+    private String description = "";
+    private TaskStatus status = TaskStatus.UNKNOWN;
+    private String user = "";
     private List<String> arguments = Collections.emptyList();
     @JsonProperty("input_files")
     private List<InputFile> inputFiles = Collections.emptyList();
@@ -46,21 +46,13 @@ public class Task {
     private List<OutputFile> outputFiles = Collections.emptyList();
     @JsonProperty("runtime_data")
     private List<RuntimeData> runtimeData = Collections.emptyList();
-    private String creation;
-    private String iosandbox;
+    private String creation = "";
+    private String iosandbox = "";
     @JsonProperty("_links")
     private List<Link> links = Collections.emptyList();
 
     public final boolean isDone() {
         return status == TaskStatus.DONE;
-    }
-
-    public final List<OutputFile> getOutputFiles() {
-        if (status == TaskStatus.DONE) {
-            return Collections.unmodifiableList(outputFiles);
-        } else {
-            return Collections.emptyList();
-        }
     }
 
     @Override
@@ -102,5 +94,21 @@ public class Task {
                                     .append(runtimeData).append(creation)
                                     .append(iosandbox).append(links)
                                     .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("id", id).append("date", date)
+                .append("lastChange", lastChange)
+                .append("application", application)
+                .append("infrastructureTask", infrastructureTask)
+                .append("description", description).append("status", status)
+                .append("user", user).append("arguments", arguments)
+                .append("inputFiles", inputFiles)
+                .append("outputFiles", outputFiles)
+                .append("runtimeData", runtimeData).append("creation", creation)
+                .append("iosandbox", iosandbox).append("links", links)
+                .toString();
     }
 }

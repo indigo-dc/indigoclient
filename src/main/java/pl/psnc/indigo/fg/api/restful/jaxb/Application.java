@@ -6,14 +6,16 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization
         .LocalDateTimeDeserializer;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.LocalDateTimeSerializer;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,24 +24,23 @@ import java.util.List;
  */
 @Getter
 @Setter
-@ToString
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Application {
-    private String id;
-    private String name;
-    private String description;
+    private String id = "";
+    private String name = "";
+    private String description = "";
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime creation;
-    private List<Parameter> parameters;
+    private LocalDateTime creation = LocalDateTime.now();
+    private List<Parameter> parameters = Collections.emptyList();
     @JsonProperty("input_files")
-    private List<InputFile> inputFiles;
-    private List<Infrastructure> infrastructures;
-    private Outcome outcome;
+    private List<InputFile> inputFiles = Collections.emptyList();
+    private List<Infrastructure> infrastructures = Collections.emptyList();
+    private Outcome outcome = Outcome.JOB;
     private boolean enabled;
     @JsonProperty("_links")
-    private List<Link> links;
+    private List<Link> links = Collections.emptyList();
 
     @Override
     public final boolean equals(final Object o) {
@@ -71,5 +72,17 @@ public class Application {
                                     .append(inputFiles).append(infrastructures)
                                     .append(outcome).append(enabled)
                                     .append(links).toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("id", id).append("name", name)
+                .append("description", description).append("creation", creation)
+                .append("parameters", parameters)
+                .append("inputFiles", inputFiles)
+                .append("infrastructures", infrastructures)
+                .append("outcome", outcome).append("enabled", enabled)
+                .append("links", links).toString();
     }
 }

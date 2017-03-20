@@ -4,50 +4,56 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Objects;
 
 /**
- * @author michalo
+ * A class containing key-value pair used in {@link PatchRuntimeData}.
  */
 @Getter
 @Setter
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Root {
-    @JsonProperty("_links")
-    private List<Link> links = Collections.emptyList();
-    private List<Version> versions = Collections.emptyList();
+public class KeyValue {
+    @JsonProperty("data_name")
+    private String dataName = "";
+    @JsonProperty("data_value")
+    private String dataValue = "";
+
+    public KeyValue() {
+        super();
+    }
+
+    public KeyValue(final String dataName, final String dataValue) {
+        super();
+        this.dataName = dataName;
+        this.dataValue = dataValue;
+    }
 
     @Override
     public final boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
-
         if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
-
-        Root other = (Root) o;
-        return new EqualsBuilder().append(links, other.links)
-                                  .append(versions, other.versions).isEquals();
+        KeyValue keyValue = (KeyValue) o;
+        return Objects.equals(dataName, keyValue.dataName) && Objects
+                .equals(dataValue, keyValue.dataValue);
     }
 
     @Override
     public final int hashCode() {
-        return new HashCodeBuilder().append(links).append(versions)
-                                    .toHashCode();
+        return Objects.hash(dataName, dataValue);
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("links", links).append("versions", versions).toString();
+                .append("dataName", dataName).append("dataValue", dataValue)
+                .toString();
     }
 }

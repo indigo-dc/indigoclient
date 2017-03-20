@@ -1,18 +1,22 @@
 package pl.psnc.indigo.fg.api.restful;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.fluent.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Application;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -21,35 +25,14 @@ import java.util.ResourceBundle;
 /**
  * Allows to query Future Gateway about available applications.
  */
-@Slf4j
 public class ApplicationsAPI extends RootAPI {
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(ApplicationsAPI.class);
     private static final String APPLICATIONS = "applications";
 
     private final URI applicationsUri;
     private final ResourceBundle resourceBundle =
             ResourceBundle.getBundle("messages"); //NON-NLS
-
-    /**
-     * Construct an instance configured to communicate with given Future Gateway
-     * instance using non-default {@link Client}.
-     *
-     * @param baseUri            URI (protocol://host:port) of a Future Gateway
-     *                           instance
-     * @param client             Implementation of REST client.
-     * @param authorizationToken Token which identifies the user to services.
-     * @throws FutureGatewayException If communication with Future Gateway
-     *                                instance fails.
-     */
-    ApplicationsAPI(
-            final URI baseUri, final Client client,
-            final String authorizationToken) throws FutureGatewayException {
-        super(baseUri, client, authorizationToken);
-
-        URI rootUri = getRootUri();
-        applicationsUri =
-                UriBuilder.fromUri(rootUri).path(ApplicationsAPI.APPLICATIONS)
-                          .build();
-    }
 
     /**
      * Construct an instance configured to communicate with given Future Gateway
@@ -80,43 +63,44 @@ public class ApplicationsAPI extends RootAPI {
      */
     public final List<Application> getAllApplications()
             throws FutureGatewayException {
-        ApplicationsAPI.log.debug("GET {}", applicationsUri);
-        Response response = getClient().target(applicationsUri)
-                                       .request(MediaType.APPLICATION_JSON_TYPE)
-                                       .accept(MediaType.APPLICATION_JSON_TYPE)
-                                       .header(HttpHeaders.CONTENT_TYPE,
-                                               MediaType.APPLICATION_JSON)
-                                       .header(HttpHeaders.AUTHORIZATION,
-                                               getAuthorizationToken()).get();
-
-        Response.StatusType status = response.getStatusInfo();
-        int statusCode = status.getStatusCode();
-        String reasonPhrase = status.getReasonPhrase();
-        ApplicationsAPI.log.debug(RootAPI.STATUS, statusCode, reasonPhrase);
-
         try {
-            if (statusCode == Response.Status.OK.getStatusCode()) {
-                String body = response.readEntity(String.class);
-                ApplicationsAPI.log.trace("Body: {}", body);
-                JsonNode jsonNode = getMapper().readTree(body);
-                jsonNode = jsonNode.get(ApplicationsAPI.APPLICATIONS);
-                Application[] applications =
-                        getMapper().treeToValue(jsonNode, Application[].class);
-                return Arrays.asList(applications);
+            ApplicationsAPI.LOGGER.debug("GET {}", applicationsUri);
+            HttpResponse response = Request.Get(applicationsUri)
+                                           .setHeader(HttpHeaders.AUTHORIZATION,
+                                                      getAuthorizationToken())
+                                           .execute().returnResponse();
+            StatusLine statusLine = response.getStatusLine();
+            ApplicationsAPI.LOGGER
+                    .debug(RootAPI.STATUS, statusLine.getStatusCode(),
+                           statusLine.getReasonPhrase());
+
+            if ((statusLine.getStatusCode() == HttpStatus.SC_OK) && (
+                    response.getEntity().getContentLength() > 0)) {
+                try (ByteArrayOutputStream outputStream = new
+                        ByteArrayOutputStream()) {
+                    response.getEntity().writeTo(outputStream);
+                    String body = outputStream
+                            .toString(Charset.defaultCharset().name());
+                    ApplicationsAPI.LOGGER.debug("Body: {}", body);
+                    JsonNode jsonNode = getMapper().readTree(body);
+                    jsonNode = jsonNode.get(ApplicationsAPI.APPLICATIONS);
+                    Application[] applications = getMapper()
+                            .treeToValue(jsonNode, Application[].class);
+                    return Arrays.asList(applications);
+                }
             } else {
                 String message = resourceBundle.getString(
                         "failed.to.list.all.applications.response.0.1");
-                message = MessageFormat.format(message, statusCode, response);
-                ApplicationsAPI.log.error(message);
+                message = MessageFormat
+                        .format(message, statusLine.getStatusCode(), response);
+                ApplicationsAPI.LOGGER.error(message);
                 throw new FutureGatewayException(message);
             }
         } catch (final IOException e) {
             String message =
                     resourceBundle.getString("failed.to.list.all.applications");
-            ApplicationsAPI.log.error(message, e);
+            ApplicationsAPI.LOGGER.error(message, e);
             throw new FutureGatewayException(message, e);
-        } finally {
-            response.close();
         }
     }
 
@@ -130,42 +114,44 @@ public class ApplicationsAPI extends RootAPI {
      */
     public final Application getApplication(final String id)
             throws FutureGatewayException {
-        URI uri = UriBuilder.fromUri(applicationsUri).path(id).build();
-        ApplicationsAPI.log.debug("GET {}", uri);
-        Response response =
-                getClient().target(uri).request(MediaType.APPLICATION_JSON_TYPE)
-                           .accept(MediaType.APPLICATION_JSON_TYPE)
-                           .header(HttpHeaders.CONTENT_TYPE,
-                                   MediaType.APPLICATION_JSON)
-                           .header(HttpHeaders.AUTHORIZATION,
-                                   getAuthorizationToken()).get();
-
-        Response.StatusType status = response.getStatusInfo();
-        int statusCode = status.getStatusCode();
-        String reasonPhrase = status.getReasonPhrase();
-        ApplicationsAPI.log.debug(RootAPI.STATUS, statusCode, reasonPhrase);
-
         try {
-            if (statusCode == Response.Status.OK.getStatusCode()) {
-                String body = response.readEntity(String.class);
-                ApplicationsAPI.log.trace("Body: {}", body);
-                return getMapper().readValue(body, Application.class);
+            URI uri = UriBuilder.fromUri(applicationsUri).path(id).build();
+            ApplicationsAPI.LOGGER.debug("GET {}", uri);
+
+            HttpResponse response = Request.Get(uri)
+                                           .setHeader(HttpHeaders.AUTHORIZATION,
+                                                      getAuthorizationToken())
+                                           .execute().returnResponse();
+
+            StatusLine status = response.getStatusLine();
+            int statusCode = status.getStatusCode();
+            String reasonPhrase = status.getReasonPhrase();
+            ApplicationsAPI.LOGGER
+                    .debug(RootAPI.STATUS, statusCode, reasonPhrase);
+
+            if (statusCode == HttpStatus.SC_OK) {
+                try (ByteArrayOutputStream outputStream = new
+                        ByteArrayOutputStream()) {
+                    response.getEntity().writeTo(outputStream);
+                    String body = outputStream
+                            .toString(Charset.defaultCharset().name());
+                    ApplicationsAPI.LOGGER.trace("Body: {}", body);
+                    return getMapper().readValue(body, Application.class);
+                }
             } else {
                 String message = resourceBundle
                         .getString("failed.to.list.application.0.response.1.2");
                 message =
                         MessageFormat.format(message, id, statusCode, response);
-                ApplicationsAPI.log.error(message);
+                ApplicationsAPI.LOGGER.error(message);
                 throw new FutureGatewayException(message);
             }
         } catch (final IOException e) {
             String message =
                     resourceBundle.getString("failed.to.list.application.0");
             message = MessageFormat.format(message, id);
-            ApplicationsAPI.log.error(message, e);
+            ApplicationsAPI.LOGGER.error(message, e);
             throw new FutureGatewayException(message, e);
-        } finally {
-            response.close();
         }
     }
 

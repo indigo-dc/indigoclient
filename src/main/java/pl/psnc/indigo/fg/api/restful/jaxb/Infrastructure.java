@@ -6,14 +6,16 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization
         .LocalDateTimeDeserializer;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.LocalDateTimeSerializer;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,17 +24,16 @@ import java.util.List;
  */
 @Getter
 @Setter
-@ToString
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Infrastructure {
-    private String id;
-    private String name;
-    private String description;
+    private String id = "";
+    private String name = "";
+    private String description = "";
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime creation;
-    private List<Parameter> parameters;
+    private LocalDateTime creation = LocalDateTime.now();
+    private List<Parameter> parameters = Collections.emptyList();
     private boolean enabled;
     @JsonProperty("vinfra")
     private boolean virtual;
@@ -63,5 +64,14 @@ public class Infrastructure {
                                     .append(creation).append(parameters)
                                     .append(enabled).append(virtual)
                                     .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("id", id).append("name", name)
+                .append("description", description).append("creation", creation)
+                .append("parameters", parameters).append("enabled", enabled)
+                .append("virtual", virtual).toString();
     }
 }

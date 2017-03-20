@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.InputFileDeserializer;
 
 /**
@@ -15,13 +16,12 @@ import pl.psnc.indigo.fg.api.restful.jaxb.serialization.InputFileDeserializer;
  */
 @Getter
 @Setter
-@ToString
 @FutureGatewayBean
 @JsonDeserialize(using = InputFileDeserializer.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InputFile {
-    private String name;
-    private String status;
+    private String name = "";
+    private String status = "";
 
     @Override
     public final boolean equals(final Object o) {
@@ -41,5 +41,11 @@ public class InputFile {
     @Override
     public final int hashCode() {
         return new HashCodeBuilder().append(name).append(status).toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("name", name).append("status", status).toString();
     }
 }

@@ -5,9 +5,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization
         .LocalDateTimeDeserializer;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.LocalDateTimeSerializer;
@@ -19,17 +20,16 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-@ToString
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RuntimeData {
-    private String name;
-    private String value;
-    private String description;
-    private String creation;
+    private String name = "";
+    private String value = "";
+    private String description = "";
+    private String creation = "";
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime lastChange;
+    private LocalDateTime lastChange = LocalDateTime.now();
 
     @Override
     public final boolean equals(final Object o) {
@@ -55,5 +55,13 @@ public class RuntimeData {
         return new HashCodeBuilder().append(name).append(value)
                                     .append(description).append(creation)
                                     .append(lastChange).toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("name", name).append("value", value)
+                .append("description", description).append("creation", creation)
+                .append("lastChange", lastChange).toString();
     }
 }

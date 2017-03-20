@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,15 +17,14 @@ import java.util.List;
  */
 @Getter
 @Setter
-@ToString
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Upload {
     private List<InputFile> files = Collections.emptyList();
-    private String message;
-    private String task;
+    private String message = "";
+    private String task = "";
     @JsonProperty("gestatus")
-    private String status;
+    private String status = "";
 
     @Override
     public final boolean equals(final Object o) {
@@ -47,5 +47,12 @@ public class Upload {
     public final int hashCode() {
         return new HashCodeBuilder().append(files).append(message).append(task)
                                     .append(status).toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("files", files).append("message", message)
+                .append("task", task).append("status", status).toString();
     }
 }

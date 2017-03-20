@@ -7,6 +7,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import pl.psnc.indigo.fg.api.restful.jaxb.serialization.OutputFileDeserializer;
 
 import java.net.URI;
@@ -16,13 +18,12 @@ import java.net.URI;
  */
 @Getter
 @Setter
-@ToString
 @FutureGatewayBean
 @JsonDeserialize(using = OutputFileDeserializer.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OutputFile {
-    private String name;
-    private URI url;
+    private String name = "";
+    private URI url = URI.create("");
 
     @Override
     public final boolean equals(final Object o) {
@@ -42,5 +43,11 @@ public class OutputFile {
     @Override
     public final int hashCode() {
         return new HashCodeBuilder().append(name).append(url).toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("name", name).append("url", url).toString();
     }
 }
