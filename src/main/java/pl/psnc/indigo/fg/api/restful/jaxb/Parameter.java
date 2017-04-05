@@ -44,7 +44,7 @@ public class Parameter {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("name", name).append("value", value)
                 .append("description", description).toString();
