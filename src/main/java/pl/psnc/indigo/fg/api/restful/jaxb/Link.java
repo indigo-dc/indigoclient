@@ -40,7 +40,7 @@ public class Link {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("rel", rel).append("href", href).toString();
     }
