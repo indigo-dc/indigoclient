@@ -67,7 +67,7 @@ public class Infrastructure {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("id", id).append("name", name)
                 .append("description", description).append("creation", creation)

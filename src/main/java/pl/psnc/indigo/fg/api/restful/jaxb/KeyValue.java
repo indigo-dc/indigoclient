@@ -22,10 +22,19 @@ public class KeyValue {
     @JsonProperty("data_value")
     private String dataValue = "";
 
+    /**
+     * Construct an empty instance. Used by bean instantiation.
+     */
     public KeyValue() {
         super();
     }
 
+    /**
+     * Construct an instance with known values.
+     *
+     * @param dataName  Key name.
+     * @param dataValue Value.
+     */
     public KeyValue(final String dataName, final String dataValue) {
         super();
         this.dataName = dataName;
@@ -51,7 +60,7 @@ public class KeyValue {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("dataName", dataName).append("dataValue", dataValue)
                 .toString();

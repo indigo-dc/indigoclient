@@ -61,7 +61,7 @@ public class Version {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("status", status).append("updated", updated)
                 .append("build", build).append("mediaType", mediaType)
