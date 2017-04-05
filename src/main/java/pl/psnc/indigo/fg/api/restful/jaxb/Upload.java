@@ -50,7 +50,7 @@ public class Upload {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("files", files).append("message", message)
                 .append("task", task).append("status", status).toString();

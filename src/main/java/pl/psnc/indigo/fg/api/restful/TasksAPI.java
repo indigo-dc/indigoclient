@@ -23,6 +23,7 @@ import pl.psnc.indigo.fg.api.restful.jaxb.PatchRuntimeData;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.Upload;
 
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.io.IOException;
@@ -120,6 +121,16 @@ public class TasksAPI extends RootAPI {
         }
     }
 
+    /**
+     * Parse HTTP response to construct an instance of {@link Task}.
+     *
+     * @param response HTTP response to a REST call.
+     * @return A {@link Task} object mapped from HTTP response.
+     * @throws IOException          When I/O operation failed.
+     * @throws JsonParseException   When the JSON in HTTP response is invalid.
+     * @throws JsonMappingException When the JSON in HTTP response does not map
+     *                              to {@link Task}.
+     */
     private Task readTask(final HttpResponse response)
             throws IOException, JsonParseException, JsonMappingException {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
@@ -375,6 +386,7 @@ public class TasksAPI extends RootAPI {
      *
      * @param id An id of a task.
      * @return Whether deletion was successful.
+     * @throws FutureGatewayException When the operation fails.
      */
     public final boolean removeTask(final String id)
             throws FutureGatewayException {
@@ -402,6 +414,7 @@ public class TasksAPI extends RootAPI {
      * @param id               An id of a task.
      * @param patchRuntimeData A list of key-value pairs of data to be set.
      * @return Whether request was successful
+     * @throws FutureGatewayException When the operation fails.
      */
     public final boolean patchRuntimeData(
             final String id, final PatchRuntimeData patchRuntimeData)
@@ -424,13 +437,20 @@ public class TasksAPI extends RootAPI {
         }
     }
 
+    /**
+     * Check if HTTP response was successful.
+     *
+     * @param response An HTTP response to previous REST call.
+     * @return True if the status of HTTP response belongs to the successful
+     * family.
+     */
     private static boolean checkResponseGeneral(final HttpResponse response) {
         StatusLine status = response.getStatusLine();
         int statusCode = status.getStatusCode();
         String reasonPhrase = status.getReasonPhrase();
         TasksAPI.LOGGER.debug(RootAPI.STATUS, statusCode, reasonPhrase);
-        return (status.getStatusCode() >= 200) && (status.getStatusCode()
-                                                   < 300);
+        return Response.Status.Family.familyOf(statusCode)
+               == Response.Status.Family.SUCCESSFUL;
     }
 
     @Override

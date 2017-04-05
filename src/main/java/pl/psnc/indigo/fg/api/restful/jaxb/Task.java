@@ -97,7 +97,7 @@ public class Task {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("id", id).append("date", date)
                 .append("lastChange", lastChange)

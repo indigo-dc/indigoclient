@@ -46,7 +46,7 @@ public class Root {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("links", links).append("versions", versions).toString();
     }
