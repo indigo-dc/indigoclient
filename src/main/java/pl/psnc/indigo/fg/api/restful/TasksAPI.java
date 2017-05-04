@@ -1,7 +1,5 @@
 package pl.psnc.indigo.fg.api.restful;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -123,13 +121,9 @@ public class TasksAPI extends RootAPI {
      *
      * @param response HTTP response to a REST call.
      * @return A {@link Task} object mapped from HTTP response.
-     * @throws IOException          When I/O operation failed.
-     * @throws JsonParseException   When the JSON in HTTP response is invalid.
-     * @throws JsonMappingException When the JSON in HTTP response does not map
-     *                              to {@link Task}.
+     * @throws IOException When I/O operation failed.
      */
-    private Task readTask(final HttpResponse response)
-            throws IOException, JsonParseException, JsonMappingException {
+    private Task readTask(final HttpResponse response) throws IOException {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             response.getEntity().writeTo(outputStream);
             final String body =
@@ -421,14 +415,16 @@ public class TasksAPI extends RootAPI {
             final HttpEntity entity = new StringEntity(
                     getMapper().writeValueAsString(patchRuntimeData),
                     ContentType.APPLICATION_JSON);
-            final HttpResponse response =
-                    Request.Patch(uri).body(entity).execute().returnResponse();
+            final HttpResponse response = Request.Patch(uri).setHeader(
+                    HttpHeaders.AUTHORIZATION, getAuthorizationToken())
+                                                 .body(entity).execute()
+                                                 .returnResponse();
             return TasksAPI.checkResponseGeneral(response);
         } catch (final IOException e) {
-            final String message = MessageFormat.format(resourceBundle
-                                                                .getString(
-                                                                        "failed.to.patch.task.0.with.data.1"),
-                                                        id, patchRuntimeData);
+            final String resource = resourceBundle
+                    .getString("failed.to.patch.task.0.with.data.1");
+            final String message =
+                    MessageFormat.format(resource, id, patchRuntimeData);
             throw new FutureGatewayException(message, e);
         }
     }
