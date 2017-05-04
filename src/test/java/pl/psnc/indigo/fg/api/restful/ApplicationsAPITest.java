@@ -16,8 +16,7 @@ import java.net.URI;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(UnitTests.class)
 public class ApplicationsAPITest {
@@ -34,22 +33,22 @@ public class ApplicationsAPITest {
 
     @Test
     public final void testGetAllApplications() throws Exception {
-        String body = Helper.readResource("applications.json");
+        final String body = Helper.readResource("applications.json");
         stubFor(get(urlEqualTo("/v1.0/applications"))
                         .willReturn(aResponse().withBody(body)));
 
-        List<Application> applications = api.getAllApplications();
-        assertEquals(2, applications.size());
+        final List<Application> applications = api.getAllApplications();
+        assertEquals(5, applications.size());
 
-        Application application = applications.get(0);
-        List<Integer> infrastructures = application.getInfrastructures();
-        List<Parameter> parameters = application.getParameters();
+        final Application hostname = applications.get(1);
+        final List<Integer> infrastructures = hostname.getInfrastructures();
+        final List<Parameter> parameters = hostname.getParameters();
         assertEquals(2, infrastructures.size());
         assertEquals(5, parameters.size());
 
-        Application application1 = applications.get(1);
-        List<Integer> infrastructures1 = application1.getInfrastructures();
-        List<Parameter> parameters1 = application1.getParameters();
+        final Application sayHello = applications.get(2);
+        final List<Integer> infrastructures1 = sayHello.getInfrastructures();
+        final List<Parameter> parameters1 = sayHello.getParameters();
         assertEquals(2, infrastructures1.size());
         assertEquals(5, parameters1.size());
     }
@@ -64,27 +63,28 @@ public class ApplicationsAPITest {
 
     @Test
     public final void testGetApplication() throws Exception {
-        String body = Helper.readResource("applications_1.json");
+        final String body = Helper.readResource("applications_1.json");
         stubFor(get(urlEqualTo("/v1.0/applications/1"))
                         .willReturn(aResponse().withBody(body)));
 
-        Application application = api.getApplication("1");
+        final Application application = api.getApplication("1");
         assertEquals("1", application.getId());
         assertEquals("hostname", application.getName());
         assertEquals("hostname tester application",
                      application.getDescription());
         assertTrue(application.isEnabled());
 
-        List<Integer> infrastructures = application.getInfrastructures();
+        final List<Integer> infrastructures = application.getInfrastructures();
         assertEquals(2, infrastructures.size());
 
-        List<Parameter> applicationParameters = application.getParameters();
+        final List<Parameter> applicationParameters =
+                application.getParameters();
         assertEquals(5, applicationParameters.size());
 
-        Parameter applicationParameter = applicationParameters.get(0);
+        final Parameter applicationParameter = applicationParameters.get(0);
         assertEquals("jobdesc_executable", applicationParameter.getName());
         assertEquals("/bin/hostname", applicationParameter.getValue());
-        assertEquals("", applicationParameter.getDescription());
+        assertNull(applicationParameter.getDescription());
     }
 
     @Test(expected = FutureGatewayException.class)

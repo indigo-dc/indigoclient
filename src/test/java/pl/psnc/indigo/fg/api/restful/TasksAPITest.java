@@ -100,51 +100,15 @@ public class TasksAPITest {
 
     @Test
     public final void testUploadFileForTask() throws Exception {
-        stubFor(post(urlEqualTo("/v1.0/tasks/1/input?user=test")).willReturn(
+        stubFor(post(urlEqualTo("/v1.0/tasks/1/input")).willReturn(
                 aResponse().withBody(mapper.writeValueAsString(new Upload()))));
 
         final Task task = new Task();
         task.setId("1");
-        task.setUser("test");
 
         final File file = File.createTempFile("TasksAPITest", null);
         try {
             assertNotNull(api.uploadFileForTask(task, file));
-        } finally {
-            FileUtils.forceDelete(file);
-        }
-    }
-
-    @Test(expected = FutureGatewayException.class)
-    public final void testUploadFileForTaskInvalidUser() throws Exception {
-        stubFor(post(urlEqualTo("/v1.0/tasks/invalid-uri/input?user=test"))
-                        .willReturn(aResponse().withStatus(
-                                HttpStatus.SC_NOT_FOUND)));
-
-        final Task task = new Task();
-        task.setId("invalid-uri");
-        task.setUser("test");
-
-        final File file = File.createTempFile("TasksAPITest", null);
-        try {
-            api.uploadFileForTask(task, file);
-        } finally {
-            FileUtils.forceDelete(file);
-        }
-    }
-
-    @Test(expected = FutureGatewayException.class)
-    public final void testUploadFileForTaskInvalidBody() throws Exception {
-        stubFor(post(urlEqualTo("/v1.0/tasks/invalid-body/input?user=test"))
-                        .willReturn(aResponse().withBody("")));
-
-        final Task task = new Task();
-        task.setId("invalid-body");
-        task.setUser("test");
-
-        final File file = File.createTempFile("TasksAPITest", null);
-        try {
-            api.uploadFileForTask(task, file);
         } finally {
             FileUtils.forceDelete(file);
         }
@@ -227,40 +191,14 @@ public class TasksAPITest {
     @Test
     public final void testCreateTask() throws Exception {
         final Task task = new Task();
-        task.setUser("test");
         task.setApplication("1");
         task.setDescription("hello");
 
-        stubFor(post(urlEqualTo("/v1.0/tasks?user=test")).willReturn(
+        stubFor(post(urlEqualTo("/v1.0/tasks")).willReturn(
                 aResponse().withBody(mapper.writeValueAsString(task))));
 
         final Task taskFG = api.createTask(task);
         assertEquals(task, taskFG);
-    }
-
-    @Test(expected = FutureGatewayException.class)
-    public final void testCreateTaskInvalidUser()
-            throws FutureGatewayException {
-        stubFor(post(urlEqualTo("/v1.0/tasks?user=invalid-user")).willReturn(
-                aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
-
-        final Task task = new Task();
-        task.setUser("invalid-user");
-        task.setApplication("1");
-        task.setDescription("hello");
-
-        api.createTask(task);
-    }
-
-    @Test(expected = FutureGatewayException.class)
-    public final void testCreateTaskInvalidBody()
-            throws FutureGatewayException {
-        stubFor(post(urlEqualTo("/v1.0/tasks?user=invalid-body"))
-                        .willReturn(aResponse().withBody("")));
-
-        final Task mockTask = new Task();
-        mockTask.setUser("invalid-body");
-        api.createTask(mockTask);
     }
 
     @Test

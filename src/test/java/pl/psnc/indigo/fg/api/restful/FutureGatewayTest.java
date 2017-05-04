@@ -3,6 +3,8 @@ package pl.psnc.indigo.fg.api.restful;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.psnc.indigo.fg.api.restful.category.IntegrationTests;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Application;
@@ -28,11 +30,11 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTests.class)
 public class FutureGatewayTest {
-    private static final URI URI =
-            UriBuilder.fromUri("https://fgw01.ncg.ingrid.pt/apis").build();
+    private static final URI URI = UriBuilder.fromUri(
+            System.getProperty("futuregateway.uri",
+                               "https://fgw01.ncg.ingrid.pt/apis")).build();
     private static final String AUTHORIZATION_TOKEN =
-            "eyJraWQiOiJyc2ExIiwiYWxnIjoiUlMyNTYifQ" +
-            ".eyJzdWIiOiJGQzI3NzVERC1CRTBELTREQTItQjY4OS1GOUM0Nzg3Mzg3QUYiLCJpc3MiOiJodHRwczpcL1wvaWFtLXRlc3QuaW5kaWdvLWRhdGFjbG91ZC5ldVwvIiwiZXhwIjoxNDkzNDUyODAzLCJpYXQiOjE0OTMzNjY0MDMsImp0aSI6IjdhYzdlOGRlLTc3ZGMtNGMzZS05YTVlLTU2ZjZkZDdiM2YxYiJ9.gXI2OxkgfB-n1SsiJ3owyoJB74xx_i6c8bgQMwtuzUUgyRA1QwFefxiIHTSrDonIO2UAuSeaqMqMFR88AjVSGWqU8M2iWLrTDvG2rE8q8c4UuHuRfUuaK658SjO-uFOT5MOuAG-ENlmrWQQ0FY-L71SrpOsKc_0SxHyQRvFh944";
+            System.getProperty("auth.token", "TOKEN");
     private static final String TASK_DESCRIPTION = "Integration Testing";
     private static final String SAYHELLO_DATA = "sayhello.data";
     private static final String SAYHELLO_SH = "sayhello.sh";

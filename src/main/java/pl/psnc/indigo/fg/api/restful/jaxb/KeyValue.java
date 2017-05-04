@@ -47,7 +47,7 @@ public class KeyValue {
         if ((o == null) || (getClass() != o.getClass())) {
             return false;
         }
-        KeyValue keyValue = (KeyValue) o;
+        final KeyValue keyValue = (KeyValue) o;
         return Objects.equals(dataName, keyValue.dataName) &&
                Objects.equals(dataValue, keyValue.dataValue);
     }

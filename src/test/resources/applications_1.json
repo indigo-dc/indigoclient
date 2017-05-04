@@ -1,101 +1,40 @@
 {
-  "infrastructures": [
-    {
-      "description": "hostname application localhost (SSH)",
-      "parameters": [
-        {
-          "name": "jobservice",
-          "value": "ssh://localhost:22"
-        },
-        {
-          "name": "username",
-          "value": "jobtest"
-        },
-        {
-          "name": "password",
-          "value": "t/BMPSqOoRpr"
-        }
-      ],
-      "creation": "2016-05-06T14:08:06",
-      "enabled": 1,
-      "virtual": false,
-      "id": "1",
-      "name": "hello@csgfsdk"
-    },
-    {
-      "description": "hostname application eumed (wms)",
-      "parameters": [
-        {
-          "name": "jobservice",
-          "value": "wms://wms.ulakbim.gov.tr:7443/glite_wms_wmproxy_server"
-        },
-        {
-          "name": "bdii",
-          "value": "ldap://bdii.eumedgrid.eu:2170"
-        },
-        {
-          "name": "eToken_host",
-          "value": "etokenserver2.ct.infn.it"
-        },
-        {
-          "name": "eToken_port",
-          "value": "8082"
-        },
-        {
-          "name": "eToken_id",
-          "value": "bc681e2bd4c3ace2a4c54907ea0c379b"
-        },
-        {
-          "name": "voms",
-          "value": "eumed"
-        },
-        {
-          "name": "voms_role",
-          "value": "eumed"
-        },
-        {
-          "name": "rfc_proxy",
-          "value": "false"
-        }
-      ],
-      "creation": "2016-05-06T14:08:06",
-      "enabled": 0,
-      "virtual": false,
-      "id": "3",
-      "name": "hello@eumed"
-    }
-  ],
+  "files": [],
+  "creation": "2017-04-13T09:44:45Z",
   "name": "hostname",
   "parameters": [
     {
       "name": "jobdesc_executable",
       "value": "/bin/hostname",
-      "description": ""
+      "description": null
     },
     {
       "name": "jobdesc_arguments",
       "value": "-f",
-      "description": ""
+      "description": null
     },
     {
       "name": "jobdesc_output",
       "value": "stdout.txt",
-      "description": ""
+      "description": null
     },
     {
       "name": "jobdesc_error",
       "value": "stderr.txt",
-      "description": ""
+      "description": null
     },
     {
       "name": "target_executor",
       "value": "GridEngine",
-      "description": ""
+      "description": null
     }
   ],
-  "creation": "2016-05-06T14:08:06",
-  "enabled": 1,
+  "outcome": "JOB",
+  "enabled": true,
   "id": "1",
-  "input_files": [],
+  "infrastructures": [
+    1,
+    3
+  ],
   "description": "hostname tester application"
 }

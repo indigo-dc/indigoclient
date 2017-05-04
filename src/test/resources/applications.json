@@ -1,71 +1,26 @@
 {
   "applications": [
     {
-      "infrastructures": [
+      "files": [],
+      "infrastructures": [],
+      "_links": [
         {
-          "description": "hostname application localhost (SSH)",
-          "parameters": [
-            {
-              "name": "jobservice",
-              "value": "ssh://localhost:22"
-            },
-            {
-              "name": "username",
-              "value": "jobtest"
-            },
-            {
-              "name": "password",
-              "value": "t/BMPSqOoRpr"
-            }
-          ],
-          "creation": "2016-05-06T14:08:06",
-          "enabled": 1,
-          "virtual": false,
-          "id": "1",
-          "name": "hello@csgfsdk"
-        },
-        {
-          "description": "hostname application eumed (wms)",
-          "parameters": [
-            {
-              "name": "jobservice",
-              "value": "wms://wms.ulakbim.gov.tr:7443/glite_wms_wmproxy_server"
-            },
-            {
-              "name": "bdii",
-              "value": "ldap://bdii.eumedgrid.eu:2170"
-            },
-            {
-              "name": "eToken_host",
-              "value": "etokenserver2.ct.infn.it"
-            },
-            {
-              "name": "eToken_port",
-              "value": "8082"
-            },
-            {
-              "name": "eToken_id",
-              "value": "bc681e2bd4c3ace2a4c54907ea0c379b"
-            },
-            {
-              "name": "voms",
-              "value": "eumed"
-            },
-            {
-              "name": "voms_role",
-              "value": "eumed"
-            },
-            {
-              "name": "rfc_proxy",
-              "value": "false"
-            }
-          ],
-          "creation": "2016-05-06T14:08:06",
-          "enabled": 0,
-          "virtual": false,
-          "id": "3",
-          "name": "hello@eumed"
+          "href": "/v1.0/application/0",
+          "rel": "self"
         }
+      ],
+      "name": "infrastructures",
+      "parameters": [],
+      "outcome": "INFRA",
+      "enabled": false,
+      "id": "0",
+      "description": "unassigned infrastructure"
+    },
+    {
+      "files": [],
+      "infrastructures": [
+        1,
+        3
       ],
       "_links": [
         {
@@ -78,11 +33,162 @@
         {
           "name": "jobdesc_executable",
           "value": "/bin/hostname",
-          "description": ""
+          "description": null
         },
         {
           "name": "jobdesc_arguments",
           "value": "-f",
+          "description": null
+        },
+        {
+          "name": "jobdesc_output",
+          "value": "stdout.txt",
+          "description": null
+        },
+        {
+          "name": "jobdesc_error",
+          "value": "stderr.txt",
+          "description": null
+        },
+        {
+          "name": "target_executor",
+          "value": "GridEngine",
+          "description": null
+        }
+      ],
+      "outcome": "JOB",
+      "enabled": true,
+      "id": "1",
+      "description": "hostname tester application"
+    },
+    {
+      "files": [
+        {
+          "override": false,
+          "path": "/home/futuregateway/FutureGateway/fgAPIServer/apps/sayhello",
+          "name": "sayhello.sh"
+        },
+        {
+          "override": false,
+          "path": "/home/futuregateway/FutureGateway/fgAPIServer/apps/sayhello",
+          "name": "sayhello.txt"
+        }
+      ],
+      "infrastructures": [
+        1,
+        2
+      ],
+      "_links": [
+        {
+          "href": "/v1.0/application/2",
+          "rel": "self"
+        }
+      ],
+      "name": "SayHello",
+      "parameters": [
+        {
+          "name": "jobdesc_executable",
+          "value": "/bin/bash",
+          "description": null
+        },
+        {
+          "name": "jobdesc_arguments",
+          "value": "sayhello.sh",
+          "description": null
+        },
+        {
+          "name": "jobdesc_output",
+          "value": "sayhello.out",
+          "description": null
+        },
+        {
+          "name": "jobdesc_error",
+          "value": "sayhello.err",
+          "description": null
+        },
+        {
+          "name": "target_executor",
+          "value": "GridEngine",
+          "description": null
+        }
+      ],
+      "outcome": "JOB",
+      "enabled": true,
+      "id": "2",
+      "description": "A more complex app using I/O Sandboxing"
+    },
+    {
+      "files": [
+        {
+          "override": false,
+          "path": "",
+          "name": "template.yml"
+        },
+        {
+          "override": false,
+          "path": "",
+          "name": "parameters.json"
+        }
+      ],
+      "infrastructures": [
+        4
+      ],
+      "_links": [
+        {
+          "href": "/v1.0/application/3",
+          "rel": "self"
+        }
+      ],
+      "name": "kepler-batch",
+      "parameters": [
+        {
+          "name": "target_executor",
+          "value": "ToscaIDC",
+          "description": ""
+        }
+      ],
+      "outcome": "JOB",
+      "enabled": true,
+      "id": "3",
+      "description": "Instantiates a VM with Kepler and runs a non-gui workflow on it"
+    },
+    {
+      "files": [
+        {
+          "override": false,
+          "path": "",
+          "name": "script.sh"
+        },
+        {
+          "override": false,
+          "path": "",
+          "name": "workflow.json"
+        },
+        {
+          "override": false,
+          "path": "",
+          "name": "oph-credentials.txt"
+        }
+      ],
+      "infrastructures": [
+        5
+      ],
+      "_links": [
+        {
+          "href": "/v1.0/application/4",
+          "rel": "self"
+        }
+      ],
+      "name": "oph-term",
+      "parameters": [
+        {
+          "name": "jobdesc_executable",
+          "value": "/bin/bash",
+          "description": ""
+        },
+        {
+          "name": "jobdesc_arguments",
+          "value": "script.sh",
           "description": ""
         },
         {
@@ -101,135 +207,10 @@
           "description": ""
         }
       ],
-      "input_files": [],
-      "enabled": 1,
-      "id": "1",
-      "description": "hostname tester application"
-    },
-    {
-      "infrastructures": [
-        {
-          "description": "sayhello application localhost (SSH)",
-          "parameters": [
-            {
-              "name": "jobservice",
-              "value": "ssh://localhost:22"
-            },
-            {
-              "name": "username",
-              "value": "jobtest"
-            },
-            {
-              "name": "password",
-              "value": "t/BMPSqOoRpr"
-            }
-          ],
-          "creation": "2016-05-06T14:08:06",
-          "enabled": 1,
-          "virtual": false,
-          "id": "1",
-          "name": "sayhello@csgfsdk"
-        },
-        {
-          "description": "hostname application nebula-1 (rOCCI)",
-          "parameters": [
-            {
-              "name": "jobservice",
-              "value": "rocci://nebula-server-01.ct.infn.it:9000"
-            },
-            {
-              "name": "os_tpl",
-              "value": "uuid_chain_reds_generic_vm_centos_6_6_kvm_103"
-            },
-            {
-              "name": "resource_tpl",
-              "value": "small"
-            },
-            {
-              "name": "attributes_title",
-              "value": "sayhello"
-            },
-            {
-              "name": "eToken_host",
-              "value": "etokenserver.ct.infn.it"
-            },
-            {
-              "name": "eToken_port",
-              "value": "8082"
-            },
-            {
-              "name": "eToken_id",
-              "value": "bc681e2bd4c3ace2a4c54907ea0c379b"
-            },
-            {
-              "name": "voms",
-              "value": "vo.chain-project.eu"
-            },
-            {
-              "name": "voms_role",
-              "value": "vo.chain-project.eu"
-            },
-            {
-              "name": "rfc_proxy",
-              "value": "true"
-            }
-          ],
-          "creation": "2016-05-06T14:08:06",
-          "enabled": 0,
-          "virtual": false,
-          "id": "2",
-          "name": "sayhello@nebula"
-        }
-      ],
-      "_links": [
-        {
-          "href": "/v1.0/application/2",
-          "rel": "self"
-        }
-      ],
-      "name": "SayHello",
-      "parameters": [
-        {
-          "name": "jobdesc_executable",
-          "value": "/bin/bash",
-          "description": ""
-        },
-        {
-          "name": "jobdesc_arguments",
-          "value": "sayhello.sh",
-          "description": ""
-        },
-        {
-          "name": "jobdesc_output",
-          "value": "sayhello.out",
-          "description": ""
-        },
-        {
-          "name": "jobdesc_error",
-          "value": "sayhello.err",
-          "description": ""
-        },
-        {
-          "name": "target_executor",
-          "value": "GridEngine",
-          "description": ""
-        }
-      ],
-      "input_files": [
-        {
-          "override": 0,
-          "path": "/home/futuregateway/FutureGateway/fgAPIServer/apps/sayhello",
-          "name": "sayhello.sh"
-        },
-        {
-          "override": 0,
-          "path": "/home/futuregateway/FutureGateway/fgAPIServer/apps/sayhello",
-          "name": "sayhello.txt"
-        }
-      ],
-      "enabled": 1,
-      "id": "2",
-      "description": "A more complex app using I/O Sandboxing"
+      "outcome": "JOB",
+      "enabled": true,
+      "id": "4",
+      "description": "Runs the oph-term command on localhost via SSH adaptor"
     }
   ]
 }
