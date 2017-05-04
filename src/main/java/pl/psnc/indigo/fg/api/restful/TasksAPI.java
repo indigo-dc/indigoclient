@@ -60,7 +60,7 @@ public class TasksAPI extends RootAPI {
             throws FutureGatewayException {
         super(baseUri, authorizationToken);
 
-        URI rootUri = getRootUri();
+        final URI rootUri = getRootUri();
         tasksUri = UriBuilder.fromUri(rootUri).path(TasksAPI.TASKS).build();
     }
 
@@ -82,24 +82,21 @@ public class TasksAPI extends RootAPI {
     public final Task createTask(final Task task)
             throws FutureGatewayException {
         try {
-            String taskJson = getMapper().writeValueAsString(task);
-            HttpEntity entity =
+            final String taskJson = getMapper().writeValueAsString(task);
+            final HttpEntity entity =
                     new StringEntity(taskJson, ContentType.APPLICATION_JSON);
 
-            String user = task.getUser();
-            URI uri = UriBuilder.fromUri(tasksUri).queryParam("user", user)
-                                .build();
+            final URI uri = UriBuilder.fromUri(tasksUri).build();
             TasksAPI.LOGGER.debug("POST {}", uri);
 
-            HttpResponse response = Request.Post(uri)
-                                           .setHeader(HttpHeaders.AUTHORIZATION,
-                                                      getAuthorizationToken())
-                                           .body(entity).execute()
-                                           .returnResponse();
+            final HttpResponse response = Request.Post(uri).setHeader(
+                    HttpHeaders.AUTHORIZATION, getAuthorizationToken())
+                                                 .body(entity).execute()
+                                                 .returnResponse();
 
-            StatusLine status = response.getStatusLine();
-            int statusCode = status.getStatusCode();
-            String reasonPhrase = status.getReasonPhrase();
+            final StatusLine status = response.getStatusLine();
+            final int statusCode = status.getStatusCode();
+            final String reasonPhrase = status.getReasonPhrase();
             TasksAPI.LOGGER.debug(RootAPI.STATUS, statusCode, reasonPhrase);
 
             if (statusCode == HttpStatus.SC_OK) {
@@ -135,7 +132,7 @@ public class TasksAPI extends RootAPI {
             throws IOException, JsonParseException, JsonMappingException {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             response.getEntity().writeTo(outputStream);
-            String body =
+            final String body =
                     outputStream.toString(Charset.defaultCharset().name());
             TasksAPI.LOGGER.trace("Body: {}", body);
             return getMapper().readValue(body, Task.class);
@@ -145,41 +142,42 @@ public class TasksAPI extends RootAPI {
     /**
      * Upload an input file for task.
      *
-     * @param task A bean describing task id and user.
-     * @param file A file to upload.
+     * @param task  A bean describing task id and user.
+     * @param files An array of files to upload.
      * @return A bean containing status information about the uploaded file.
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
-    public final Upload uploadFileForTask(final Task task, final File file)
+    public final Upload uploadFileForTask(final Task task, final File... files)
             throws FutureGatewayException {
         try {
-            String id = task.getId();
-            String user = task.getUser();
-            URI uri = UriBuilder.fromUri(tasksUri).path(id).path("input")
-                                .queryParam("user", user).build();
+            final String id = task.getId();
+            final URI uri =
+                    UriBuilder.fromUri(tasksUri).path(id).path("input").build();
             TasksAPI.LOGGER.debug("POST {}", uri);
 
-            HttpEntity httpEntity = MultipartEntityBuilder.create()
-                                                          .addBinaryBody(
-                                                                  "file[]",
-                                                                  file).build();
-            HttpResponse response = Request.Post(uri)
-                                           .setHeader(HttpHeaders.AUTHORIZATION,
-                                                      getAuthorizationToken())
-                                           .body(httpEntity).execute()
-                                           .returnResponse();
+            final MultipartEntityBuilder builder =
+                    MultipartEntityBuilder.create();
+            for (final File file : files) {
+                builder.addBinaryBody("file[]", file);
+            }
+            final HttpEntity httpEntity = builder.build();
 
-            StatusLine status = response.getStatusLine();
-            int statusCode = status.getStatusCode();
-            String reasonPhrase = status.getReasonPhrase();
+            final HttpResponse response = Request.Post(uri).setHeader(
+                    HttpHeaders.AUTHORIZATION, getAuthorizationToken())
+                                                 .body(httpEntity).execute()
+                                                 .returnResponse();
+
+            final StatusLine status = response.getStatusLine();
+            final int statusCode = status.getStatusCode();
+            final String reasonPhrase = status.getReasonPhrase();
             TasksAPI.LOGGER.debug(RootAPI.STATUS, statusCode, reasonPhrase);
 
             if (statusCode == HttpStatus.SC_OK) {
                 try (ByteArrayOutputStream outputStream = new
                         ByteArrayOutputStream()) {
                     response.getEntity().writeTo(outputStream);
-                    String body = outputStream
+                    final String body = outputStream
                             .toString(Charset.defaultCharset().name());
                     TasksAPI.LOGGER.trace("Body: {}", body);
                     return getMapper().readValue(body, Upload.class);
@@ -188,14 +186,16 @@ public class TasksAPI extends RootAPI {
                 String message = resourceBundle.getString(
                         "failed.to.upload.file.for.task.response.0.1.task.2.3");
                 message = MessageFormat
-                        .format(message, statusCode, response, task, file);
+                        .format(message, statusCode, response, task,
+                                Arrays.toString(files));
                 TasksAPI.LOGGER.error(message);
                 throw new FutureGatewayException(message);
             }
         } catch (final IOException e) {
             String message = resourceBundle
                     .getString("failed.to.upload.file.for.task.0.file.1");
-            message = MessageFormat.format(message, task, file);
+            message =
+                    MessageFormat.format(message, task, Arrays.toString(files));
             TasksAPI.LOGGER.error(message, e);
             throw new FutureGatewayException(message, e);
         }
@@ -212,17 +212,16 @@ public class TasksAPI extends RootAPI {
      */
     public final Task getTask(final String id) throws FutureGatewayException {
         try {
-            URI uri = UriBuilder.fromUri(tasksUri).path(id).build();
+            final URI uri = UriBuilder.fromUri(tasksUri).path(id).build();
             TasksAPI.LOGGER.debug("GET {}", uri);
 
-            HttpResponse response = Request.Get(uri)
-                                           .setHeader(HttpHeaders.AUTHORIZATION,
-                                                      getAuthorizationToken())
-                                           .execute().returnResponse();
+            final HttpResponse response = Request.Get(uri).setHeader(
+                    HttpHeaders.AUTHORIZATION, getAuthorizationToken())
+                                                 .execute().returnResponse();
 
-            StatusLine status = response.getStatusLine();
-            int statusCode = status.getStatusCode();
-            String reasonPhrase = status.getReasonPhrase();
+            final StatusLine status = response.getStatusLine();
+            final int statusCode = status.getStatusCode();
+            final String reasonPhrase = status.getReasonPhrase();
             TasksAPI.LOGGER.debug(RootAPI.STATUS, statusCode, reasonPhrase);
 
             if (statusCode == HttpStatus.SC_OK) {
@@ -251,8 +250,8 @@ public class TasksAPI extends RootAPI {
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
-    public final void downloadOutputFile(
-            final OutputFile outputFile, final File directory)
+    public final void downloadOutputFile(final OutputFile outputFile,
+                                         final File directory)
             throws FutureGatewayException {
         try {
             TasksAPI.testLocalFolderPermissions(directory);
@@ -262,29 +261,29 @@ public class TasksAPI extends RootAPI {
         }
 
         try {
-            URI outputFileUri = outputFile.getUrl();
-            String path = outputFileUri.getPath();
-            String query = outputFileUri.getQuery();
-            URI rootUri = getRootUri();
-            URI uri = UriBuilder.fromUri(rootUri).path(path).replaceQuery(query)
-                                .build();
+            final URI outputFileUri = outputFile.getUrl();
+            final String path = outputFileUri.getPath();
+            final String query = outputFileUri.getQuery();
+            final URI rootUri = getRootUri();
+            final URI uri =
+                    UriBuilder.fromUri(rootUri).path(path).replaceQuery(query)
+                              .build();
             TasksAPI.LOGGER.debug("GET {}", uri);
 
-            HttpResponse response = Request.Get(uri)
-                                           .setHeader(HttpHeaders.AUTHORIZATION,
-                                                      getAuthorizationToken())
-                                           .execute().returnResponse();
+            final HttpResponse response = Request.Get(uri).setHeader(
+                    HttpHeaders.AUTHORIZATION, getAuthorizationToken())
+                                                 .execute().returnResponse();
 
-            StatusLine status = response.getStatusLine();
-            int statusCode = status.getStatusCode();
-            String reasonPhrase = status.getReasonPhrase();
+            final StatusLine status = response.getStatusLine();
+            final int statusCode = status.getStatusCode();
+            final String reasonPhrase = status.getReasonPhrase();
             TasksAPI.LOGGER.debug(RootAPI.STATUS, statusCode, reasonPhrase);
 
             if (statusCode == HttpStatus.SC_OK) {
                 try (ByteArrayOutputStream outputStream = new
                         ByteArrayOutputStream()) {
                     response.getEntity().writeTo(outputStream);
-                    File file = new File(directory, outputFile.getName());
+                    final File file = new File(directory, outputFile.getName());
                     FileUtils.writeByteArrayToFile(file,
                                                    outputStream.toByteArray());
                 }
@@ -314,8 +313,8 @@ public class TasksAPI extends RootAPI {
         if (localFolder.exists()) {
             if (!localFolder.isDirectory()) {
                 throw new IOException(
-                        "Output path exists and is " + "not a directory: "
-                        + localFolder);
+                        "Output path exists and is " + "not a directory: " +
+                        localFolder);
             }
             if (!localFolder.canWrite()) {
                 throw new IOException("Cannot write to: " + localFolder);
@@ -331,38 +330,34 @@ public class TasksAPI extends RootAPI {
     /**
      * Get all tasks belonging to a user.
      *
-     * @param user An id of a user.
      * @return A collection of tasks belonging to a user.
      * @throws FutureGatewayException If communication with Future Gateway
      *                                fails.
      */
-    public final List<Task> getAllTasks(final String user)
-            throws FutureGatewayException {
+    public final List<Task> getAllTasks() throws FutureGatewayException {
         try {
-            URI uri = UriBuilder.fromUri(tasksUri).queryParam("user", user)
-                                .build();
+            final URI uri = UriBuilder.fromUri(tasksUri).build();
             TasksAPI.LOGGER.debug("GET {}", uri);
 
-            HttpResponse response = Request.Get(uri)
-                                           .setHeader(HttpHeaders.AUTHORIZATION,
-                                                      getAuthorizationToken())
-                                           .execute().returnResponse();
+            final HttpResponse response = Request.Get(uri).setHeader(
+                    HttpHeaders.AUTHORIZATION, getAuthorizationToken())
+                                                 .execute().returnResponse();
 
-            StatusLine status = response.getStatusLine();
-            int statusCode = status.getStatusCode();
-            String reasonPhrase = status.getReasonPhrase();
+            final StatusLine status = response.getStatusLine();
+            final int statusCode = status.getStatusCode();
+            final String reasonPhrase = status.getReasonPhrase();
             TasksAPI.LOGGER.debug(RootAPI.STATUS, statusCode, reasonPhrase);
 
             if (statusCode == HttpStatus.SC_OK) {
                 try (ByteArrayOutputStream outputStream = new
                         ByteArrayOutputStream()) {
                     response.getEntity().writeTo(outputStream);
-                    String body = outputStream
+                    final String body = outputStream
                             .toString(Charset.defaultCharset().name());
                     TasksAPI.LOGGER.trace("Body: {}", body);
                     JsonNode jsonNode = getMapper().readTree(body);
                     jsonNode = jsonNode.get("tasks"); //NON-NLS
-                    Task[] tasks =
+                    final Task[] tasks =
                             getMapper().treeToValue(jsonNode, Task[].class);
                     return Arrays.asList(tasks);
                 }
@@ -374,7 +369,7 @@ public class TasksAPI extends RootAPI {
                 throw new FutureGatewayException(message);
             }
         } catch (final IOException e) {
-            String message =
+            final String message =
                     resourceBundle.getString("failed.to.get.all.tasks");
             TasksAPI.LOGGER.error(message, e);
             throw new FutureGatewayException(message, e);
@@ -391,16 +386,15 @@ public class TasksAPI extends RootAPI {
     public final boolean removeTask(final String id)
             throws FutureGatewayException {
         try {
-            URI uri = UriBuilder.fromUri(tasksUri).path(id).build();
+            final URI uri = UriBuilder.fromUri(tasksUri).path(id).build();
             TasksAPI.LOGGER.debug("DELETE {}", uri);
 
-            HttpResponse response = Request.Delete(uri)
-                                           .setHeader(HttpHeaders.AUTHORIZATION,
-                                                      getAuthorizationToken())
-                                           .execute().returnResponse();
+            final HttpResponse response = Request.Delete(uri).setHeader(
+                    HttpHeaders.AUTHORIZATION, getAuthorizationToken())
+                                                 .execute().returnResponse();
             return TasksAPI.checkResponseGeneral(response);
         } catch (final IOException e) {
-            String message = MessageFormat
+            final String message = MessageFormat
                     .format(resourceBundle.getString("failed.to.delete.task.0"),
                             id);
             TasksAPI.LOGGER.error(message, e);
@@ -416,23 +410,25 @@ public class TasksAPI extends RootAPI {
      * @return Whether request was successful
      * @throws FutureGatewayException When the operation fails.
      */
-    public final boolean patchRuntimeData(
-            final String id, final PatchRuntimeData patchRuntimeData)
+    public final boolean patchRuntimeData(final String id,
+                                          final PatchRuntimeData
+                                                  patchRuntimeData)
             throws FutureGatewayException {
-        URI uri = UriBuilder.fromUri(tasksUri).path(id).build();
+        final URI uri = UriBuilder.fromUri(tasksUri).path(id).build();
         TasksAPI.LOGGER.debug("PATCH {}", uri);
 
         try {
-            HttpEntity entity = new StringEntity(
+            final HttpEntity entity = new StringEntity(
                     getMapper().writeValueAsString(patchRuntimeData),
                     ContentType.APPLICATION_JSON);
-            HttpResponse response =
+            final HttpResponse response =
                     Request.Patch(uri).body(entity).execute().returnResponse();
             return TasksAPI.checkResponseGeneral(response);
         } catch (final IOException e) {
-            String message = MessageFormat.format(resourceBundle.getString(
-                    "failed.to.patch.task.0.with.data.1"), id,
-                                                  patchRuntimeData);
+            final String message = MessageFormat.format(resourceBundle
+                                                                .getString(
+                                                                        "failed.to.patch.task.0.with.data.1"),
+                                                        id, patchRuntimeData);
             throw new FutureGatewayException(message, e);
         }
     }
@@ -445,12 +441,12 @@ public class TasksAPI extends RootAPI {
      * family.
      */
     private static boolean checkResponseGeneral(final HttpResponse response) {
-        StatusLine status = response.getStatusLine();
-        int statusCode = status.getStatusCode();
-        String reasonPhrase = status.getReasonPhrase();
+        final StatusLine status = response.getStatusLine();
+        final int statusCode = status.getStatusCode();
+        final String reasonPhrase = status.getReasonPhrase();
         TasksAPI.LOGGER.debug(RootAPI.STATUS, statusCode, reasonPhrase);
-        return Response.Status.Family.familyOf(statusCode)
-               == Response.Status.Family.SUCCESSFUL;
+        return Response.Status.Family.familyOf(statusCode) ==
+               Response.Status.Family.SUCCESSFUL;
     }
 
     @Override

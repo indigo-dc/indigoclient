@@ -23,8 +23,7 @@ public class Upload {
     private List<InputFile> files = Collections.emptyList();
     private String message = "";
     private String task = "";
-    @JsonProperty("gestatus")
-    private String status = "";
+    @JsonProperty("gestatus") private String status = "";
 
     @Override
     public final boolean equals(final Object o) {

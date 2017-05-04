@@ -40,16 +40,15 @@ public class Task {
     private TaskStatus status = TaskStatus.UNKNOWN;
     private String user = "";
     private List<String> arguments = Collections.emptyList();
-    @JsonProperty("input_files")
-    private List<InputFile> inputFiles = Collections.emptyList();
-    @JsonProperty("output_files")
-    private List<OutputFile> outputFiles = Collections.emptyList();
-    @JsonProperty("runtime_data")
-    private List<RuntimeData> runtimeData = Collections.emptyList();
+    @JsonProperty("input_files") private List<InputFile> inputFiles =
+            Collections.emptyList();
+    @JsonProperty("output_files") private List<OutputFile> outputFiles =
+            Collections.emptyList();
+    @JsonProperty("runtime_data") private List<RuntimeData> runtimeData =
+            Collections.emptyList();
     private String creation = "";
     private String iosandbox = "";
-    @JsonProperty("_links")
-    private List<Link> links = Collections.emptyList();
+    @JsonProperty("_links") private List<Link> links = Collections.emptyList();
 
     public final boolean isDone() {
         return status == TaskStatus.DONE;

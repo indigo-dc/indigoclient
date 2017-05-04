@@ -5,5 +5,7 @@ package pl.psnc.indigo.fg.api.restful.jaxb;
  */
 @SuppressWarnings("WeakerAccess")
 public enum Outcome {
-    JOB, RESOURCE
+    JOB,
+    RESOURCE,
+    INFRA
 }

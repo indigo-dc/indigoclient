@@ -20,8 +20,8 @@ import java.util.Objects;
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PatchRuntimeData {
-    @JsonProperty("runtime_data")
-    private List<KeyValue> runtimeData = Collections.emptyList();
+    @JsonProperty("runtime_data") private List<KeyValue> runtimeData =
+            Collections.emptyList();
 
     @Override
     public final boolean equals(final Object o) {

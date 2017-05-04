@@ -35,7 +35,9 @@ public class RootAPI {
     public static final URI LOCALHOST_ADDRESS =
             URI.create("http://localhost:8888"); //NON-NLS
 
-    /** A constant used for all logging of REST communication. */
+    /**
+     * A constant used for all logging of REST communication.
+     */
     static final String STATUS = "Status: {} {}";
 
     private final ResourceBundle resourceBundle =

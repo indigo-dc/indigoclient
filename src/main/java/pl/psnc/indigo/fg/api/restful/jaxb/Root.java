@@ -20,8 +20,7 @@ import java.util.List;
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Root {
-    @JsonProperty("_links")
-    private List<Link> links = Collections.emptyList();
+    @JsonProperty("_links") private List<Link> links = Collections.emptyList();
     private List<Version> versions = Collections.emptyList();
 
     @Override

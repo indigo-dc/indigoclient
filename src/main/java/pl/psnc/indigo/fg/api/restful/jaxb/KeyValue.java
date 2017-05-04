@@ -17,10 +17,8 @@ import java.util.Objects;
 @FutureGatewayBean
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KeyValue {
-    @JsonProperty("data_name")
-    private String dataName = "";
-    @JsonProperty("data_value")
-    private String dataValue = "";
+    @JsonProperty("data_name") private String dataName = "";
+    @JsonProperty("data_value") private String dataValue = "";
 
     /**
      * Construct an empty instance. Used by bean instantiation.
@@ -50,8 +48,8 @@ public class KeyValue {
             return false;
         }
         KeyValue keyValue = (KeyValue) o;
-        return Objects.equals(dataName, keyValue.dataName) && Objects
-                .equals(dataValue, keyValue.dataValue);
+        return Objects.equals(dataName, keyValue.dataName) &&
+               Objects.equals(dataValue, keyValue.dataValue);
     }
 
     @Override

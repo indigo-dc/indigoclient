@@ -9,25 +9,19 @@ import org.junit.experimental.categories.Category;
 import pl.psnc.indigo.fg.api.restful.category.UnitTests;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Application;
-import pl.psnc.indigo.fg.api.restful.jaxb.Infrastructure;
 import pl.psnc.indigo.fg.api.restful.jaxb.Parameter;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Category(UnitTests.class)
 public class ApplicationsAPITest {
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule();
+    @Rule public WireMockRule wireMockRule = new WireMockRule();
 
     private ApplicationsAPI api;
 
@@ -48,14 +42,13 @@ public class ApplicationsAPITest {
         assertEquals(2, applications.size());
 
         Application application = applications.get(0);
-        List<Infrastructure> infrastructures = application.getInfrastructures();
+        List<Integer> infrastructures = application.getInfrastructures();
         List<Parameter> parameters = application.getParameters();
         assertEquals(2, infrastructures.size());
         assertEquals(5, parameters.size());
 
         Application application1 = applications.get(1);
-        List<Infrastructure> infrastructures1 =
-                application1.getInfrastructures();
+        List<Integer> infrastructures1 = application1.getInfrastructures();
         List<Parameter> parameters1 = application1.getParameters();
         assertEquals(2, infrastructures1.size());
         assertEquals(5, parameters1.size());
@@ -82,24 +75,8 @@ public class ApplicationsAPITest {
                      application.getDescription());
         assertTrue(application.isEnabled());
 
-        List<Infrastructure> infrastructures = application.getInfrastructures();
+        List<Integer> infrastructures = application.getInfrastructures();
         assertEquals(2, infrastructures.size());
-
-        Infrastructure infrastructure = infrastructures.get(0);
-        assertEquals("1", infrastructure.getId());
-        assertEquals("hello@csgfsdk", infrastructure.getName());
-        assertEquals("hostname application localhost (SSH)",
-                     infrastructure.getDescription());
-        assertTrue(infrastructure.isEnabled());
-        assertFalse(infrastructure.isVirtual());
-
-        List<Parameter> infrastructureParameters =
-                infrastructure.getParameters();
-        assertEquals(3, infrastructureParameters.size());
-
-        Parameter infrastructureParameter = infrastructureParameters.get(0);
-        assertEquals("jobservice", infrastructureParameter.getName());
-        assertEquals("ssh://localhost:22", infrastructureParameter.getValue());
 
         List<Parameter> applicationParameters = application.getParameters();
         assertEquals(5, applicationParameters.size());

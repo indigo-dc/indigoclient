@@ -16,18 +16,14 @@ import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.assertEquals;
 
 @Category(UnitTests.class)
 public class RootAPITest {
     private static final String URI_STRING = "http://localhost:8080";
 
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule();
+    @Rule public WireMockRule wireMockRule = new WireMockRule();
 
     @Test
     public final void testGetRoot() throws Exception {
