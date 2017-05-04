@@ -1,7 +1,10 @@
 package pl.psnc.indigo.fg.api.restful;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.psnc.indigo.fg.api.restful.category.IntegrationTests;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Application;
@@ -13,82 +16,98 @@ import pl.psnc.indigo.fg.api.restful.jaxb.RuntimeData;
 import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 import pl.psnc.indigo.fg.api.restful.jaxb.TaskStatus;
 
+import javax.ws.rs.core.UriBuilder;
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTests.class)
 public class FutureGatewayTest {
-    public static final String USERNAME = "brunor";
+    private static final URI URI = UriBuilder.fromUri(
+            System.getProperty("futuregateway.uri",
+                               "https://fgw01.ncg.ingrid.pt/apis")).build();
+    private static final String AUTHORIZATION_TOKEN =
+            System.getProperty("auth.token", "TOKEN");
+    private static final String TASK_DESCRIPTION = "Integration Testing";
+    private static final String SAYHELLO_DATA = "sayhello.data";
+    private static final String SAYHELLO_SH = "sayhello.sh";
+    private static final String SAYHELLO_TXT = "sayhello.txt";
+    private static final String DATA_NAME = "dataName";
+    private static final String DATA_VALUE = "dataValue";
 
     @Test
     public final void testGetRoot() throws FutureGatewayException {
-        new RootAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
+        new RootAPI(FutureGatewayTest.URI,
+                    FutureGatewayTest.AUTHORIZATION_TOKEN);
     }
 
     @Test
     public final void testGetAllApplications() throws Exception {
-        ApplicationsAPI api =
-                new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
+        final ApplicationsAPI api = new ApplicationsAPI(FutureGatewayTest.URI,
+                                                        FutureGatewayTest
+                                                                .AUTHORIZATION_TOKEN);
         api.getAllApplications();
     }
 
     @Test
     public final void testGetApplication() throws Exception {
-        ApplicationsAPI api =
-                new ApplicationsAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
-        Application application = api.getApplication("1");
-        String name = application.getName();
+        final ApplicationsAPI api = new ApplicationsAPI(FutureGatewayTest.URI,
+                                                        FutureGatewayTest
+                                                                .AUTHORIZATION_TOKEN);
+        final Application application = api.getApplication("1");
+        final String name = application.getName();
         assertEquals("hostname", name);
     }
 
     @Test
     public final void testCreateTask() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
+        final TasksAPI api = new TasksAPI(FutureGatewayTest.URI,
+                                          FutureGatewayTest
+                                                  .AUTHORIZATION_TOKEN);
 
-        Task task = new Task();
-        task.setUser(FutureGatewayTest.USERNAME);
+        final Task task = new Task();
         task.setApplication("1");
-        task.setDescription("hello");
-        Task result = api.createTask(task);
+        task.setDescription(FutureGatewayTest.TASK_DESCRIPTION);
+        final Task result = api.createTask(task);
 
         // Check the status of this task
-        String id = result.getId();
+        final String id = result.getId();
         api.getTask(id);
     }
 
     @Test
-    public final void testSubmitTaskWithFiles() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
+    public final void testSubmitTaskWithFiles() throws Exception {
+        final TasksAPI api = new TasksAPI(FutureGatewayTest.URI,
+                                          FutureGatewayTest
+                                                  .AUTHORIZATION_TOKEN);
 
-        Task newTask = new Task();
-        newTask.setUser(FutureGatewayTest.USERNAME);
+        final Task newTask = new Task();
         newTask.setApplication("2");
-        newTask.setDescription("Test with files");
+        newTask.setDescription(FutureGatewayTest.TASK_DESCRIPTION);
 
-        List<String> arguments = new ArrayList<>(1);
-        arguments.add("I am saying hello");
+        final List<String> arguments = new ArrayList<>(1);
+        arguments.add(FutureGatewayTest.TASK_DESCRIPTION);
 
-        OutputFile oFile = new OutputFile();
-        oFile.setName("sayhello.data");
+        final OutputFile oFile = new OutputFile();
+        oFile.setName(FutureGatewayTest.SAYHELLO_DATA);
 
-        List<OutputFile> outputFiles = new ArrayList<>(1);
+        final List<OutputFile> outputFiles = new ArrayList<>(1);
         outputFiles.add(oFile);
 
-        InputFile iFileSH = new InputFile();
-        iFileSH.setName("sayhello.sh");
+        final InputFile iFileSH = new InputFile();
+        iFileSH.setName(FutureGatewayTest.SAYHELLO_SH);
 
-        InputFile iFileTXT = new InputFile();
-        iFileTXT.setName("sayhello.txt");
+        final InputFile iFileTXT = new InputFile();
+        iFileTXT.setName(FutureGatewayTest.SAYHELLO_TXT);
 
-        List<InputFile> inputFiles = new ArrayList<>(2);
+        final List<InputFile> inputFiles = new ArrayList<>(2);
         inputFiles.add(iFileSH);
         inputFiles.add(iFileTXT);
 
@@ -96,13 +115,14 @@ public class FutureGatewayTest {
         newTask.setInputFiles(inputFiles);
 
         newTask.setArguments(arguments);
-        Task result = api.createTask(newTask);
+        final Task result = api.createTask(newTask);
 
         // Once task is created, we can upload files
-        String fileNameSH = getClass().getResource("/sayhello.sh").getFile();
-        String fileNameTXT = getClass().getResource("/sayhello.txt").getFile();
-        api.uploadFileForTask(result, new File(fileNameSH));
-        api.uploadFileForTask(result, new File(fileNameTXT));
+        final File fileNameSH =
+                Helper.getResourceFile(FutureGatewayTest.SAYHELLO_SH);
+        final File fileNameTXT =
+                Helper.getResourceFile(FutureGatewayTest.SAYHELLO_TXT);
+        api.uploadFileForTask(result, fileNameSH, fileNameTXT);
     }
 
     /**
@@ -112,29 +132,30 @@ public class FutureGatewayTest {
     @Test
     public final void testSubmitTaskWithFilesWaitGetOutputs()
             throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
+        final TasksAPI api = new TasksAPI(FutureGatewayTest.URI,
+                                          FutureGatewayTest
+                                                  .AUTHORIZATION_TOKEN);
 
-        Task newTask = new Task();
-        newTask.setUser(FutureGatewayTest.USERNAME);
+        final Task newTask = new Task();
         newTask.setApplication("2");
-        newTask.setDescription("Test with files");
+        newTask.setDescription(FutureGatewayTest.TASK_DESCRIPTION);
 
-        List<String> arguments = new ArrayList<>(1);
-        arguments.add("I am saying hello");
+        final List<String> arguments = new ArrayList<>(1);
+        arguments.add(FutureGatewayTest.TASK_DESCRIPTION);
 
-        OutputFile oFile = new OutputFile();
-        oFile.setName("sayhello.data");
+        final OutputFile oFile = new OutputFile();
+        oFile.setName(FutureGatewayTest.SAYHELLO_DATA);
 
-        List<OutputFile> outputFiles = new ArrayList<>(1);
+        final List<OutputFile> outputFiles = new ArrayList<>(1);
         outputFiles.add(oFile);
 
-        InputFile iFileSH = new InputFile();
-        iFileSH.setName("sayhello.sh");
+        final InputFile iFileSH = new InputFile();
+        iFileSH.setName(FutureGatewayTest.SAYHELLO_SH);
 
-        InputFile iFileTXT = new InputFile();
-        iFileTXT.setName("sayhello.txt");
+        final InputFile iFileTXT = new InputFile();
+        iFileTXT.setName(FutureGatewayTest.SAYHELLO_TXT);
 
-        List<InputFile> inputFiles = new ArrayList<>(2);
+        final List<InputFile> inputFiles = new ArrayList<>(2);
         inputFiles.add(iFileSH);
         inputFiles.add(iFileTXT);
 
@@ -142,79 +163,76 @@ public class FutureGatewayTest {
         newTask.setInputFiles(inputFiles);
 
         newTask.setArguments(arguments);
-        Task result = api.createTask(newTask);
-        String id = result.getId();
+        final Task result = api.createTask(newTask);
+        final String id = result.getId();
 
         // Once task is created, we can upload files
-        String fileNameSH = getClass().getResource("/sayhello.sh").getFile();
-        String fileNameTXT = getClass().getResource("/sayhello.txt").getFile();
-        api.uploadFileForTask(result, new File(fileNameSH));
-        api.uploadFileForTask(result, new File(fileNameTXT));
+        final File fileNameSH =
+                Helper.getResourceFile(FutureGatewayTest.SAYHELLO_SH);
+        final File fileNameTXT =
+                Helper.getResourceFile(FutureGatewayTest.SAYHELLO_TXT);
+        api.uploadFileForTask(result, fileNameSH, fileNameTXT);
 
         await().atMost(10, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS)
                .until(() -> {
-                   Task task = api.getTask(id);
+                   final Task task = api.getTask(id);
                    return task.getStatus() == TaskStatus.DONE;
                });
 
-        List<OutputFile> files = api.getTask(id).getOutputFiles();
-        String file = getClass().getResource("/outputs").getFile();
-        File outputDir = new File(file);
-
+        final List<OutputFile> files = api.getTask(id).getOutputFiles();
+        final File outputDir = new File(FileUtils.getTempDirectory(),
+                                        UUID.randomUUID().toString());
         for (final OutputFile outputFile : files) {
             api.downloadOutputFile(outputFile, outputDir);
         }
-    }
-
-    @Test
-    public final void testGetTask() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
-
-        Task newTask = new Task();
-        newTask.setUser(FutureGatewayTest.USERNAME);
-        newTask.setId("1");
-        api.getTask("1");
+        FileUtils.deleteQuietly(outputDir);
     }
 
     @Test
     public final void testGetAllTasks() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
-        api.getAllTasks(FutureGatewayTest.USERNAME);
+        final TasksAPI api = new TasksAPI(FutureGatewayTest.URI,
+                                          FutureGatewayTest
+                                                  .AUTHORIZATION_TOKEN);
+        api.getAllTasks();
     }
 
     @Test
     public final void testDeleteTask() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
+        final TasksAPI api = new TasksAPI(FutureGatewayTest.URI,
+                                          FutureGatewayTest
+                                                  .AUTHORIZATION_TOKEN);
 
         Task task = new Task();
         task.setApplication("1");
-        task.setUser(FutureGatewayTest.USERNAME);
         task = api.createTask(task);
 
-        String id = task.getId();
+        final String id = task.getId();
         assertTrue(api.removeTask(id));
         assertFalse(api.removeTask(id));
     }
 
     @Test
     public final void testPatchTask() throws FutureGatewayException {
-        TasksAPI api = new TasksAPI(RootAPI.LOCALHOST_ADDRESS, "testing");
+        final TasksAPI api = new TasksAPI(FutureGatewayTest.URI,
+                                          FutureGatewayTest
+                                                  .AUTHORIZATION_TOKEN);
 
         Task task = new Task();
         task.setApplication("1");
-        task.setUser(FutureGatewayTest.USERNAME);
         task = api.createTask(task);
         assertTrue(task.getRuntimeData().isEmpty());
 
-        PatchRuntimeData patchRuntimeData = new PatchRuntimeData();
+        final PatchRuntimeData patchRuntimeData = new PatchRuntimeData();
         patchRuntimeData.setRuntimeData(Collections.singletonList(
-                new KeyValue("dataName", "dataValue")));
+                new KeyValue(FutureGatewayTest.DATA_NAME,
+                             FutureGatewayTest.DATA_VALUE)));
         api.patchRuntimeData(task.getId(), patchRuntimeData);
         task = api.getTask(task.getId());
 
-        List<RuntimeData> runtimeData = task.getRuntimeData();
+        final List<RuntimeData> runtimeData = task.getRuntimeData();
         assertEquals(1, runtimeData.size());
-        assertEquals("dataName", runtimeData.get(0).getName());
-        assertEquals("dataValue", runtimeData.get(0).getValue());
+        assertEquals(FutureGatewayTest.DATA_NAME, runtimeData.get(0).getName());
+        assertEquals(FutureGatewayTest.DATA_VALUE,
+                     runtimeData.get(0).getValue());
     }
 }

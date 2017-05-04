@@ -38,8 +38,8 @@ class RequestLogger implements ClientRequestFilter {
      * @param context Context of the HTTP request.
      * @param builder Where the output will be appended.
      */
-    private static void describeBody(
-            final ClientRequestContext context, final StringBuilder builder) {
+    private static void describeBody(final ClientRequestContext context,
+                                     final StringBuilder builder) {
         if ((context != null) && context.hasEntity()) {
             Object entity = context.getEntity();
             if (entity instanceof MultiPart) {
@@ -56,8 +56,8 @@ class RequestLogger implements ClientRequestFilter {
      * @param builder Where the output will be appended.
      * @param entity  The entity itself.
      */
-    private static void describeMultiPart(
-            final StringBuilder builder, final MultiPart entity) {
+    private static void describeMultiPart(final StringBuilder builder,
+                                          final MultiPart entity) {
         for (final BodyPart part : entity.getBodyParts()) {
             if (part instanceof FileDataBodyPart) {
                 File fileEntity = ((FileDataBodyPart) part).getFileEntity();
@@ -75,8 +75,8 @@ class RequestLogger implements ClientRequestFilter {
      * @param context Context of the HTTP request.
      * @param builder Where the output will be appended.
      */
-    private static void describeHeaders(
-            final ClientRequestContext context, final StringBuilder builder) {
+    private static void describeHeaders(final ClientRequestContext context,
+                                        final StringBuilder builder) {
         MultivaluedMap<String, String> headers = context.getStringHeaders();
         for (final Map.Entry<String, List<String>> entry : headers.entrySet()) {
             String key = entry.getKey();

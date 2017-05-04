@@ -34,13 +34,12 @@ public class Application {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime creation = LocalDateTime.now();
     private List<Parameter> parameters = Collections.emptyList();
-    @JsonProperty("input_files")
-    private List<InputFile> inputFiles = Collections.emptyList();
-    private List<Infrastructure> infrastructures = Collections.emptyList();
+    @JsonProperty("input_files") private List<InputFile> inputFiles =
+            Collections.emptyList();
+    private List<Integer> infrastructures = Collections.emptyList();
     private Outcome outcome = Outcome.JOB;
     private boolean enabled;
-    @JsonProperty("_links")
-    private List<Link> links = Collections.emptyList();
+    @JsonProperty("_links") private List<Link> links = Collections.emptyList();
 
     @Override
     public final boolean equals(final Object o) {

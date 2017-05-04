@@ -25,13 +25,11 @@ import java.util.List;
 public class Version {
     private String status = "";
     private String updated = "";
-    @JsonProperty("build:")
-    private String build = "";
+    @JsonProperty("build:") private String build = "";
     @JsonDeserialize(using = MediaTypeDeserializer.class)
     @JsonProperty("media-types")
     private MediaType mediaType = MediaType.WILDCARD_TYPE;
-    @JsonProperty("_links")
-    private List<Link> links = Collections.emptyList();
+    @JsonProperty("_links") private List<Link> links = Collections.emptyList();
     private String id = "";
 
     @Override

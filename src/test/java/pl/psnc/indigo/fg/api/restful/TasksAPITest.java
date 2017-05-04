@@ -25,24 +25,14 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.delete;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.patch;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Category(UnitTests.class)
 public class TasksAPITest {
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule();
+    @Rule public final WireMockRule wireMockRule = new WireMockRule();
 
     private ObjectMapper mapper;
     private TasksAPI api;
@@ -58,40 +48,40 @@ public class TasksAPITest {
 
     @Test
     public final void testGetAllTasks() throws Exception {
-        String body = Helper.readResource("tasks.json");
-        stubFor(get(urlEqualTo("/v1.0/tasks?user=all-tasks"))
+        final String body = Helper.readResource("tasks.json");
+        stubFor(get(urlEqualTo("/v1.0/tasks"))
                         .willReturn(aResponse().withBody(body)));
 
-        List<Task> tasks = api.getAllTasks("all-tasks");
+        final List<Task> tasks = api.getAllTasks();
         assertEquals(3, tasks.size());
 
-        Task task = tasks.get(0);
+        final Task task = tasks.get(0);
         assertEquals(2, task.getOutputFiles().size());
         assertEquals(2, task.getLinks().size());
     }
 
     @Test
     public final void testGetTask() throws Exception {
-        String body = Helper.readResource("tasks_1.json");
+        final String body = Helper.readResource("tasks_1.json");
         stubFor(get(urlEqualTo("/v1.0/tasks/1"))
                         .willReturn(aResponse().withBody(body)));
 
-        Task task = api.getTask("1");
+        final Task task = api.getTask("1");
         assertEquals("1", task.getId());
         assertEquals("2", task.getApplication());
         assertEquals("Test with files", task.getDescription());
         assertEquals("brunor", task.getUser());
         assertEquals(TaskStatus.DONE, task.getStatus());
 
-        List<OutputFile> outputFiles = task.getOutputFiles();
+        final List<OutputFile> outputFiles = task.getOutputFiles();
         assertEquals(3, outputFiles.size());
 
-        OutputFile outputFile = outputFiles.get(0);
+        final OutputFile outputFile = outputFiles.get(0);
         assertEquals("sayhello.data", outputFile.getName());
         assertEquals(URI.create(
-                "file?path=%2Ftmp%2Fba3a8d88-1e71-11e6-92fb-fa163e26496e"
-                + "%2F1tmpba3a8d881e7111e692fbfa163e26496e_2&name=sayhello"
-                + ".data"), outputFile.getUrl());
+                "file?path=%2Ftmp%2Fba3a8d88-1e71-11e6-92fb-fa163e26496e" +
+                "%2F1tmpba3a8d881e7111e692fbfa163e26496e_2&name=sayhello" +
+                ".data"), outputFile.getUrl());
     }
 
     @Test(expected = FutureGatewayException.class)
@@ -110,51 +100,15 @@ public class TasksAPITest {
 
     @Test
     public final void testUploadFileForTask() throws Exception {
-        stubFor(post(urlEqualTo("/v1.0/tasks/1/input?user=test")).willReturn(
+        stubFor(post(urlEqualTo("/v1.0/tasks/1/input")).willReturn(
                 aResponse().withBody(mapper.writeValueAsString(new Upload()))));
 
-        Task task = new Task();
+        final Task task = new Task();
         task.setId("1");
-        task.setUser("test");
 
-        File file = File.createTempFile("TasksAPITest", null);
+        final File file = File.createTempFile("TasksAPITest", null);
         try {
             assertNotNull(api.uploadFileForTask(task, file));
-        } finally {
-            FileUtils.forceDelete(file);
-        }
-    }
-
-    @Test(expected = FutureGatewayException.class)
-    public final void testUploadFileForTaskInvalidUser() throws Exception {
-        stubFor(post(urlEqualTo("/v1.0/tasks/invalid-uri/input?user=test"))
-                        .willReturn(aResponse().withStatus(
-                                HttpStatus.SC_NOT_FOUND)));
-
-        Task task = new Task();
-        task.setId("invalid-uri");
-        task.setUser("test");
-
-        File file = File.createTempFile("TasksAPITest", null);
-        try {
-            api.uploadFileForTask(task, file);
-        } finally {
-            FileUtils.forceDelete(file);
-        }
-    }
-
-    @Test(expected = FutureGatewayException.class)
-    public final void testUploadFileForTaskInvalidBody() throws Exception {
-        stubFor(post(urlEqualTo("/v1.0/tasks/invalid-body/input?user=test"))
-                        .willReturn(aResponse().withBody("")));
-
-        Task task = new Task();
-        task.setId("invalid-body");
-        task.setUser("test");
-
-        File file = File.createTempFile("TasksAPITest", null);
-        try {
-            api.uploadFileForTask(task, file);
         } finally {
             FileUtils.forceDelete(file);
         }
@@ -176,14 +130,14 @@ public class TasksAPITest {
         stubFor(get(urlEqualTo("/v1.0/file?path=%2Ftmp&name=test.txt"))
                         .willReturn(aResponse().withBody("TEST")));
 
-        OutputFile outputFile = new OutputFile();
+        final OutputFile outputFile = new OutputFile();
         outputFile.setName("test.txt");
         outputFile.setUrl(URI.create("file?path=%2Ftmp&name=test.txt"));
 
-        File directory = FileUtils.getTempDirectory();
+        final File directory = FileUtils.getTempDirectory();
         api.downloadOutputFile(outputFile, directory);
 
-        File file = new File(directory, "test.txt");
+        final File file = new File(directory, "test.txt");
         assertTrue(file.exists());
         assertEquals("TEST", FileUtils
                 .readFileToString(file, Charset.defaultCharset()));
@@ -197,19 +151,19 @@ public class TasksAPITest {
                         .willReturn(aResponse().withStatus(
                                 HttpStatus.SC_NOT_FOUND)));
 
-        OutputFile outputFile = new OutputFile();
+        final OutputFile outputFile = new OutputFile();
         outputFile.setName("test.txt");
         outputFile
                 .setUrl(URI.create("file?path=%2Ftmp&name=non-existing-file"));
 
-        File directory = FileUtils.getTempDirectory();
+        final File directory = FileUtils.getTempDirectory();
         api.downloadOutputFile(outputFile, directory);
     }
 
     @Test(expected = FutureGatewayException.class)
     public final void testDownloadOutputFileNotDirectory()
             throws FutureGatewayException {
-        File file = mock(File.class);
+        final File file = mock(File.class);
         when(file.exists()).thenReturn(true);
         when(file.isDirectory()).thenReturn(false);
         api.downloadOutputFile(new OutputFile(), file);
@@ -218,7 +172,7 @@ public class TasksAPITest {
     @Test(expected = FutureGatewayException.class)
     public final void testDownloadOutputFileCannotWrite()
             throws FutureGatewayException {
-        File file = mock(File.class);
+        final File file = mock(File.class);
         when(file.exists()).thenReturn(true);
         when(file.isDirectory()).thenReturn(true);
         when(file.canWrite()).thenReturn(false);
@@ -228,7 +182,7 @@ public class TasksAPITest {
     @Test(expected = FutureGatewayException.class)
     public final void testDownloadOutputFileCannotMkdir()
             throws FutureGatewayException {
-        File file = mock(File.class);
+        final File file = mock(File.class);
         when(file.exists()).thenReturn(false);
         when(file.mkdirs()).thenReturn(false);
         api.downloadOutputFile(new OutputFile(), file);
@@ -236,41 +190,15 @@ public class TasksAPITest {
 
     @Test
     public final void testCreateTask() throws Exception {
-        Task task = new Task();
-        task.setUser("test");
+        final Task task = new Task();
         task.setApplication("1");
         task.setDescription("hello");
 
-        stubFor(post(urlEqualTo("/v1.0/tasks?user=test")).willReturn(
+        stubFor(post(urlEqualTo("/v1.0/tasks")).willReturn(
                 aResponse().withBody(mapper.writeValueAsString(task))));
 
-        Task taskFG = api.createTask(task);
+        final Task taskFG = api.createTask(task);
         assertEquals(task, taskFG);
-    }
-
-    @Test(expected = FutureGatewayException.class)
-    public final void testCreateTaskInvalidUser()
-            throws FutureGatewayException {
-        stubFor(post(urlEqualTo("/v1.0/tasks?user=invalid-user")).willReturn(
-                aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
-
-        Task task = new Task();
-        task.setUser("invalid-user");
-        task.setApplication("1");
-        task.setDescription("hello");
-
-        api.createTask(task);
-    }
-
-    @Test(expected = FutureGatewayException.class)
-    public final void testCreateTaskInvalidBody()
-            throws FutureGatewayException {
-        stubFor(post(urlEqualTo("/v1.0/tasks?user=invalid-body"))
-                        .willReturn(aResponse().withBody("")));
-
-        Task mockTask = new Task();
-        mockTask.setUser("invalid-body");
-        api.createTask(mockTask);
     }
 
     @Test
@@ -278,13 +206,13 @@ public class TasksAPITest {
         /*
          * Before PATCH
          */
-        String body = Helper.readResource("tasks_3.json");
+        final String body = Helper.readResource("tasks_3.json");
         stubFor(get(urlEqualTo("/v1.0/tasks/3"))
                         .willReturn(aResponse().withBody(body)));
         stubFor(patch(urlEqualTo("/v1.0/tasks/3"))
                         .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-        PatchRuntimeData patchRuntimeData = new PatchRuntimeData();
+        final PatchRuntimeData patchRuntimeData = new PatchRuntimeData();
         patchRuntimeData.setRuntimeData(
                 Collections.singletonList(new KeyValue("name", "value")));
 
@@ -295,13 +223,13 @@ public class TasksAPITest {
         /*
          * After PATCH
          */
-        String patchedBody = Helper.readResource("tasks_3_patched.json");
+        final String patchedBody = Helper.readResource("tasks_3_patched.json");
         stubFor(get(urlEqualTo("/v1.0/tasks/3"))
                         .willReturn(aResponse().withBody(patchedBody)));
 
         task = api.getTask(task.getId());
         assertEquals(1, task.getRuntimeData().size());
-        RuntimeData runtimeData = task.getRuntimeData().get(0);
+        final RuntimeData runtimeData = task.getRuntimeData().get(0);
         assertEquals("name", runtimeData.getName());
         assertEquals("value", runtimeData.getValue());
     }

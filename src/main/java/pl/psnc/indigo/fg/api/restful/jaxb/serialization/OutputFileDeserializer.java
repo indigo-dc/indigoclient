@@ -15,9 +15,9 @@ import java.net.URI;
  */
 public final class OutputFileDeserializer extends JsonDeserializer<OutputFile> {
     @Override
-    public OutputFile deserialize(
-            final JsonParser jsonParser,
-            final DeserializationContext deserializationContext)
+    public OutputFile deserialize(final JsonParser jsonParser,
+                                  final DeserializationContext
+                                          deserializationContext)
             throws IOException {
         JsonNode node = jsonParser.readValueAsTree();
         JsonNode nameNode = node.get("name");

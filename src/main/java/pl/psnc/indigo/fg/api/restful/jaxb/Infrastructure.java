@@ -35,8 +35,7 @@ public class Infrastructure {
     private LocalDateTime creation = LocalDateTime.now();
     private List<Parameter> parameters = Collections.emptyList();
     private boolean enabled;
-    @JsonProperty("vinfra")
-    private boolean virtual;
+    @JsonProperty("vinfra") private boolean virtual;
 
     @Override
     public final boolean equals(final Object o) {
