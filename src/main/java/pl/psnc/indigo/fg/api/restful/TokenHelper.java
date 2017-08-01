@@ -136,6 +136,7 @@ public final class TokenHelper {
      *
      * @param token Token as {@link String}.
      * @return Token as {@link DecodedJWT}.
+     * @throws FutureGatewayException If the JWT decoding procedure failed.
      */
     private static DecodedJWT decodeToken(final String token)
             throws FutureGatewayException {
