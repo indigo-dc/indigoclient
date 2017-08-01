@@ -1,0 +1,6 @@
+{
+  "error": "User with subject 1234567890 has not access token",
+  "groups": null,
+  "subject": "1234567890",
+  "token": null
+}

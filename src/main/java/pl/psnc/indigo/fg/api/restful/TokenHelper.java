@@ -1,6 +1,7 @@
 package pl.psnc.indigo.fg.api.restful;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
@@ -136,12 +137,21 @@ public final class TokenHelper {
      * @param token Token as {@link String}.
      * @return Token as {@link DecodedJWT}.
      */
-    private static DecodedJWT decodeToken(final String token) {
-        final DecodedJWT jwt = JWT.decode(token);
-        TokenHelper.LOGGER
-                .debug("Decoded JWT token. Subject: {} ExpiresAt: {}", //NON-NLS
-                       jwt.getSubject(), jwt.getExpiresAt());
-        return jwt;
+    private static DecodedJWT decodeToken(final String token)
+            throws FutureGatewayException {
+        try {
+            final DecodedJWT jwt = JWT.decode(token);
+            TokenHelper.LOGGER
+                    .debug("Decoded JWT token. Subject: {} ExpiresAt: {}",
+                           jwt.getSubject(), jwt.getExpiresAt());
+            return jwt;
+        } catch (final JWTDecodeException e) {
+            String message = TokenHelper.RESOURCE_BUNDLE
+                    .getString("failed.to.decode.jwt.token.0");
+            message = MessageFormat.format(message, token);
+            TokenHelper.LOGGER.error(message);
+            throw new FutureGatewayException(message, e);
+        }
     }
 
     /**

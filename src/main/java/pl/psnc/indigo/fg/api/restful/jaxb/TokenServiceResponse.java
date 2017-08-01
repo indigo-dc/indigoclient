@@ -13,7 +13,5 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TokenServiceResponse {
     private String token;
-    private String subject;
-    private String groups;
     private String error;
 }
