@@ -2,7 +2,6 @@ package pl.psnc.indigo.fg.api.restful;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.auth0.jwt.interfaces.Payload;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -25,6 +24,10 @@ import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+/**
+ * A utility class which allows to get valid IAM token by using the special
+ * Token service, part of indigo-dc/LiferayPlugins.
+ */
 public final class TokenHelper {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(TokenHelper.class);
@@ -32,11 +35,27 @@ public final class TokenHelper {
             ResourceBundle.getBundle("messages"); //NON-NLS
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    /**
+     * Empty constructor, because this is a utility class (use only public
+     * static methods).
+     */
     private TokenHelper() {
         super();
     }
 
-
+    /**
+     * Contact Token service, authenticate with username and password and
+     * obtain a valid token. If the given input token is still valid, it will
+     * be given as output. Otherwise a new one will be returned.
+     *
+     * @param token                IAM token, can be already expired.
+     * @param tokenServiceUri      {@link URI} of the Token service endpoint.
+     * @param tokenServiceUser     Username for the Token service.
+     * @param tokenServicePassword Password for the Token service.
+     * @return An IAM token which is ensured to be valid.
+     * @throws FutureGatewayException If anything goes wrong (e.g. invalid
+     *                                credentials)
+     */
     public static String getToken(final String token, final URI tokenServiceUri,
                                   final String tokenServiceUser,
                                   final String tokenServicePassword)
@@ -94,6 +113,14 @@ public final class TokenHelper {
         }
     }
 
+    /**
+     * Create {@link Header} instance with Basic HTTP authorization scheme.
+     *
+     * @param user     Username.
+     * @param password Password.
+     * @return An instance of {@link Header} which conforms to HTTP Basic
+     * auth scheme.
+     */
     private static Header getAuthorizationHeader(final String user,
                                                  final String password) {
         final String encoded = Base64.encodeBase64String(
@@ -103,7 +130,13 @@ public final class TokenHelper {
                                String.format("Basic %s", encoded));
     }
 
-    private static Payload decodeToken(final String token) {
+    /**
+     * Decode a JWT token, log the subject and expiration date.
+     *
+     * @param token Token as {@link String}.
+     * @return Token as {@link DecodedJWT}.
+     */
+    private static DecodedJWT decodeToken(final String token) {
         final DecodedJWT jwt = JWT.decode(token);
         TokenHelper.LOGGER
                 .debug("Decoded JWT token. Subject: {} ExpiresAt: {}", //NON-NLS
@@ -111,6 +144,14 @@ public final class TokenHelper {
         return jwt;
     }
 
+    /**
+     * Use {@link ObjectMapper} to parse HTTP response into a valid
+     * {@link TokenServiceResponse} object.
+     *
+     * @param response Response from the Token service.
+     * @return An object representing parsed JSON data.
+     * @throws IOException If the mapping causes errors.
+     */
     private static TokenServiceResponse readToken(final HttpResponse response)
             throws IOException {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
