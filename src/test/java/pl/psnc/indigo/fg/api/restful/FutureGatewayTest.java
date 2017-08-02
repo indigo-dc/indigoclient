@@ -3,8 +3,6 @@ package pl.psnc.indigo.fg.api.restful;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.psnc.indigo.fg.api.restful.category.IntegrationTests;
 import pl.psnc.indigo.fg.api.restful.exceptions.FutureGatewayException;
 import pl.psnc.indigo.fg.api.restful.jaxb.Application;
