@@ -1,5 +1,6 @@
 package pl.psnc.indigo.cli;
 
+import java.util.LinkedList;
 import org.apache.commons.cli.*;
 import pl.psnc.indigo.cli.commands.*;
 
@@ -20,9 +21,9 @@ public class ICParser {
      at a time, or we can call multiple commands. E.g. to call status check for multiple jobs
   */
     
-  public LinkedList<AbstractICCommand> parse() throws Exception {
+  public LinkedList<AbstractCommand> parse() throws Exception {
  
-    LinkedList<AbstractICCommand> retVal = new LinkedList<AbstractICCommand>();
+    LinkedList<AbstractCommand> retVal = new LinkedList<AbstractCommand>();
   
     if(appArgs == null || appArgs.length == 0) {
       throw new Exception("Application arguments are empty. You have to specify at least -help.");
@@ -45,7 +46,7 @@ public class ICParser {
     }
 
     if (cmdLine.hasOption("help")) {
-      retVal.add( HelpICCommand(options) );
+      retVal.add( new HelpCommand(options) );
       
     }
 
@@ -62,14 +63,14 @@ public class ICParser {
     }
 
     if(cmdLine.hasOption("apps")) {
-			if(tokenString == null || tokenString.length == 0) {
+			if(tokenString == null || tokenString.length() == 0) {
 				throw new Exception("You have to pass user's token to list applications. Use -token argument to pass user's token");
       }
-      if(fgURLString == null || fgURLString.length == 0) {
+      if(fgURLString == null || fgURLString.length() == 0) {
         throw new Exception("You have to pass FutureGateway API URL if you want to list applications. Use -url argument to pass FG API URL.");
       }
 
-      retVal.add( new ListApplicationsCommand(token, fgURLString) ); 
+      retVal.add( new ListApplicationsCommand( tokenString, fgURLString) ); 
     }
 
     return retVal;

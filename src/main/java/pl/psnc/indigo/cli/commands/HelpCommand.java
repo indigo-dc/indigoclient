@@ -2,13 +2,13 @@ package pl.psnc.indigo.cli.commands;
 
 import org.apache.commons.cli.*;
 
-public HelpCommand implements AbstractICCommand {
+public class HelpCommand implements AbstractCommand {
 
   Options options;
 
   /* This command prints help for CLI client
   */
-  HelpCommand(Options options) {
+  public HelpCommand(Options options) {
     this.options 	= options;
   }
 
@@ -18,7 +18,7 @@ public HelpCommand implements AbstractICCommand {
 
     In case of super nasty issue, it may throw Exception
   */  
-  public int execute() thows Exception {
+  public int execute() throws Exception {
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp( "java -cp ./indigoAPI.jar pl.psnc.indigo.cli.IndigoClient", options );
     return 0;
