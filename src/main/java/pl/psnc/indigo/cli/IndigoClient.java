@@ -21,8 +21,7 @@ public class IndigoClient {
     }
 
     if (cmdline.hasOption("help")) {
-      HelpFormatter formatter = new HelpFormatter();
-      formatter.printHelp( "java -cp ./indigoAPI.jar pl.psnc.indigo.cli.IndigoClient", options );
+      System.out.println("Help");
     }
 
   }
