@@ -1,7 +1,6 @@
 package pl.psnc.indigo.cli;
 
 import org.apache.commons.cli.*;
-import pl.psnc.indigo.cli.commands.*;
 
 public class ICParser {
 
@@ -13,17 +12,7 @@ public class ICParser {
     appArgs = args;
   }
 
-  /* After parsing all the parameters, parse method returns all the commands
-     that should/could be executed based on command line parametrs.
-
-     Now, this is a question, how to proceed here. Either we allow just one command
-     at a time, or we can call multiple commands. E.g. to call status check for multiple jobs
-  */
-    
-  public LinkedList<AbstractICCommand> parse() throws Exception {
- 
-    LinkedList<AbstractICCommand> retVal = new LinkedList<AbstractICCommand>();
-  
+  public void parse() throws Exception {
     if(appArgs == null || appArgs.length == 0) {
       throw new Exception("Application arguments are empty. You have to specify at least -help.");
     }
@@ -45,8 +34,10 @@ public class ICParser {
     }
 
     if (cmdLine.hasOption("help")) {
-      retVal.add( HelpICCommand(options) );
-      
+      HelpFormatter formatter = new HelpFormatter();
+      formatter.printHelp( "java -cp ./indigoAPI.jar pl.psnc.indigo.cli.IndigoClient", options );
+      // I guess, we should quit app once "-help/--help" was passed
+      System.exit(0); 
     }
 
     // What we do now, is parsing all other arguments. For most things we need token. Token
@@ -60,19 +51,6 @@ public class ICParser {
     if (cmdLine.hasOption("url")) {
       fgURLString = cmdLine.getOptionValue("token");
     }
-
-    if(cmdLine.hasOption("apps")) {
-			if(tokenString == null || tokenString.length == 0) {
-				throw new Exception("You have to pass user's token to list applications. Use -token argument to pass user's token");
-      }
-      if(fgURLString == null || fgURLString.length == 0) {
-        throw new Exception("You have to pass FutureGateway API URL if you want to list applications. Use -url argument to pass FG API URL.");
-      }
-
-      retVal.add( new ListApplicationsCommand(token, fgURLString) ); 
-    }
-
-    return retVal;
 
   }
 
