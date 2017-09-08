@@ -1,6 +1,6 @@
 package pl.psnc.indigo.cli.commands;
 
-public class ListApplicationsCommand implements AbstractCommand {
+public ListApplicationsCommand implements AbstractICCommand {
 
   String   token;
   String   url;
@@ -16,15 +16,15 @@ public class ListApplicationsCommand implements AbstractCommand {
      - it may take timeout as additional parameter - in that case, after given
           time, timeout will be raised
   */
-  public ListApplicationsCommand(String url, String token) {
-    this.url    = url;
-    this.token	= token;
+  ListApplicationsCommand(String url, String token) {
+    this.url 			= url;
+		this.token		= token;
   }
 
-  public ListApplicationsCommand(String url, String token, long timeout) {
-    this(url, token);
+  ListApplicationsCommand(String url, String token, long timeout) {
+		ListApplicationsCommand(url, token);
 
-    this.timeout = timeout;
+		this.timeout = timeout;
   }
 
   
@@ -34,8 +34,7 @@ public class ListApplicationsCommand implements AbstractCommand {
 
     In case of super nasty issue, it may throw Exception
   */  
-  public int execute() throws Exception {
+  public int execute() thows Exception {
     // we have to call stuff
-    return 0;
   }
 }

@@ -1,6 +1,5 @@
 package pl.psnc.indigo.cli;
 
-import java.util.LinkedList;
 import pl.psnc.indigo.cli.commands.*;
 
 public class IndigoClient {
@@ -9,8 +8,8 @@ public class IndigoClient {
 
     ICParser parser = new ICParser(args);
     try {
-      LinkedList<AbstractCommand> commands = parser.parse();
-      for(AbstractCommand cmd : commands) {
+      LinkedList<AbstractICCommand> commands = parser.parse();
+      for(AbstractICCommand cmd : commands) {
         try {
           cmd.execute();
         } catch( Exception ex ) {

@@ -1,6 +1,6 @@
 package pl.psnc.indigo.cli.commands;
 
-public interface AbstractCommand {
+public AbstractICCommand {
 
   /* execute command can return
      - == 0 - everything is OK
@@ -8,5 +8,5 @@ public interface AbstractCommand {
 
     In case of super nasty issue, it may throw Exception
   */  
-  public int execute() throws Exception;
+  public int execute() thows Exception;
 }
