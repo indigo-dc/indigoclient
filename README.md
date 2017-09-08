@@ -18,3 +18,10 @@ If you don't want to perform tests, call:
 
 Note that for testing you need access to Future Gateway Web Services.
 
+# CLI client
+
+Indigo-DC CLI client allows to call Future Gateway's API from Command Line Interface. You can run it following way:
+
+       java -cp ./target/indigoAPI.jar pl.psnc.indigo.cli.IndigoClient --help
+       
+       
