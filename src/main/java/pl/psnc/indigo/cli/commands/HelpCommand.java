@@ -1,26 +1,36 @@
 package pl.psnc.indigo.cli.commands;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
 
+/**
+ * Class responsible for printing Help of the application.
+ */
 public class HelpCommand implements AbstractCommand {
 
-  Options options;
+  private Options options;
 
-  /* This command prints help for CLI client
-  */
-  public HelpCommand(Options options) {
-    this.options 	= options;
+  /**
+   * This command prints help for CLI client.
+   *
+   * @param options Options created while parsing application's arguments.
+   */
+  public HelpCommand(final Options options) {
+    this.options = options;
   }
 
-  /* execute command can return
-     - == 0 - everything is OK
-     - != 0 - something is definitelly not right
-
-    In case of super nasty issue, it may throw Exception
-  */  
-  public int execute() throws Exception {
+  /**
+   * Execute help command.
+   *
+   * @return 0    - everything is OK
+   *         != 0 - something is definitelly not right
+   *
+   * @throws Exception In case of super nasty issue, it may throw Exception
+   */
+  public final int execute() throws Exception {
     HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp( "java -cp ./indigoAPI.jar pl.psnc.indigo.cli.IndigoClient", options );
+    formatter.printHelp(
+      "java -cp ./indigoAPI.jar pl.psnc.indigo.cli.IndigoClient", options);
     return 0;
   }
 }

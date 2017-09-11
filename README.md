@@ -16,6 +16,10 @@ If you don't want to perform tests, call:
 
 	mvn install -DskipTests -Dcobertura.skip
 
+If you want to call syntax checking, call:
+
+  mvn checkstyle:check cobertura:check
+
 Note that for testing you need access to Future Gateway Web Services.
 
 # CLI client
