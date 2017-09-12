@@ -1,6 +1,7 @@
 package pl.psnc.indigo.cli;
 
 import java.util.LinkedList;
+import pl.psnc.indigo.cli.parser.ICParser;
 import pl.psnc.indigo.cli.commands.AbstractCommand;
 
 /**
