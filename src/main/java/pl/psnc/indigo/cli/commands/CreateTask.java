@@ -54,6 +54,8 @@ public class CreateTask implements AbstractCommand {
       this.arguments = arguments;
       this.inputFileNames = inputFileNames;
       this.outputFileNames = outputFileNames;
+      this.url = url;
+      this.token = token;
     }
     
     /**

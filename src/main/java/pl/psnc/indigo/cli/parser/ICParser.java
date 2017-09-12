@@ -66,24 +66,55 @@ public final class ICParser {
     CommandLine cmdLine = null;
 
     options.addOption("help", false, "show help");
-    options.addOption("token", true, "access token (string)");
-    options.addOption("url", true, "Future Gateway API URL");
+    
+    options.addOption(OptionBuilder.withLongOpt("token")
+            .withDescription("access token (string)")
+            .hasArgs(1)
+            .withArgName("TOKEN")
+            .create());
+    
+    options.addOption(OptionBuilder.withLongOpt("url")
+            .withDescription("Future Gateway API URL")
+            .hasArgs(1)
+            .withArgName("URL")
+            .create());
     options.addOption("listApps", false, "Lists all available applications");
+    
     options.addOption(OptionBuilder.withLongOpt("inputs")
             .withDescription("Path to inputs")
             .hasArgs()
             .withArgName("PATHS")
+            .withValueSeparator(',')  
             .create());
     options.addOption(OptionBuilder.withLongOpt("outputs")
             .withDescription("Path to outputs")
             .hasArgs()
             .withArgName("PATHS")
+            .withValueSeparator(',')
             .create());
-    options.addOption("description", false, "Description of the task");
-    options.addOption("args", false, "Arguments of the task");
-    options.addOption("appName",
-            false, "Name of the application to be created");
+    
+    options.addOption(OptionBuilder.withLongOpt("description")
+            .withDescription("Description of the task")
+            .hasArgs(1)
+            .withArgName("DESCRIPTION")
+            .create());
+    
+    options.addOption(OptionBuilder.withLongOpt("args")
+            .withDescription("Arguments of the task (must be embedded in 'agrs')")
+            .hasArgs(1)
+            .withArgName("ARGS")
+            .create());
+    
+    options.addOption(OptionBuilder.withLongOpt("appName")
+            .withDescription("Name of the application to be created")
+            .hasArgs(1)
+            .withArgName("NAME")
+            .create());
+    
     options.addOption("createTask", false, "Creates tasks");
+    
+    options.addOption("getTask", true, "Get task info (requires id)");
+    
     options.addOption("verbose", false, "Be verbose");
 
     CommandLineParser parser = new PosixParser();
@@ -100,7 +131,9 @@ public final class ICParser {
     } else if (cmdLine.hasOption("listApps")) {
       retVal.add(ListApplicationsParser.getInstance().parse(cmdLine, options));
     } else if (cmdLine.hasOption("createTask")) {
-
+      retVal.add(CreateTaskParser.getInstance().parse(cmdLine, options));
+    } else if (cmdLine.hasOption("getTask")) {
+      retVal.add(GetTaskParser.getInstance().parse(cmdLine, options));
     }
 
     return retVal;

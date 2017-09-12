@@ -82,6 +82,10 @@ public class CreateTaskParser implements AbstractParser {
       description = cmd.getOptionValue("description"); 
     }
     
+    if(cmd.hasOption("args")) {
+      
+    }
+    
     return new CreateTask(
             appName, 
             description, 
