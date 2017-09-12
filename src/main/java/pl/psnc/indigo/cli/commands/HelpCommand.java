@@ -2,6 +2,7 @@ package pl.psnc.indigo.cli.commands;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
+import pl.psnc.indigo.cli.parser.OptionComparator;
 
 /**
  * Class responsible for printing Help of the application.
@@ -29,6 +30,7 @@ public class HelpCommand implements AbstractCommand {
    */
   public final int execute() throws Exception {
     HelpFormatter formatter = new HelpFormatter();
+    formatter.setOptionComparator(OptionComparator.getInstance());
     formatter.printHelp(
       "java -cp ./indigoAPI.jar pl.psnc.indigo.cli.IndigoClient", options);
     return 0;
