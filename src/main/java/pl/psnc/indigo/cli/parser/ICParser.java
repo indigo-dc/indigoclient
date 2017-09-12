@@ -84,6 +84,7 @@ public final class ICParser {
     options.addOption("appName",
             false, "Name of the application to be created");
     options.addOption("createTask", false, "Creates tasks");
+    options.addOption("verbose", false, "Be verbose");
 
     CommandLineParser parser = new PosixParser();
 

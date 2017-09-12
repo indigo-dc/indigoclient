@@ -64,6 +64,23 @@ public class CreateTaskParser implements AbstractParser {
     
     // Now, we can parse optional elements: description, input files,
     // output files, and agruments
+    if (cmd.hasOption("inputs")) {
+      String[] inputFileNameStrings = cmd.getOptionValues("inputs");
+      for (String inputName : inputFileNameStrings) {
+        inputFileNames.add(inputName);
+      }
+    }
+    
+    if (cmd.hasOption("outputs")) {
+      String[] outputFileNameStrings = cmd.getOptionValues("outputs");
+      for (String outputName : outputFileNameStrings) {
+        outputFileNames.add(outputName);
+      }
+    }
+    
+    if (cmd.hasOption("description")) {
+      description = cmd.getOptionValue("description"); 
+    }
     
     return new CreateTask(
             appName, 
