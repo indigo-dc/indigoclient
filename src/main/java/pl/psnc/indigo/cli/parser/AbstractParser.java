@@ -21,10 +21,12 @@ public interface AbstractParser {
   /**
    * Parses command line arguments and creates command.
    *
-   * @param parser
-   * @param options
-   * @return
-   * @throws Exception
+   * @param cmd Command Line arguments
+   * @param options Options object that contain all the options
+   *                (used by HelpCommand)
+   * @return returns command that can be created using concrete parser
+   * @throws Exception In case something really bad happens, we are throwing
+   *                   Exception
    */
   AbstractCommand parse(
           CommandLine cmd,

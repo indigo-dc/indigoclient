@@ -55,7 +55,10 @@ public class ListApplicationsCommand implements AbstractCommand {
     ApplicationsAPI appapi = new ApplicationsAPI(URI.create(url), token);
     List<Application> list = appapi.getAllApplications();
     for (Application app : list) {
-        System.out.println("ID: [" + app.getId() + "] - AppName: " + app.getName());
+        System.out.println("ID: ["
+                + app.getId()
+                + "] - AppName: "
+                + app.getName());
     }
     return 0;
   }

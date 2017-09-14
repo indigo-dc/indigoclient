@@ -9,8 +9,6 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.PosixParser;
 import pl.psnc.indigo.cli.commands.AbstractCommand;
-import pl.psnc.indigo.cli.commands.ListApplicationsCommand;
-import pl.psnc.indigo.cli.commands.HelpCommand;
 
 /**
  * This class is responsible for parsing command line arguments.
@@ -60,58 +58,59 @@ public final class ICParser {
 
     if (appArgs == null || appArgs.length == 0) {
       throw new Exception(
-              "Application arguments are empty. You have to specify at least -help.");
+              "Application arguments are empty."
+            + " You have to specify at least -help.");
     }
 
     Options options = new Options();
-    
+
     CommandLine cmdLine = null;
 
     options.addOption("help", false, "show help");
     OptionComparator.getInstance().addOption("help", "001");
-    
+
     options.addOption("listApps", false, "Lists all available applications");
     OptionComparator.getInstance().addOption("listApps", "002");
-    
+
     options.addOption("createTask", false, "Creates tasks");
     OptionComparator.getInstance().addOption("createTask", "003");
-    
+
     options.addOption("getTask", true, "Get task info (requires id)");
     OptionComparator.getInstance().addOption("getTask", "004");
-    
+
     options.addOption(Option.builder("uploadFile")
             .desc("Upload file for task")
             .hasArgs()
-            .numberOfArgs(3)
+            .numberOfArgs(UploadFileParser.NUMBER_OF_ARGS)
             .argName("ID FILE_NAME LOCAL_FILE_LOCATION")
             .build());
     OptionComparator.getInstance().addOption("uploadFile", "005");
-    
+
     options.addOption("verbose", false, "Be verbose");
     OptionComparator.getInstance().addOption("verbose", "006");
-    
+
     options.addOption(Option.builder().longOpt("token")
             .desc("access token (string)")
             .hasArgs()
             .argName("TOKEN")
             .build());
     OptionComparator.getInstance().addOption("token", "011");
-    
+
     options.addOption(OptionBuilder.withLongOpt("url")
             .withDescription("Future Gateway API URL")
             .hasArgs(1)
             .withArgName("URL")
             .create());
     OptionComparator.getInstance().addOption("url", "012");
-    
+
     options.addOption(OptionBuilder.withLongOpt("inputs")
             .withDescription("Names of files")
             .hasArgs()
             .withArgName("FILE_NAMES")
-            .withValueSeparator(',')  
+            .withValueSeparator(',')
             .create());
     OptionComparator.getInstance().addOption("inputs", "013");
-    
+
     options.addOption(OptionBuilder.withLongOpt("outputs")
             .withDescription("Names of files")
             .hasArgs()
@@ -119,31 +118,27 @@ public final class ICParser {
             .withValueSeparator(',')
             .create());
     OptionComparator.getInstance().addOption("outputs", "014");
-    
+
     options.addOption(OptionBuilder.withLongOpt("description")
             .withDescription("Description of the task")
             .hasArgs(1)
             .withArgName("DESCRIPTION")
             .create());
     OptionComparator.getInstance().addOption("description", "015");
-    
+
     options.addOption(OptionBuilder.withLongOpt("args")
-            .withDescription("Arguments of the task (must be embedded in 'agrs')")
+            .withDescription("Arguments of the task (embedded in 'agrs')")
             .hasArgs(1)
             .withArgName("ARGS")
             .create());
     OptionComparator.getInstance().addOption("args", "016");
-    
+
     options.addOption(OptionBuilder.withLongOpt("appName")
             .withDescription("Name of the application to be created")
             .hasArgs(1)
             .withArgName("NAME")
             .create());
     OptionComparator.getInstance().addOption("appName", "017");
-    
-   
-    
-    
 
     CommandLineParser parser = new PosixParser();
 

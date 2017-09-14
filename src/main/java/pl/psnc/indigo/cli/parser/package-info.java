@@ -1,4 +1,4 @@
 /**
- * Command line arguments parser
+ * Command line arguments parser.
  */
 package pl.psnc.indigo.cli.parser;

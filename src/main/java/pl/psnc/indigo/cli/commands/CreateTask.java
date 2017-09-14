@@ -16,11 +16,11 @@ import pl.psnc.indigo.fg.api.restful.jaxb.Task;
 
 /**
  * This class is responsible for creating Task at FG API server.
- * 
+ *
  * @author michalo
  */
-public class CreateTask implements AbstractCommand {
-    
+public final class CreateTask implements AbstractCommand {
+
     private String appName = null;
     private String description = null;
     private List<String> arguments = null;
@@ -28,17 +28,17 @@ public class CreateTask implements AbstractCommand {
     private List<String> outputFileNames;
     private String url;
     private String token;
-    
+
     /**
      * Parametric constructor for the command.
-     * 
-     * @param appName
-     * @param description
-     * @param arguments
-     * @param inputFiles
-     * @param outputFiles
-     * @param url
-     * @param token 
+     *
+     * @param appName Name of the application to be created
+     * @param description Description of the application
+     * @param arguments Arguments passed to the application
+     * @param inputFileNames List of input file names
+     * @param outputFileNames List of output file names
+     * @param url URL of FG API server
+     * @param token User's token
      */
     public CreateTask(
             final String appName,
@@ -48,7 +48,7 @@ public class CreateTask implements AbstractCommand {
             final List<String> outputFileNames,
             final String url,
             final String token) {
-    
+
       this.appName = appName;
       this.description = description;
       this.arguments = arguments;
@@ -57,7 +57,7 @@ public class CreateTask implements AbstractCommand {
       this.url = url;
       this.token = token;
     }
-    
+
     /**
      *
      * Executes command can return two different values.
@@ -67,12 +67,12 @@ public class CreateTask implements AbstractCommand {
      * @throws Exception In case of super nasty issue, it may throw Exception
      *
      */
-    public final int execute() throws Exception {
+    public int execute() throws Exception {
       Task task = new Task();
       task.setDescription(description);
       task.setApplication(appName);
       task.setArguments(arguments);
-      
+
       // we have to convert file names to InputFile objects
       final int inputSize = inputFileNames.size();
       final int outputSize = outputFileNames.size();
@@ -90,7 +90,7 @@ public class CreateTask implements AbstractCommand {
         outputFile.setName(fileName);
         outputFiles.add(outputFile);
       }
-      
+
       task.setInputFiles(inputFiles);
       task.setOutputFiles(outputFiles);
 
@@ -99,12 +99,12 @@ public class CreateTask implements AbstractCommand {
 
         task = api.createTask(task);
         final String id = task.getId();
-        
+
         System.out.println("Task ID: " + id);
         return 0;
       } catch (final FutureGatewayException e) {
         throw new Exception("There was a problem while creating task: ", e);
-      }    
+      }
     }
 }
 

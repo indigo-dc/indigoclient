@@ -14,15 +14,32 @@ import pl.psnc.indigo.cli.commands.HelpCommand;
  *
  * @author michalo
  */
-public class HelpParser implements AbstractParser {
+public final class HelpParser implements AbstractParser {
 
+  /**
+   * We want to prevent from creating default objects.
+   */
   private HelpParser() {
   }
 
-  public AbstractCommand parse(CommandLine cmd, Options options) throws Exception {
+  /**
+   * Creates command that provides help message.
+   * @param cmd Command line arguments
+   * @param options All available options
+   * @return return command object that shows help
+   * @throws Exception In case of really serious issues, throws Exception
+   */
+  public AbstractCommand parse(
+          final CommandLine cmd,
+          final Options options)
+          throws Exception {
     return new HelpCommand(options);
   }
 
+  /**
+   * Gets the instance of the class.
+   * @return Returns new object of the class
+   */
   public static AbstractParser getInstance() {
     return new HelpParser();
   }

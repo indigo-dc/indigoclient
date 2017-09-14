@@ -16,12 +16,26 @@ import pl.psnc.indigo.cli.commands.CreateTask;
  *
  * @author michalo
  */
-public class CreateTaskParser implements AbstractParser {
+public final class CreateTaskParser implements AbstractParser {
 
+  /**
+   * We want to make sure that class is not instantiated without params.
+   */
   private CreateTaskParser() { }
-  
+
+  /**
+   * Creates command for creating task. It is called in case we spot
+   * argument that is responsible for creating task via FG API.
+   * @param cmd Command line arguments (parsed)
+   * @param options All available options
+   * @return Command that creates task
+   * @throws Exception In case of problems we are throwing Exception.
+   */
   @Override
-  public AbstractCommand parse(CommandLine cmd, Options options) throws Exception {
+  public AbstractCommand parse(
+          final CommandLine cmd,
+          final Options options)
+          throws Exception {
     String token = null;
     String url = null;
     String appName = null;
@@ -38,7 +52,7 @@ public class CreateTaskParser implements AbstractParser {
     if (cmd.hasOption("url")) {
       url = cmd.getOptionValue("url");
     }
-    
+
     if (cmd.hasOption("appName")) {
       appName = cmd.getOptionValue("appName");
     }
@@ -61,7 +75,7 @@ public class CreateTaskParser implements AbstractParser {
       throw new Exception(
               "You have to pass application name in order to create new task");
     }
-    
+
     // Now, we can parse optional elements: description, input files,
     // output files, and agruments
     if (cmd.hasOption("inputs")) {
@@ -70,33 +84,33 @@ public class CreateTaskParser implements AbstractParser {
         inputFileNames.add(inputName);
       }
     }
-    
+
     if (cmd.hasOption("outputs")) {
       String[] outputFileNameStrings = cmd.getOptionValues("outputs");
       for (String outputName : outputFileNameStrings) {
         outputFileNames.add(outputName);
       }
     }
-    
+
     if (cmd.hasOption("description")) {
-      description = cmd.getOptionValue("description"); 
+      description = cmd.getOptionValue("description");
     }
-    
-    if(cmd.hasOption("args")) {
-      
-    }
-    
+
+//    if (cmd.hasOption("args")) {
+//
+//    }
+
     return new CreateTask(
-            appName, 
-            description, 
-            args, 
-            inputFileNames, 
-            outputFileNames, 
-            url, 
+            appName,
+            description,
+            args,
+            inputFileNames,
+            outputFileNames,
+            url,
             token);
-    
+
   }
-  
+
   public static AbstractParser getInstance() {
     return new CreateTaskParser();
   }
