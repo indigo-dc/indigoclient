@@ -5,113 +5,89 @@
  */
 package pl.psnc.indigo.cli.parser;
 
-import java.util.LinkedList;
-import java.util.List;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import pl.psnc.indigo.cli.commands.AbstractCommand;
 import pl.psnc.indigo.cli.commands.CreateTask;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
- *
  * @author michalo
  */
 public final class CreateTaskParser implements AbstractParser {
-
-  /**
-   * We want to make sure that class is not instantiated without params.
-   */
-  private CreateTaskParser() { }
-
-  /**
-   * Creates command for creating task. It is called in case we spot
-   * argument that is responsible for creating task via FG API.
-   * @param cmd Command line arguments (parsed)
-   * @param options All available options
-   * @return Command that creates task
-   * @throws Exception In case of problems we are throwing Exception.
-   */
-  @Override
-  public AbstractCommand parse(
-          final CommandLine cmd,
-          final Options options)
-          throws Exception {
-    String token = null;
-    String url = null;
-    String appName = null;
-    String description = null;
-    List<String> inputFileNames = new LinkedList<String>();
-    List<String> outputFileNames = new LinkedList<String>();
-    List<String> args = new LinkedList<String>();
-
-    // First, we need to parse token, url, and application name
-    if (cmd.hasOption("token")) {
-      token = cmd.getOptionValue("token");
+    /**
+     * We want to make sure that class is not instantiated without params.
+     */
+    private CreateTaskParser() {
+        super();
     }
 
-    if (cmd.hasOption("url")) {
-      url = cmd.getOptionValue("url");
+    /**
+     * Creates command for creating task. It is called in case we spot
+     * argument that is responsible for creating task via FG API.
+     *
+     * @param cmd     Command line arguments (parsed)
+     * @param options All available options
+     * @return Command that creates task
+     */
+    @Override
+    public AbstractCommand parse(final CommandLine cmd, final Options options) {
+        // First, we need to parse token, url, and application name
+        final String token = cmd.getOptionValue("token", "");
+        final String url = cmd.getOptionValue("url", "");
+        final String appName = cmd.getOptionValue("appName", "");
+        final String description = cmd.getOptionValue("description", "");
+
+        // If either of three is null (empty) we need to terminate.
+        // We need (for sure): token, url and app name. Otherwise it is not
+        // possible to create task.
+        if (token.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "You have to pass user's token to list applications." +
+                    " Use -token argument to pass user's token");
+        }
+        if (url.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "You have to pass FutureGateway API URL if " +
+                    "you want to list applications." +
+                    " Use -url argument to pass FG API URL.");
+        }
+        if (appName.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "You have to pass application name in order to create new" +
+                    " task");
+        }
+
+        final List<String> args;
+        if (cmd.hasOption("args")) {
+            args = Arrays.asList(cmd.getOptionValues("args"));
+        } else {
+            args = Collections.emptyList();
+        }
+
+        final List<String> inputFileNames;
+        if (cmd.hasOption("inputs")) {
+            inputFileNames = Arrays.asList(cmd.getOptionValues("inputs"));
+        } else {
+            inputFileNames = Collections.emptyList();
+        }
+
+        final List<String> outputFileNames;
+        if (cmd.hasOption("outputs")) {
+            outputFileNames = Arrays.asList(cmd.getOptionValues("outputs"));
+        } else {
+            outputFileNames = Collections.emptyList();
+        }
+
+        return new CreateTask(appName, description, args, inputFileNames,
+                              outputFileNames, url, token);
+
     }
 
-    if (cmd.hasOption("appName")) {
-      appName = cmd.getOptionValue("appName");
+    public static AbstractParser getInstance() {
+        return new CreateTaskParser();
     }
-
-    // If either of three is null (empty) we need to terminate.
-    // We need (for sure): token, url and app name. Otherwise it is not possible
-    // to create task.
-    if (token == null || token.length() == 0) {
-      throw new Exception(
-              "You have to pass user's token to list applications."
-              + " Use -token argument to pass user's token");
-    }
-    if (url == null || url.length() == 0) {
-      throw new Exception(
-              "You have to pass FutureGateway API URL if "
-              + "you want to list applications."
-              + " Use -url argument to pass FG API URL.");
-    }
-    if (appName == null || appName.length() == 0) {
-      throw new Exception(
-              "You have to pass application name in order to create new task");
-    }
-
-    // Now, we can parse optional elements: description, input files,
-    // output files, and agruments
-    if (cmd.hasOption("inputs")) {
-      String[] inputFileNameStrings = cmd.getOptionValues("inputs");
-      for (String inputName : inputFileNameStrings) {
-        inputFileNames.add(inputName);
-      }
-    }
-
-    if (cmd.hasOption("outputs")) {
-      String[] outputFileNameStrings = cmd.getOptionValues("outputs");
-      for (String outputName : outputFileNameStrings) {
-        outputFileNames.add(outputName);
-      }
-    }
-
-    if (cmd.hasOption("description")) {
-      description = cmd.getOptionValue("description");
-    }
-
-//    if (cmd.hasOption("args")) {
-//
-//    }
-
-    return new CreateTask(
-            appName,
-            description,
-            args,
-            inputFileNames,
-            outputFileNames,
-            url,
-            token);
-
-  }
-
-  public static AbstractParser getInstance() {
-    return new CreateTaskParser();
-  }
 }

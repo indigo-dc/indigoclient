@@ -18,17 +18,15 @@ import pl.psnc.indigo.cli.commands.AbstractCommand;
  */
 public interface AbstractParser {
 
-  /**
-   * Parses command line arguments and creates command.
-   *
-   * @param cmd Command Line arguments
-   * @param options Options object that contain all the options
-   *                (used by HelpCommand)
-   * @return returns command that can be created using concrete parser
-   * @throws Exception In case something really bad happens, we are throwing
-   *                   Exception
-   */
-  AbstractCommand parse(
-          CommandLine cmd,
-          Options options) throws Exception;
+    /**
+     * Parses command line arguments and creates command.
+     *
+     * @param cmd     Command Line arguments
+     * @param options Options object that contain all the options
+     *                (used by Help)
+     * @return returns command that can be created using concrete parser
+     * @throws Exception In case something really bad happens, we are throwing
+     *                   Exception
+     */
+    AbstractCommand parse(CommandLine cmd, Options options);
 }
