@@ -1,25 +1,12 @@
 package pl.psnc.indigo.cli.commands;
 
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import pl.psnc.indigo.cli.parser.OptionComparator;
+import pl.psnc.indigo.cli.OptionComparator;
 
 /**
  * Class responsible for printing Help of the application.
  */
 public class Help implements AbstractCommand {
-    private final Options options;
-
-    /**
-     * This command prints help for CLI client.
-     *
-     * @param options Options created while parsing application's arguments.
-     */
-    public Help(final Options options) {
-        super();
-        this.options = options;
-    }
-
     /**
      * Execute help command.
      *
@@ -31,7 +18,7 @@ public class Help implements AbstractCommand {
         formatter.setOptionComparator(OptionComparator.getInstance());
         formatter.printHelp(
                 "java -cp ./indigoAPI.jar pl.psnc.indigo.cli.IndigoClient",
-                options);
+                OptionComparator.options());
         return 0;
     }
 }

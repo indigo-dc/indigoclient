@@ -6,32 +6,21 @@
 package pl.psnc.indigo.cli.parser;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Options;
 import pl.psnc.indigo.cli.commands.AbstractCommand;
 import pl.psnc.indigo.cli.commands.GetTask;
 
 /**
  * @author michalo
  */
-public final class GetTaskParser implements AbstractParser {
-    /**
-     * We want to make sure there are no GetTaskParser objects that were
-     * created without parameters.
-     */
-    private GetTaskParser() {
-        super();
-    }
-
+public final class GetTaskParser {
     /**
      * Parses CommandLine arguments and creates
      * Command for getting status of task.
      *
-     * @param cmd     Command Line arguments - parsed
-     * @param options Available options
+     * @param cmd Command Line arguments - parsed
      * @return returns Command that will call FG API and get task status
      */
-    @Override
-    public AbstractCommand parse(final CommandLine cmd, final Options options) {
+    public static AbstractCommand parse(final CommandLine cmd) {
         final String token = cmd.getOptionValue("token", "");
         final String url = cmd.getOptionValue("url", "");
 
@@ -50,8 +39,11 @@ public final class GetTaskParser implements AbstractParser {
         return new GetTask(cmd.getOptionValue("getTask"), url, token);
     }
 
-    public static AbstractParser getInstance() {
-        return new GetTaskParser();
+    /**
+     * We want to make sure there are no GetTaskParser objects that were
+     * created without parameters.
+     */
+    private GetTaskParser() {
+        super();
     }
-
 }

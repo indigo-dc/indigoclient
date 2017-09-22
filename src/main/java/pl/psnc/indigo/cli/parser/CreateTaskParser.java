@@ -6,7 +6,6 @@
 package pl.psnc.indigo.cli.parser;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Options;
 import pl.psnc.indigo.cli.commands.AbstractCommand;
 import pl.psnc.indigo.cli.commands.CreateTask;
 
@@ -17,24 +16,15 @@ import java.util.List;
 /**
  * @author michalo
  */
-public final class CreateTaskParser implements AbstractParser {
-    /**
-     * We want to make sure that class is not instantiated without params.
-     */
-    private CreateTaskParser() {
-        super();
-    }
-
+public final class CreateTaskParser {
     /**
      * Creates command for creating task. It is called in case we spot
      * argument that is responsible for creating task via FG API.
      *
-     * @param cmd     Command line arguments (parsed)
-     * @param options All available options
+     * @param cmd Command line arguments (parsed)
      * @return Command that creates task
      */
-    @Override
-    public AbstractCommand parse(final CommandLine cmd, final Options options) {
+    public static AbstractCommand parse(final CommandLine cmd) {
         // First, we need to parse token, url, and application name
         final String token = cmd.getOptionValue("token", "");
         final String url = cmd.getOptionValue("url", "");
@@ -84,10 +74,12 @@ public final class CreateTaskParser implements AbstractParser {
 
         return new CreateTask(appName, description, args, inputFileNames,
                               outputFileNames, url, token);
-
     }
 
-    public static AbstractParser getInstance() {
-        return new CreateTaskParser();
+    /**
+     * We want to make sure that class is not instantiated without params.
+     */
+    private CreateTaskParser() {
+        super();
     }
 }

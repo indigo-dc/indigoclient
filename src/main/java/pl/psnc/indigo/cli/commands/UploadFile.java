@@ -26,8 +26,8 @@ public class UploadFile implements AbstractCommand {
      * @param url      URL of FG API server
      * @param token    User's access token
      */
-    public UploadFile(final String url, final String token,
-                      final String id, final String filePath) {
+    public UploadFile(final String url, final String token, final String id,
+                      final String filePath) {
         super();
         this.url = url;
         this.token = token;
@@ -47,9 +47,8 @@ public class UploadFile implements AbstractCommand {
         final Task task = new Task();
         task.setId(id);
 
-        final TasksAPI restAPI = new TasksAPI(URI.create(url), token);
-        final Upload result =
-                restAPI.uploadFileForTask(task, new File(filePath));
+        final TasksAPI api = new TasksAPI(URI.create(url), token);
+        final Upload result = api.uploadFileForTask(task, new File(filePath));
 
         if (!"uploaded".equals(result.getMessage())) {
             return -1;

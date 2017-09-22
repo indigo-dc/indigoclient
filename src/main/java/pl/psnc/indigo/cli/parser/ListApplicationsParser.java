@@ -6,7 +6,6 @@
 package pl.psnc.indigo.cli.parser;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Options;
 import pl.psnc.indigo.cli.commands.AbstractCommand;
 import pl.psnc.indigo.cli.commands.ListApplications;
 
@@ -15,23 +14,15 @@ import pl.psnc.indigo.cli.commands.ListApplications;
  *
  * @author michalo
  */
-public final class ListApplicationsParser implements AbstractParser {
-    /**
-     * We want to prevent from creating objects.
-     */
-    private ListApplicationsParser() {
-        super();
-    }
-
+public final class ListApplicationsParser {
     /**
      * Parses command line arguments and creates Command for listing
      * applications.
      *
-     * @param cmd     Command line - parsed
-     * @param options All available options
+     * @param cmd Command line - parsed
      * @return Returns Command that calls FG API and returns available apps
      */
-    public AbstractCommand parse(final CommandLine cmd, final Options options) {
+    public static AbstractCommand parse(final CommandLine cmd) {
         final String token = cmd.getOptionValue("token", "");
         final String url = cmd.getOptionValue("url", "");
 
@@ -51,11 +42,9 @@ public final class ListApplicationsParser implements AbstractParser {
     }
 
     /**
-     * Provides instance of the class.
-     *
-     * @return Instance of the AbstractParser
+     * We want to prevent from creating objects.
      */
-    public static AbstractParser getInstance() {
-        return new ListApplicationsParser();
+    private ListApplicationsParser() {
+        super();
     }
 }
