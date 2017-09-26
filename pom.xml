@@ -8,7 +8,7 @@
 
     <groupId>pl.psnc.indigo</groupId>
     <artifactId>indigo-fg-api</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.3</version>
     <packaging>jar</packaging>
 
     <properties>
