@@ -61,7 +61,7 @@ public class RootAPI {
             throws FutureGatewayException {
         super();
 
-        String bearer = resourceBundle.getString("bearer.0");
+        final String bearer = resourceBundle.getString("bearer.0");
         this.authorizationToken =
                 MessageFormat.format(bearer, authorizationToken);
 
@@ -70,7 +70,7 @@ public class RootAPI {
         mapper.setDateFormat(new ISO8601DateFormat());
 
         root = getRootForUri(baseUri);
-        String version = root.getVersions().get(0).getId();
+        final String version = root.getVersions().get(0).getId();
         rootUri = UriBuilder.fromUri(baseUri).path(version).build();
     }
 
@@ -91,21 +91,20 @@ public class RootAPI {
         try {
             RootAPI.LOGGER.debug("GET {}", baseUri);
 
-            HttpResponse response = Request.Get(baseUri)
-                                           .setHeader(HttpHeaders.AUTHORIZATION,
-                                                      authorizationToken)
-                                           .execute().returnResponse();
+            final HttpResponse response = Request.Get(baseUri).setHeader(
+                    HttpHeaders.AUTHORIZATION, authorizationToken).execute()
+                                                 .returnResponse();
 
-            StatusLine status = response.getStatusLine();
-            int statusCode = status.getStatusCode();
-            String reasonPhrase = status.getReasonPhrase();
+            final StatusLine status = response.getStatusLine();
+            final int statusCode = status.getStatusCode();
+            final String reasonPhrase = status.getReasonPhrase();
             RootAPI.LOGGER.debug(RootAPI.STATUS, statusCode, reasonPhrase);
 
             if (statusCode == HttpStatus.SC_OK) {
                 try (ByteArrayOutputStream outputStream = new
                         ByteArrayOutputStream()) {
                     response.getEntity().writeTo(outputStream);
-                    String body = outputStream
+                    final String body = outputStream
                             .toString(Charset.defaultCharset().name());
                     RootAPI.LOGGER.trace("Body: {}", body);
                     return mapper.readValue(body, Root.class);
@@ -118,7 +117,7 @@ public class RootAPI {
                 throw new FutureGatewayException(message);
             }
         } catch (final IOException e) {
-            String message = resourceBundle
+            final String message = resourceBundle
                     .getString("failed.to.connect.to.future.gateway");
             RootAPI.LOGGER.error(message, e);
             throw new FutureGatewayException(message, e);
