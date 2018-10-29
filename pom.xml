@@ -137,6 +137,11 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>com.amashchenko.maven.plugin</groupId>
+        <artifactId>gitflow-maven-plugin</artifactId>
+        <version>1.10.0</version>
+      </plugin>
 
       <plugin>
         <groupId>com.github.ekryd.sortpom</groupId>
